@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DC0E2220-E4DF-4EE1-933E-00FF84C5ABEA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SecureSubmit</RootNamespace>
+    <AssemblyName>SecureSubmit</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Staging|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Staging\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net20\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Entities\Check\HpsCheck.cs" />
+    <Compile Include="Entities\HpsTrackData.cs" />
+    <Compile Include="Entities\PayPlan\Dto\HpsPayPlanResponse.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanCustomerQueryOptions.cs" />
+    <Compile Include="Infrastructure\HpsCheckException.cs" />
+    <Compile Include="Entities\Check\HpsCheckHolder.cs" />
+    <Compile Include="Entities\Check\HpsCheckResponse.cs" />
+    <Compile Include="Entities\Check\HpsCheckResponseDetails.cs" />
+    <Compile Include="Entities\HpsConsumer.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCardReversal.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCardVoid.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCardSale.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCardReward.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCardReplace.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCardDeactivate.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCardBalance.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCardAddValue.cs" />
+    <Compile Include="Entities\Credit\HpsAmountDetails.cs" />
+    <Compile Include="Entities\HpsEncryptionData.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCard.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCardActivate.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCardAlias.cs" />
+    <Compile Include="Entities\PayPlan\Dto\PayPlanCustomer.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanCustomer.cs" />
+    <Compile Include="Entities\HpsTransactionDetails.cs" />
+    <Compile Include="Entities\Credit\HpsVoid.cs" />
+    <Compile Include="Entities\HpsAuthorization.cs" />
+    <Compile Include="Entities\Batch\HpsBatch.cs" />
+    <Compile Include="Entities\Credit\HpsCardHolder.cs" />
+    <Compile Include="Entities\Credit\HpsChargeExceptions.cs" />
+    <Compile Include="Entities\Credit\HpsReportTransactionDetails.cs" />
+    <Compile Include="Entities\Credit\HpsReportTransactionSummary.cs" />
+    <Compile Include="Entities\IHpsReportTransaction.cs" />
+    <Compile Include="Entities\Credit\HpsReversal.cs" />
+    <Compile Include="Entities\HpsTransactionHeader.cs" />
+    <Compile Include="Entities\Credit\HpsAccountVerify.cs" />
+    <Compile Include="Entities\HpsAddress.cs" />
+    <Compile Include="Entities\HpsTokenData.cs" />
+    <Compile Include="Entities\Credit\HpsCreditCard.cs" />
+    <Compile Include="Entities\Credit\HpsCharge.cs" />
+    <Compile Include="Entities\Credit\HpsRefund.cs" />
+    <Compile Include="Entities\HpsTransaction.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanCustomerEditOptions.cs" />
+    <Compile Include="Infrastructure\HpsAuthenticationException.cs" />
+    <Compile Include="Infrastructure\Enums.cs" />
+    <Compile Include="Infrastructure\HpsConfiguration.cs" />
+    <Compile Include="Infrastructure\HpsCreditException.cs" />
+    <Compile Include="Infrastructure\HpsCreditExceptionDetails.cs" />
+    <Compile Include="Infrastructure\HpsException.cs" />
+    <Compile Include="Infrastructure\HpsGatewayException.cs" />
+    <Compile Include="Infrastructure\HpsGatewayExceptionDetails.cs" />
+    <Compile Include="Infrastructure\HpsInvalidRequestException.cs" />
+    <Compile Include="Infrastructure\PosGatewayClient.cs" />
+    <Compile Include="Infrastructure\Validation\HpsIssuerResponseValidation.cs" />
+    <Compile Include="Infrastructure\Validation\HpsGatewayResponseValidation.cs" />
+    <Compile Include="Infrastructure\Validation\HpsInputValidation.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Serialization\HpsError.cs" />
+    <Compile Include="Serialization\HpsToken.cs" />
+    <Compile Include="Services\Gateway\Batch\HpsBatchService.cs" />
+    <Compile Include="Services\Gateway\Check\HpsCheckService.cs" />
+    <Compile Include="Services\Gateway\Credit\HpsCreditService.cs" />
+    <Compile Include="Services\Gateway\Debit\HpsDebitService.cs" />
+    <Compile Include="Services\Gateway\GiftCard\HpsGiftCardService.cs" />
+    <Compile Include="Services\Gateway\HpsGatewayService.cs" />
+    <Compile Include="Services\HpsServicesConfig.cs" />
+    <Compile Include="Abstractions\IHpsServicesConfig.cs" />
+    <Compile Include="Services\Token\HpsTokenService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\PayPlan\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
