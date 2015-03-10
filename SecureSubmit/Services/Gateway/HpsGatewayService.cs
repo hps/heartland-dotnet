@@ -60,12 +60,6 @@ namespace SecureSubmit.Services
                 }
             };
 
-            if (clientTransactionId.HasValue)
-            {
-                req.Ver10.Header.ClientTxnId = clientTransactionId.Value;
-                req.Ver10.Header.ClientTxnIdSpecified = true;
-            }
-
             var url = (ServicesConfig == null) ? HpsConfiguration.SoapServiceUri : ServicesConfig.SoapServiceUri;
 
             if (!string.IsNullOrEmpty(req.Ver10.Header.SecretAPIKey))
@@ -83,6 +77,12 @@ namespace SecureSubmit.Services
                         Transaction = transaction
                     }
                 };
+            }
+
+            if (clientTransactionId.HasValue)
+            {
+                req.Ver10.Header.ClientTxnId = clientTransactionId.Value;
+                req.Ver10.Header.ClientTxnIdSpecified = true;
             }
 
             // if they have an api key and they didn't hard-set the service uri.
