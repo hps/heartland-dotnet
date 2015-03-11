@@ -44,7 +44,7 @@ namespace SecureSubmit.Entities
         public string Number { get; set; }
 
         /// <summary>Gets or sets the card security code.</summary>
-        public int Cvv { get; set; }
+        public string Cvv { get; set; }
 
         /// <summary>Gets or sets the expiration month.</summary>
         public int ExpMonth { get; set; }

@@ -29,7 +29,7 @@ namespace SecureSubmit.CodeSamples
 
             var creditCard = new HpsCreditCard // Valid Visa
             {
-                Cvv = 123,
+                Cvv = "123",
                 ExpMonth = 12,
                 ExpYear = 2015,
                 Number = "4012002000060016"
@@ -54,7 +54,7 @@ namespace SecureSubmit.CodeSamples
 
             var creditCard = new HpsCreditCard // Valid Visa
             {
-                Cvv = 123,
+                Cvv = "123",
                 ExpMonth = 12,
                 ExpYear = 2015,
                 Number = "4012002000060016"
@@ -79,7 +79,7 @@ namespace SecureSubmit.CodeSamples
 
             var creditCard = new HpsCreditCard                  // Valid Visa
             {
-                Cvv = 123,
+                Cvv = "123",
                 ExpMonth = 12,
                 ExpYear = 2015,
                 Number = "4012002000060016"
@@ -106,7 +106,7 @@ namespace SecureSubmit.CodeSamples
 
             var creditCard = new HpsCreditCard // Valid Visa
             {
-                Cvv = 123,
+                Cvv = "123",
                 ExpMonth = 12,
                 ExpYear = 2015,
                 Number = "4012002000060016"

@@ -88,9 +88,9 @@ namespace SecureSubmit.Services
             return RequestToken(new HpsCardToken(cardData));
         }
 
-        public HpsToken GetToken(string track)
+        public HpsToken GetSwipeToken(string track)
         {
-            return RequestToken(new HpsEncryptedSwipeToken(track));
+            return RequestToken(new HpsE3SwipeToken(track));
         }
 
         /// <summary>
@@ -98,9 +98,9 @@ namespace SecureSubmit.Services
         /// </summary>
         /// <param name="track">Trackdata from the card reader</param>
         /// <returns>A token with expiration information.</returns>
-        public HpsToken GetToken(string track, string trackNumber, string ktb, string pinBlock = "")
+        public HpsToken GetTrackToken(string track, string trackNumber, string ktb, string pinBlock = "")
         {
-            return RequestToken(new HpsEncryptedCardToken(track, trackNumber, ktb, pinBlock));
+            return RequestToken(new HpsTrackDataToken(track, trackNumber, ktb, pinBlock));
         }
     }
 }

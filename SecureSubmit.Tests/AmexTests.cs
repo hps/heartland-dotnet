@@ -1,13 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AmexTests.cs" company="Heartland Payment Systems">
-//   Copyright (c) Heartland Payment Systems. All rights reserved.
-// </copyright>
-// <summary>
-//   AMEX unit tests.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-using SecureSubmit.Services.Credit;
+﻿using SecureSubmit.Services.Credit;
 // ReSharper disable InconsistentNaming
 
 namespace SecureSubmit.Tests
@@ -52,6 +43,7 @@ namespace SecureSubmit.Tests
             StringAssert.Matches(transaction.Memo, new Regex("memo"));
             StringAssert.Matches(transaction.InvoiceNumber, new Regex("1234"));
             StringAssert.Matches(transaction.CustomerId, new Regex("customerID"));
+            Assert.AreEqual(charge.ClientTransactionId, 12345678);
         }
 
         #region AVS Tests
@@ -444,7 +436,7 @@ namespace SecureSubmit.Tests
         [TestMethod]
         public void Amex_WhenValidTrackData_ShouldReturnValidResult()
         {
-            var service = new HpsCreditService(TestServicesConfig.ValidServicesConfig());
+            var service = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
             var charge = service.Charge(50, "usd", new HpsTrackData
             {
                 Value = "%B3727 006992 51018^AMEX TEST CARD^2512990502700?;372700699251018=2512990502700?",

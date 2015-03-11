@@ -175,10 +175,12 @@ namespace SecureSubmit.Services.Credit
         /// <param name="details">The transaction details.</param>
         /// <param name="encryptionData">The encryption data.</param>
         /// <param name="gratuity">The gratuity aamount.</param>
+        /// <param name="directMarketData">The direct market data.</param>
         /// <returns>The <see cref="HpsCharge"/>.</returns>
         public HpsCharge Charge(decimal amount, string currency, HpsCreditCard card, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
-            HpsTransactionDetails details = null, HpsEncryptionData encryptionData = null, decimal gratuity = 0)
+            HpsTransactionDetails details = null, HpsEncryptionData encryptionData = null, decimal gratuity = 0,
+            HpsDirectMarketData directMarketData = null)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -205,7 +207,8 @@ namespace SecureSubmit.Services.Credit
                             Item = HydrateCardManualEntry(card)
                         },
                         AdditionalTxnFields = HydrateAdditionalTxnFields(details),
-                        TxnDescriptor = descriptor
+                        TxnDescriptor = descriptor,
+                        DirectMktData = HydrateDirectMarketData(directMarketData)
                     }
                 },
                 ItemElementName = ItemChoiceType1.CreditSale
@@ -230,10 +233,11 @@ namespace SecureSubmit.Services.Credit
         /// <param name="allowPartialAuth">Indicated whether partial authorization is supported.</param>
         /// <param name="details">The transaction details.</param>
         /// <param name="gratuity">The gratuity amount.</param>
+        /// <param name="directMarketData">The direct market data.</param>
         /// <returns>The <see cref="HpsCharge"/>.</returns>
         public HpsCharge Charge(decimal amount, string currency, string token, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
-            HpsTransactionDetails details = null, decimal gratuity = 0)
+            HpsTransactionDetails details = null, decimal gratuity = 0, HpsDirectMarketData directMarketData = null)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -262,7 +266,8 @@ namespace SecureSubmit.Services.Credit
                             }
                         },
                         AdditionalTxnFields = HydrateAdditionalTxnFields(details),
-                        TxnDescriptor = descriptor
+                        TxnDescriptor = descriptor,
+                        DirectMktData = HydrateDirectMarketData(directMarketData)
                     }
                 },
                 ItemElementName = ItemChoiceType1.CreditSale
@@ -272,7 +277,8 @@ namespace SecureSubmit.Services.Credit
         }
 
         public HpsCharge Charge(decimal amount, string currency, HpsTrackData trackData, HpsEncryptionData encryptionData = null,
-            decimal gratuity = 0, bool allowPartialAuthorization = false)
+            decimal gratuity = 0, bool allowPartialAuthorization = false, bool requestMultiUseToken = false,
+            HpsDirectMarketData directMarketData = null, string emvData = "", bool allowDuplicates = false)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -289,11 +295,16 @@ namespace SecureSubmit.Services.Credit
                         GratuityAmtInfoSpecified = gratuity != 0,
                         AllowPartialAuth = allowPartialAuthorization ? booleanType.Y : booleanType.N,
                         AllowPartialAuthSpecified = true,
+                        AllowDup = allowDuplicates ? booleanType.Y : booleanType.N,
+                        AllowDupSpecified = true,
                         CardData = new CardDataType
                         {
+                            TokenRequest = requestMultiUseToken ? booleanType.Y : booleanType.N,
                             Item = HydrateCardTrackData(trackData),
                             EncryptionData = HydrateEncryptionData(encryptionData)
-                        }
+                        },
+                        DirectMktData = HydrateDirectMarketData(directMarketData),
+                        EMVData = HydrateEmvData(emvData)
                     }
                 },
                 ItemElementName = ItemChoiceType1.CreditSale
@@ -366,6 +377,40 @@ namespace SecureSubmit.Services.Credit
                             {
                                 TokenValue = token
                             }
+                        }
+                    }
+                },
+                ItemElementName = ItemChoiceType1.CreditAccountVerify
+            };
+
+            return SubmitVerify(transaction, clientTransactionId);
+        }
+
+        /// <summary>
+        /// A <b>credit account verify</b> transaction is used to verify that the account is in good standing
+        /// with the issuer. This is a zero dollar transaction with no associated authorization. Since VISA and
+        /// other issuers have started assessing penalties for one dollar authorizations, this provides a way for
+        /// merchants to accomplish the same task while avoiding these penalties.
+        /// </summary>
+        /// <param name="trackData">The CC track data.</param>
+        /// <param name="encryptionData">Optional encryption data.</param>
+        /// <param name="requestMultiUseToken">Request a multi-use token.</param>
+        /// <param name="clientTransactionId">Optional client transaction ID.</param>
+        /// <returns>The <see cref="HpsAccountVerify"/>.</returns>
+        public HpsAccountVerify Verify(HpsTrackData trackData, HpsEncryptionData encryptionData = null,
+            bool requestMultiUseToken = false, long? clientTransactionId = null)
+        {
+            var transaction = new PosRequestVer10Transaction
+            {
+                Item = new PosCreditAccountVerifyReqType
+                {
+                    Block1 = new CreditAccountVerifyBlock1Type
+                    {
+                        CardData = new CardDataType
+                        {
+                            TokenRequest = requestMultiUseToken ? booleanType.Y : booleanType.N,
+                            Item = HydrateCardTrackData(trackData),
+                            EncryptionData = HydrateEncryptionData(encryptionData)
                         }
                     }
                 },
@@ -521,9 +566,10 @@ namespace SecureSubmit.Services.Credit
         /// <param name="amount">An amount to charge (optional). Used if different from original authorization.</param>
         /// <param name="gratuity">The gratuity amount (optional).</param>
         /// <param name="clientTransactionId">The optional client transaction ID.</param>
+        /// <param name="directMarketData">The direct market data.</param>
         /// <returns>The details of the charge captured.</returns>
         public HpsReportTransactionDetails Capture(int transactionId, decimal? amount = null, decimal? gratuity = null,
-            long? clientTransactionId = null)
+            long? clientTransactionId = null, HpsDirectMarketData directMarketData = null)
         {
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
@@ -547,6 +593,8 @@ namespace SecureSubmit.Services.Credit
             {
                 request.GratuityAmtInfo = gratuity.Value;
             }
+
+            request.DirectMktData = HydrateDirectMarketData(directMarketData);
 
             /* Submit the transaction. */
             var rsp = DoTransaction(transaction, clientTransactionId).Ver10;

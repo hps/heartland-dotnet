@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -55,7 +55,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AmexTests.cs" />
-    <Compile Include="CertTests.cs" />
+    <Compile Include="Certification\CardPresent.cs" />
+    <Compile Include="Certification\eCommerce.cs" />
+    <Compile Include="Certification\Gift.cs" />
     <Compile Include="CheckTests.cs" />
     <Compile Include="DiscoverTests.cs" />
     <Compile Include="GiftCardTests.cs" />
@@ -76,9 +78,6 @@
       <Project>{dc0e2220-e4df-4ee1-933e-00ff84c5abea}</Project>
       <Name>SecureSubmit</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="PayPlan\" />

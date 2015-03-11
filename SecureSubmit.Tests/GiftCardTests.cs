@@ -11,9 +11,9 @@
 namespace SecureSubmit.Tests
 {
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using SecureSubmit.Infrastructure;
-    using SecureSubmit.Services.GiftCard;
-    using SecureSubmit.Tests.TestData;
+    using Infrastructure;
+    using Services.GiftCard;
+    using TestData;
     using System.Text.RegularExpressions;
 
     /// <summary>Gift card unit tests.</summary>
@@ -53,14 +53,24 @@ namespace SecureSubmit.Tests
         public void GiftCard_ManualCard_ShouldAlias()
         {
             var giftCardSvc = new HpsGiftCardService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = giftCardSvc.Alias(HpsGiftCardAliasAction.Add,
-                TestGiftCard.Manual.validGiftCardNotEncrypted, "1234567890");
-            if (response == null)
+            try
             {
-                Assert.Fail("Response is null.");
-            }
+                var response = giftCardSvc.Alias(HpsGiftCardAliasAction.Add,
+                    TestGiftCard.Manual.validGiftCardNotEncrypted, "1234567890");
+                if (response == null)
+                {
+                    Assert.Fail("Response is null.");
+                }
 
-            StringAssert.Matches(response.ResponseCode, new Regex("^0$"));
+                StringAssert.Matches(response.ResponseCode, new Regex("^0$"));
+            }
+            catch (HpsCreditException ex)
+            {
+                if (ex.Details.IssuerResponseCode != "6")
+                {
+                    throw;
+                }
+            }
         }
 
         /// <summary>The gift card balance method.</summary>

@@ -39,11 +39,12 @@ namespace SecureSubmit.Tests
         {
             var service = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
             var charge = service.Charge(50, "usd", TestCreditCard.ValidVisa,
-                TestCardHolder.ValidCardHolder, false, "descriptor", false, new HpsTransactionDetails
+                TestCardHolder.ValidCardHolder, false, "descriptor", true, new HpsTransactionDetails
                 {
                     Memo = "memo",
                     InvoiceNumber = "1234",
-                    CustomerId = "customerID"
+                    CustomerId = "customerID",
+                    ClientTransactionId = 12345678
                 });
 
             Assert.IsNotNull(charge);
@@ -54,6 +55,7 @@ namespace SecureSubmit.Tests
             StringAssert.Matches(transaction.Memo, new Regex("memo"));
             StringAssert.Matches(transaction.InvoiceNumber, new Regex("1234"));
             StringAssert.Matches(transaction.CustomerId, new Regex("customerID"));
+            Assert.AreEqual(charge.ClientTransactionId, 12345678);
         }
 
         #region AVS Tests
@@ -625,7 +627,7 @@ namespace SecureSubmit.Tests
         [TestMethod]
         public void Visa_WhenValidTrackData_ShouldReturnValidResult()
         {
-            var service = new HpsCreditService(TestServicesConfig.ValidServicesConfig());
+            var service = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
             var charge = service.Charge(50, "usd", new HpsTrackData
             {
                 Value = "%B4012002000060016^VI TEST CREDIT^251210118039000000000396?;4012002000060016=25121011803939600000?",
@@ -643,7 +645,7 @@ namespace SecureSubmit.Tests
         [TestMethod]
         public void Visa_Debit_WhenValidTrackData_ShouldChargeOk()
         {
-            var service = new HpsDebitService(TestServicesConfig.ValidServicesConfig());
+            var service = new HpsDebitService(TestServicesConfig.ValidSecretKeyConfig());
             var charge = service.Charge(50, "usd", "%B4012002000060016^VI TEST CREDIT^251210118039000000000396?;4012002000060016=25121011803939600000?", "32539F50C245A6A93D123412324000AA", null, true);
             Assert.IsNotNull(charge);
             StringAssert.Matches(charge.ResponseCode, new Regex("00"));
@@ -657,7 +659,7 @@ namespace SecureSubmit.Tests
                               "IDv3gBfF|+++++++Dbbn04ekG|00|||/wECAQECAoFGAgEH2wYcShV78RZwb3NAc2VjdXJlZXhjaGFuZ2UubmV0PX50qfj4dt0lu9oFB" +
                               "ESQQNkpoxEVpCW3ZKmoIV3T93zphPS3XKP4+DiVlM8VIOOmAuRrpzxNi0TN/DWXWSjUC8m/PI2dACGdl/hVJ/imfqIs68wYDnp8j0Zfg" +
                               "vM26MlnDbTVRrSx68Nzj2QAgpBCHcaBb/FZm9T7pfMr2Mlh2YcAt6gGG1i2bJgiEJn8IiSDX5M2ybzqRT86PCbKle/XCTwFFe1X|&gt;";
-            var service = new HpsDebitService(TestServicesConfig.ValidServicesConfig());
+            var service = new HpsDebitService(TestServicesConfig.ValidSecretKeyConfig());
             var charge = service.Charge(50, "usd", e3, "32539F50C245A6A93D123412324000AA", new HpsEncryptionData
             {
                 Version = "01"
@@ -669,7 +671,7 @@ namespace SecureSubmit.Tests
         [TestMethod]
         public void Visa_Debit_WhenValidTrackData_ShouldReturnOk()
         {
-            var service = new HpsDebitService(TestServicesConfig.ValidServicesConfig());
+            var service = new HpsDebitService(TestServicesConfig.ValidSecretKeyConfig());
             var charge = service.Charge(50, "usd", "%B4012002000060016^VI TEST CREDIT^251210118039000000000396?;4012002000060016=25121011803939600000?", "32539F50C245A6A93D123412324000AA", null, true);
             Assert.IsNotNull(charge);
             StringAssert.Matches(charge.ResponseCode, new Regex("00"));
@@ -682,7 +684,7 @@ namespace SecureSubmit.Tests
         [TestMethod]
         public void Visa_Debit_WhenValidTrackData_ShouldReverseOk()
         {
-            var service = new HpsDebitService(TestServicesConfig.ValidServicesConfig());
+            var service = new HpsDebitService(TestServicesConfig.ValidSecretKeyConfig());
             var charge = service.Charge(50, "usd", "%B4012002000060016^VI TEST CREDIT^251210118039000000000396?;4012002000060016=25121011803939600000?", "32539F50C245A6A93D123412324000AA", null, true);
             Assert.IsNotNull(charge);
             StringAssert.Matches(charge.ResponseCode, new Regex("00"));

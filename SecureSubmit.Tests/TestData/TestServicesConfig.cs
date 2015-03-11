@@ -57,7 +57,6 @@ namespace SecureSubmit.Tests.TestData
                 {
                     CredentialToken = "pkapi_cert_P6dRqs1LzfWJ6HgGVZ",
                     SecretApiKey = "skapi_cert_MYl2AQAowiQAbLp5JesGKh7QFkcizOP2jcX9BrEMqQ",
-                    ServiceUrl = CertServiceUri,
                     PayPlanBaseUri = PayPlanBaseUri
                 };
         }

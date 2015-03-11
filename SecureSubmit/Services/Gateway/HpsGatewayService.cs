@@ -7,7 +7,6 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Globalization;
 using Hps.Exchange.PosGateway.Client;
 using SecureSubmit.Abstractions;
 using SecureSubmit.Entities;
@@ -60,49 +59,13 @@ namespace SecureSubmit.Services
                 }
             };
 
-            var url = (ServicesConfig == null) ? HpsConfiguration.SoapServiceUri : ServicesConfig.SoapServiceUri;
-
-            if (!string.IsNullOrEmpty(req.Ver10.Header.SecretAPIKey))
-            {
-                req = new PosRequest
-                {
-                    Ver10 = new PosRequestVer10
-                    {
-                        Header = new PosRequestVer10Header
-                        {
-                            SecretAPIKey = (ServicesConfig == null) ? HpsConfiguration.SecretApiKey : ServicesConfig.SecretApiKey,
-                            VersionNbr = (ServicesConfig == null) ? HpsConfiguration.VersionNumber : ServicesConfig.VersionNumber,
-                            DeveloperID = (ServicesConfig == null) ? HpsConfiguration.DeveloperId : ServicesConfig.DeveloperId,
-                        },
-                        Transaction = transaction
-                    }
-                };
-            }
-
             if (clientTransactionId.HasValue)
             {
                 req.Ver10.Header.ClientTxnId = clientTransactionId.Value;
                 req.Ver10.Header.ClientTxnIdSpecified = true;
             }
 
-            // if they have an api key and they didn't hard-set the service uri.
-            if (!string.IsNullOrEmpty(req.Ver10.Header.SecretAPIKey))
-            {
-                if (req.Ver10.Header.SecretAPIKey.Contains("_uat_"))
-                {
-                    url = "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
-                }
-                else if (req.Ver10.Header.SecretAPIKey.Contains("_cert_"))
-                {
-                    url = "https://posgateway.cert.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
-                }
-                else
-                {
-                    url = "https://posgateway.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
-                }
-            }
-        
-            using (var client = new PosGatewayService { Url = url })
+            using (var client = new PosGatewayService { Url = HpsConfiguration.SoapServiceUri })
             {
                 return client.DoTransaction(req);
             }
@@ -162,7 +125,7 @@ namespace SecureSubmit.Services
                 CardNbr = card.Number,
                 ExpMonth = card.ExpMonth,
                 ExpYear = card.ExpYear,
-                CVV2 = (card.Cvv == 0) ? null : card.Cvv.ToString(CultureInfo.InvariantCulture),
+                CVV2 = card.Cvv,
                 CVV2StatusSpecified = false,
                 CardPresent = booleanType.N,
                 CardPresentSpecified = true,
@@ -192,6 +155,14 @@ namespace SecureSubmit.Services
             } : null;
         }
 
+        protected EMVDataType HydrateEmvData(string emvData)
+        {
+            return string.IsNullOrEmpty(emvData) ? null : new EMVDataType
+            {
+                EMVTagData = emvData
+            };
+        }
+
         protected CardDataTypeTrackData HydrateCardTrackData(HpsTrackData trackData)
         {
             return trackData != null ? new CardDataTypeTrackData
@@ -199,6 +170,16 @@ namespace SecureSubmit.Services
                 method = trackData.Mehod == HpsTrackDataMethod.Swipe ? CardDataTypeTrackDataMethod.swipe : CardDataTypeTrackDataMethod.proximity,
                 methodSpecified = true,
                 Value = trackData.Value
+            } : null;
+        }
+
+        protected DirectMktDataType HydrateDirectMarketData(HpsDirectMarketData directMarketData)
+        {
+            return directMarketData != null ? new DirectMktDataType
+            {
+                DirectMktInvoiceNbr = directMarketData.InvoiceNumber,
+                DirectMktShipDay = directMarketData.ShipDay,
+                DirectMktShipMonth = directMarketData.ShipMonth
             } : null;
         }
 

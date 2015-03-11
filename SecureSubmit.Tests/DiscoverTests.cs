@@ -35,12 +35,13 @@ namespace SecureSubmit.Tests
         public void Descover_WhenCardIsOkAndIncludesDetails_ShouldReturnValidResult()
         {
             var service = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            HpsCharge charge = service.Charge(50, "usd", TestCreditCard.ValidDiscover,
-                TestCardHolder.ValidCardHolder, false, "descriptor", false, new HpsTransactionDetails
+            var charge = service.Charge(50, "usd", TestCreditCard.ValidDiscover,
+                TestCardHolder.ValidCardHolder, false, "descriptor", true, new HpsTransactionDetails
                 {
                     Memo = "memo",
                     InvoiceNumber = "1234",
-                    CustomerId = "customerID"
+                    CustomerId = "customerID",
+                    ClientTransactionId = 12345678
                 });
 
             Assert.IsNotNull(charge);
@@ -51,6 +52,7 @@ namespace SecureSubmit.Tests
             StringAssert.Matches(transaction.Memo, new Regex("memo"));
             StringAssert.Matches(transaction.InvoiceNumber, new Regex("1234"));
             StringAssert.Matches(transaction.CustomerId, new Regex("customerID"));
+            Assert.AreEqual(charge.ClientTransactionId, 12345678);
         }
 
         #region AVS Tests

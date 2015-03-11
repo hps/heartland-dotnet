@@ -45,7 +45,7 @@ namespace SecureSubmit.Infrastructure.Validation
                 {HpsExceptionCodes.PinVerification, "Can't verify card pin number."},
                 {HpsExceptionCodes.IncorrectCvc, "The card's security code is incorrect."},
                 {HpsExceptionCodes.IssuerTimeout, "The card issuer timed-out."},
-                {HpsExceptionCodes.UnknownCreditError, "An unknown issuer error has occurred."}
+                {HpsExceptionCodes.UnknownIssuerError, "An unknown issuer error has occurred."}
             };
         }
 
@@ -57,13 +57,13 @@ namespace SecureSubmit.Infrastructure.Validation
 
         public static HpsCreditException GetException(int transactionId, string responseCode, string responseText)
         {
-            if (responseCode == "85" || responseCode == "00") return null;
+            if (responseCode == "85" || responseCode == "00" || responseCode == "0") return null;
 
             HpsExceptionCodes code;
             string message;
             if (!IssuerCodeToCreditExceptionCode.TryGetValue(responseCode, out code))
-                return new HpsCreditException(transactionId, HpsExceptionCodes.UnknownCreditError,
-                    CreditExceptionCodeToMessage[HpsExceptionCodes.UnknownCreditError], responseCode, responseText);
+                return new HpsCreditException(transactionId, HpsExceptionCodes.UnknownIssuerError,
+                    CreditExceptionCodeToMessage[HpsExceptionCodes.UnknownIssuerError], responseCode, responseText);
             
             CreditExceptionCodeToMessage.TryGetValue(code, out message);
             return new HpsCreditException(transactionId, code, message ?? "Unknown issuer error.", responseCode, responseText);

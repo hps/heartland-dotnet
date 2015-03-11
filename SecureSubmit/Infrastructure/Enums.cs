@@ -35,7 +35,10 @@
         CardDeclined,
         ProcessingError,
         IssuerTimeoutReversalError,
-        UnknownCreditError
+        UnknownIssuerError,
+
+        /* Gift Issuer Codes */
+        CardAlreadyActivated
     }
 
     public enum HpsTransactionType

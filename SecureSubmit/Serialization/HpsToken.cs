@@ -16,43 +16,47 @@ namespace SecureSubmit.Serialization
             token_type = "supt";
         }
     }
+
     public class HpsCardToken : HpsToken
     {
         public Card card { get; set; }
         
         public HpsCardToken() : base() { }
-        public HpsCardToken(string number, int cvc, int expMonth, int expYear) : this()
+        public HpsCardToken(string number, string cvc, int expMonth, int expYear) : this()
         {
             card = new Card(number, cvc, expMonth, expYear);
         }
+
         public HpsCardToken(HpsCreditCard cardData) : this(cardData.Number, cardData.Cvv, cardData.ExpMonth, cardData.ExpYear) { }
     }
-    public class HpsEncryptedSwipeToken : HpsToken
-    {
-        public EncryptedSwipe card { get; set; }
 
-        public HpsEncryptedSwipeToken() : base() { }
-        public HpsEncryptedSwipeToken(EncryptedSwipe card) : this()
+    public class HpsE3SwipeToken : HpsToken
+    {
+        public E3Swipe card { get; set; }
+
+        public HpsE3SwipeToken() : base() { }
+        public HpsE3SwipeToken(E3Swipe card) : this()
         {
             this.card = card;
         }
-        public HpsEncryptedSwipeToken(string track)
+        public HpsE3SwipeToken(string track)
         {
-            this.card = new EncryptedSwipe(track);
+            this.card = new E3Swipe(track);
         }
     }
-    public class HpsEncryptedCardToken : HpsToken
-    {
-        public EncryptedCard encryptedcard { get; set; }
 
-        public HpsEncryptedCardToken() : base() { }
-        public HpsEncryptedCardToken(EncryptedCard card) : this()
+    public class HpsTrackDataToken : HpsToken
+    {
+        public TrackData encryptedcard { get; set; }
+
+        public HpsTrackDataToken() : base() { }
+        public HpsTrackDataToken(TrackData card) : this()
         {
             this.encryptedcard = card;
         }
-        public HpsEncryptedCardToken(string track, string trackNumber, string ktb, string pinBlock = "") : this()
+        public HpsTrackDataToken(string track, string trackNumber, string ktb, string pinBlock = "") : this()
         {
-            encryptedcard = new EncryptedCard(track, trackNumber, ktb);
+            encryptedcard = new TrackData(track, trackNumber, ktb);
             if (!string.IsNullOrEmpty(pinBlock))
                 encryptedcard.pin_block = pinBlock;
         }
@@ -61,32 +65,33 @@ namespace SecureSubmit.Serialization
     public class Card
     {
         public string number { get; set; }
-        public int cvc { get; set; }
+        public string cvc { get; set; }
         public int exp_month { get; set; }
         public int exp_year { get; set; }
 
-        public Card() { }
-        public Card(string number, int cvc, int expMonth, int expYear)
+        public Card(string number, string cvc, int expMonth, int expYear)
         {
             this.number = number;
             this.cvc = cvc;
-            this.exp_month = expMonth;
-            this.exp_year = expYear;
+            exp_month = expMonth;
+            exp_year = expYear;
         }
     }
-    public class EncryptedSwipe
+
+    public class E3Swipe
     {
         public string track_method { get; set; }
         public string track { get; set; }
 
-        public EncryptedSwipe() { }
-        public EncryptedSwipe(string track)
+        public E3Swipe() { }
+        public E3Swipe(string track)
         {
             this.track = track;
             this.track_method = "swipe";
         }
     }
-    public class EncryptedCard
+
+    public class TrackData
     {
         public string track { get; set; }
         public string track_method { get; set; }
@@ -94,13 +99,12 @@ namespace SecureSubmit.Serialization
         public string pin_block { get; set; }
         public string ktb { get; set; }
 
-        public EncryptedCard() { }
-        public EncryptedCard(string track, string trackNumber, string ktb)
+        public TrackData() { }
+        public TrackData(string track, string trackNumber, string ktb)
         {
             this.track = track;
             this.track_number = trackNumber;
             this.ktb = ktb;
-            
             this.track_method = "swipe";
         }
     }

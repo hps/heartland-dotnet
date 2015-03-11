@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Check\HpsCheck.cs" />
+    <Compile Include="Entities\HpsDirectMarketData.cs" />
     <Compile Include="Entities\HpsTrackData.cs" />
     <Compile Include="Entities\PayPlan\Dto\HpsPayPlanResponse.cs" />
     <Compile Include="Entities\PayPlan\HpsPayPlanCustomerQueryOptions.cs" />

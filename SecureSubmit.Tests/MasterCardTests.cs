@@ -7,6 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using SecureSubmit.Services.Credit;
 using SecureSubmit.Services.Debit;
 
@@ -36,23 +37,25 @@ namespace SecureSubmit.Tests
         [TestMethod]
         public void MasterCard_WhenCardIsOkAndIncludesDetails_ShouldReturnValidResult()
         {
-            var service = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
+            var service = new HpsCreditService(TestServicesConfig.ValidServicesConfig());
             var charge = service.Charge(50, "usd", TestCreditCard.ValidMasterCard,
-                TestCardHolder.ValidCardHolder, false, "descriptor", false, new HpsTransactionDetails
+                TestCardHolder.ValidCardHolder, false, "descriptor", true, new HpsTransactionDetails
                 {
                     Memo = "memo",
                     InvoiceNumber = "1234",
-                    CustomerId = "customerID"
+                    CustomerId = "customerID",
+                    ClientTransactionId = 12345678
                 });
 
             Assert.IsNotNull(charge);
             StringAssert.Matches(charge.ResponseCode, new Regex("00"));
 
-            HpsReportTransactionDetails transaction = service.Get(charge.TransactionId);
+            var transaction = service.Get(charge.TransactionId);
             Assert.IsNotNull(transaction);
             StringAssert.Matches(transaction.Memo, new Regex("memo"));
             StringAssert.Matches(transaction.InvoiceNumber, new Regex("1234"));
             StringAssert.Matches(transaction.CustomerId, new Regex("customerID"));
+            Assert.AreEqual(charge.ClientTransactionId, 12345678);
         }
 
         #region AVS Tests
@@ -582,8 +585,9 @@ namespace SecureSubmit.Tests
         [TestMethod]
         public void Mastercard_WhenValidTrackData_ShouldReturnValidResult()
         {
-            var service = new HpsCreditService(TestServicesConfig.ValidServicesConfig());
-            var charge = service.Charge(50, "usd", new HpsTrackData
+            var r = new Random();
+            var service = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
+            var charge = service.Charge(r.Next(1, 50), "usd", new HpsTrackData
             {
                 Value = "%B5473500000000014^MC TEST CARD^251210199998888777766665555444433332?;5473500000000014=25121019999888877776?",
                 Mehod = HpsTrackDataMethod.Swipe

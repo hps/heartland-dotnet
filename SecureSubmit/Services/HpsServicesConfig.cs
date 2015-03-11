@@ -9,8 +9,8 @@
 
 namespace SecureSubmit.Services
 {
-    using SecureSubmit.Abstractions;
-    using SecureSubmit.Infrastructure;
+    using Abstractions;
+    using Infrastructure;
     using System;
 
     /// <summary>The HPS services config (best to use AppSettings).</summary>
@@ -20,7 +20,11 @@ namespace SecureSubmit.Services
         public string CredentialToken { get; set; }
 
         /// <summary>Gets or sets the secret api key.</summary>
-        public string SecretApiKey { get; set; }
+        public string SecretApiKey
+        {
+            get { return HpsConfiguration.SecretApiKey; }
+            set { HpsConfiguration.SecretApiKey = value; }
+        }
 
         /// <summary>Gets or sets the license id.</summary>
         public int LicenseId { get; set; }
