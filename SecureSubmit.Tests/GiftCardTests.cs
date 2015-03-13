@@ -15,6 +15,8 @@ namespace SecureSubmit.Tests
     using Services.GiftCard;
     using TestData;
     using System.Text.RegularExpressions;
+    using SecureSubmit.Services;
+    using SecureSubmit.Entities;
 
     /// <summary>Gift card unit tests.</summary>
     [TestClass]

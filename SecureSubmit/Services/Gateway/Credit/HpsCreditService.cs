@@ -552,7 +552,7 @@ namespace SecureSubmit.Services.Credit
                         }
                     }
                 },
-                ItemElementName = ItemChoiceType1.CreditSale
+                ItemElementName = ItemChoiceType1.CreditAuth
             };
 
             return SubmitAuthorize(transaction, amount, currency);
