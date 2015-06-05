@@ -12,7 +12,7 @@ namespace SecureSubmit.Entities
     using System;
 
     /// <summary>The HPS charge header.</summary>
-    internal class HpsTransactionHeader
+    public class HpsTransactionHeader
     {
         /// <summary>Gets or sets the gateway RSP code.</summary>
         public int GatewayRspCode { get; set; }

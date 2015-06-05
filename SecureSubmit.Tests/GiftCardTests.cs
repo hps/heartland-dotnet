@@ -15,8 +15,6 @@ namespace SecureSubmit.Tests
     using Services.GiftCard;
     using TestData;
     using System.Text.RegularExpressions;
-    using SecureSubmit.Services;
-    using SecureSubmit.Entities;
 
     /// <summary>Gift card unit tests.</summary>
     [TestClass]
@@ -80,7 +78,7 @@ namespace SecureSubmit.Tests
         public void GiftCard_ManualCard_ShouldBalance()
         {
             var giftCardSvc = new HpsGiftCardService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = giftCardSvc.Balance(TestGiftCard.Manual.validGiftCardNotEncrypted);
+            var response = giftCardSvc.Balance(TestGiftCard.Manual.validGiftCardNotEncrypted).Execute();
             if (response == null)
             {
                 Assert.Fail("Response is null.");
@@ -94,7 +92,7 @@ namespace SecureSubmit.Tests
         public void GiftCard_ManualCard_ShouldDeactivate()
         {
             var giftCardSvc = new HpsGiftCardService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = giftCardSvc.Deactivate(TestGiftCard.Manual.validGiftCardNotEncrypted);
+            var response = giftCardSvc.Deactivate(TestGiftCard.Manual.validGiftCardNotEncrypted).Execute();
             if (response == null)
             {
                 Assert.Fail("Response is null.");
@@ -108,7 +106,7 @@ namespace SecureSubmit.Tests
         public void GiftCard_ManualCard_ShouldReplace()
         {
             var giftCardSvc = new HpsGiftCardService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = giftCardSvc.Replace(TestGiftCard.Manual.validGiftCardNotEncrypted, TestGiftCard.Manual.validGiftCardNotEncrypted2);
+            var response = giftCardSvc.Replace(TestGiftCard.Manual.validGiftCardNotEncrypted, TestGiftCard.Manual.validGiftCardNotEncrypted2).Execute();
             if (response == null)
             {
                 Assert.Fail("Response is null.");
@@ -152,7 +150,7 @@ namespace SecureSubmit.Tests
             var giftCardSvc = new HpsGiftCardService(TestServicesConfig.ValidSecretKeyConfig());
             var saleResponse = giftCardSvc.Sale(TestGiftCard.Manual.validGiftCardNotEncrypted, 10.00m);
             StringAssert.Matches(saleResponse.ResponseCode, new Regex("^0$"));
-            var voidResponse = giftCardSvc.Void(saleResponse.TransactionId);
+            var voidResponse = giftCardSvc.Void(saleResponse.TransactionId).Execute();
             StringAssert.Matches(voidResponse.ResponseCode, new Regex("^0$"));
         }
 

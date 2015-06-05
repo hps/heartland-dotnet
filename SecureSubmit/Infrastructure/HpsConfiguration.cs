@@ -202,17 +202,18 @@ namespace SecureSubmit.Infrastructure
                 // Check AppSettings for a URI
                 if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["HpsSoapServiceUri"])) return ConfigurationManager.AppSettings["HpsSoapServiceUri"];
 
-                // If we still don't have a URI and and there's no secret key, return the default
-                if (string.IsNullOrEmpty(_secretApiKey)) return "https://posgateway.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                // if there is a secret key check for cert/uat
+                if (!string.IsNullOrEmpty(_secretApiKey))
+                {
+                    // If we have a secret key, return either the production URI...
+                    if (_secretApiKey.Contains("_uat_"))
+                        return "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                    else if (_secretApiKey.Contains("_cert_"))
+                        return "https://posgateway.cert.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                }
 
-                // If we have a secret key, return either the production URI...
-                if (_secretApiKey.Contains("_uat_")) return "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
-
-                // ...or the cert URI
-                if (_secretApiKey.Contains("_cert_")) return "https://posgateway.cert.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
-
-                // If the key doesn't contain either _uat_ or _cert_ throw an exception
-                throw new HpsAuthenticationException(HpsExceptionCodes.AuthenticationError, "You secret API key contains errors, please make sure you are using a valid key.");
+                // all else fails return the default
+                return "https://posgateway.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
             }
             set
             {

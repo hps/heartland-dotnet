@@ -25,9 +25,9 @@ namespace SecureSubmit.Services
             }
 
             var components = publicApiKey.Split('_');
-            if (components.Length != 3)
+            if (components.Length < 3)
             {
-                throw new ArgumentException("Public API Key must contain three underscores.", "publicApiKey");
+                throw new ArgumentException(@"Public API Key must contain at least three underscores.", "publicApiKey");
             }
 
             var env = components[1].ToLower();

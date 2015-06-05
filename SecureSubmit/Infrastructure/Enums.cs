@@ -5,6 +5,7 @@
         /* General Codes */
         AuthenticationError,
         InvalidConfiguration,
+        InvalidArgument,
 
         /* Input Codes */
         InvalidAmount,
@@ -61,12 +62,6 @@
         Delete,
         Add,
         Create
-    }
-
-    public enum HpsPayPlanCustomerStatus
-    {
-        Active,
-        Inactive
     }
 
     public enum HpsTrackDataMethod

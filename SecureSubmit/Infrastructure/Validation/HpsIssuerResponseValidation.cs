@@ -57,7 +57,7 @@ namespace SecureSubmit.Infrastructure.Validation
 
         public static HpsCreditException GetException(int transactionId, string responseCode, string responseText)
         {
-            if (responseCode == "85" || responseCode == "00" || responseCode == "0") return null;
+            if (responseCode == "85" || responseCode == "10" || responseCode == "00" || responseCode == "0") return null;
 
             HpsExceptionCodes code;
             string message;

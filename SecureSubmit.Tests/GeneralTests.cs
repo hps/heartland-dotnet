@@ -1,12 +1,3 @@
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GeneralTests.cs" company="Heartland Payment Systems">
-//   Copyright (c) Heartland Payment Systems. All rights reserved.
-// </copyright>
-// <summary>
-//   Charge unit tests.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
 using System.Text.RegularExpressions;
 using SecureSubmit.Services.Credit;
 // ReSharper disable InconsistentNaming
@@ -166,8 +157,7 @@ namespace SecureSubmit.Tests
         public void List_WhenConfigValid_ShouldListCharges()
         {
             var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-
-            List<HpsReportTransactionSummary> items = chargeSvc.List(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow, HpsTransactionType.Capture);
+            var items = chargeSvc.List(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow, HpsTransactionType.Capture);
             Assert.IsNotNull(items);
         }
 
@@ -176,8 +166,7 @@ namespace SecureSubmit.Tests
         public void List_WhenConfigValidNoTxn_ShouldListCharges()
         {
             var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-
-            List<HpsReportTransactionSummary> items = chargeSvc.List(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow);
+            var items = chargeSvc.List(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow);
             Assert.IsNotNull(items);
         }
 
@@ -186,13 +175,10 @@ namespace SecureSubmit.Tests
         public void GetFirst_WhenConfigValid_ShouldGetTheFirstCharge()
         {
             var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            List<HpsReportTransactionSummary> items = chargeSvc.List(DateTime.Today.AddDays(-10), DateTime.Today);
-
-            if (items.Count > 0)
-            {
-                HpsReportTransactionDetails charge = chargeSvc.Get(items[0].TransactionId);
-                Assert.IsNotNull(charge);
-            }
+            var items = chargeSvc.List(DateTime.Today.AddDays(-10), DateTime.Today);
+            if (items.Count <= 0) return;
+            var charge = chargeSvc.Get(items[0].TransactionId);
+            Assert.IsNotNull(charge);
         }
 
         /// <summary>Partial reversal (partial void) test.</summary>
@@ -237,6 +223,28 @@ namespace SecureSubmit.Tests
 
             var captureResponse = creditSvc.Capture(authResponse.TransactionId, null, 5);
             Assert.AreEqual("00", captureResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void ManageTokens()
+        {
+            var service = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
+            var response = service.Verify(new HpsCreditCard
+            {
+                Number = "4111111111111111",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            }, null, true);
+            Assert.IsNotNull(response);
+            Assert.IsNotNull(response.TokenData);
+            Assert.AreEqual("85", response.ResponseCode);
+            Assert.AreEqual(0, response.TokenData.TokenRspCode);
+
+            var token = response.TokenData.TokenValue;
+            var updateRepsonse = service.UpdateTokenExpiration(token, 12, 2025);
+            Assert.IsNotNull(updateRepsonse);
+            Assert.AreEqual("0", updateRepsonse.ResponseCode);
         }
     }
 }

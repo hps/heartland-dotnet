@@ -59,10 +59,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\Check\HpsCheck.cs" />
+    <Compile Include="Entities\Credit\HpsAdditionalTransactionFields.cs" />
+    <Compile Include="Entities\Credit\HpsCpcData.cs" />
     <Compile Include="Entities\HpsDirectMarketData.cs" />
     <Compile Include="Entities\HpsTrackData.cs" />
-    <Compile Include="Entities\PayPlan\Dto\HpsPayPlanResponse.cs" />
-    <Compile Include="Entities\PayPlan\HpsPayPlanCustomerQueryOptions.cs" />
+    <Compile Include="Entities\PayPlan\FormatDate.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanAmount.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanCustomerCollection.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanCustomerStatus.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanPaymentMethod.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanPaymentMethodCollection.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanPaymentMethodStatus.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanScheduleStatus.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanScheduleDuration.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanScheduleFrequency.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanPaymentMethodType.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanResource.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanSchedule.cs" />
+    <Compile Include="Entities\PayPlan\HpsPayPlanScheduleCollection.cs" />
     <Compile Include="Infrastructure\HpsCheckException.cs" />
     <Compile Include="Entities\Check\HpsCheckHolder.cs" />
     <Compile Include="Entities\Check\HpsCheckResponse.cs" />
@@ -81,10 +95,8 @@
     <Compile Include="Entities\Gift\HpsGiftCard.cs" />
     <Compile Include="Entities\Gift\HpsGiftCardActivate.cs" />
     <Compile Include="Entities\Gift\HpsGiftCardAlias.cs" />
-    <Compile Include="Entities\PayPlan\Dto\PayPlanCustomer.cs" />
     <Compile Include="Entities\PayPlan\HpsPayPlanCustomer.cs" />
     <Compile Include="Entities\HpsTransactionDetails.cs" />
-    <Compile Include="Entities\Credit\HpsVoid.cs" />
     <Compile Include="Entities\HpsAuthorization.cs" />
     <Compile Include="Entities\Batch\HpsBatch.cs" />
     <Compile Include="Entities\Credit\HpsCardHolder.cs" />
@@ -101,7 +113,6 @@
     <Compile Include="Entities\Credit\HpsCharge.cs" />
     <Compile Include="Entities\Credit\HpsRefund.cs" />
     <Compile Include="Entities\HpsTransaction.cs" />
-    <Compile Include="Entities\PayPlan\HpsPayPlanCustomerEditOptions.cs" />
     <Compile Include="Infrastructure\HpsAuthenticationException.cs" />
     <Compile Include="Infrastructure\Enums.cs" />
     <Compile Include="Infrastructure\HpsConfiguration.cs" />
@@ -123,14 +134,49 @@
     </Compile>
     <Compile Include="Serialization\HpsError.cs" />
     <Compile Include="Serialization\HpsToken.cs" />
-    <Compile Include="Services\Gateway\Batch\HpsBatchService.cs" />
-    <Compile Include="Services\Gateway\Check\HpsCheckService.cs" />
-    <Compile Include="Services\Gateway\Credit\HpsCreditService.cs" />
-    <Compile Include="Services\Gateway\Debit\HpsDebitService.cs" />
-    <Compile Include="Services\Gateway\GiftCard\HpsGiftCardService.cs" />
-    <Compile Include="Services\Gateway\HpsGatewayService.cs" />
+    <Compile Include="Services\Fluent\Batch\HpsCloseBuilder.cs" />
+    <Compile Include="Services\Fluent\Check\RecurringBuilder.cs" />
+    <Compile Include="Services\Fluent\Check\VoidBuilder.cs" />
+    <Compile Include="Services\Fluent\Check\SaleBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\BalanceInquiryBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\CpcEditBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\RecurringBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\VoidBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\CaptureBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\ChargeBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\EditBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\AuthBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\OfflineChargeBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\VerifyBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\ReverseBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\RefundBuilder.cs" />
+    <Compile Include="Services\Fluent\Debit\AddValueBuilder.cs" />
+    <Compile Include="Services\Fluent\Debit\ReverseBuilder.cs" />
+    <Compile Include="Services\Fluent\Debit\ReturnBuilder.cs" />
+    <Compile Include="Services\Fluent\Debit\ChargeBuilder.cs" />
+    <Compile Include="Services\Fluent\GiftCard\ReverseBuilder.cs" />
+    <Compile Include="Services\Fluent\GiftCard\VoidBuilder.cs" />
+    <Compile Include="Services\Fluent\GiftCard\SaleBuilder.cs" />
+    <Compile Include="Services\Fluent\GiftCard\RewardBuilder.cs" />
+    <Compile Include="Services\Fluent\GiftCard\ReplaceBuilder.cs" />
+    <Compile Include="Services\Fluent\GiftCard\DeactivateBuilder.cs" />
+    <Compile Include="Services\Fluent\GiftCard\BalanceBuilder.cs" />
+    <Compile Include="Services\Fluent\GiftCard\AliasBuilder.cs" />
+    <Compile Include="Services\Fluent\GiftCard\AddValueBuilder.cs" />
+    <Compile Include="Services\Fluent\GiftCard\ActivateBuilder.cs" />
+    <Compile Include="Services\Fluent\TransactionBuilder.cs" />
+    <Compile Include="Services\Fluent\GatewayTransactionBuilder.cs" />
+    <Compile Include="Services\Batch\HpsBatchService.cs" />
+    <Compile Include="Services\Check\HpsCheckService.cs" />
+    <Compile Include="Entities\HpsRecurringData.cs" />
+    <Compile Include="Services\Credit\HpsCreditService.cs" />
+    <Compile Include="Services\Debit\HpsDebitService.cs" />
+    <Compile Include="Services\GiftCard\HpsGiftCardService.cs" />
+    <Compile Include="Services\HpsRestGatewayService.cs" />
+    <Compile Include="Services\HpsSoapGatewayService.cs" />
     <Compile Include="Services\HpsServicesConfig.cs" />
     <Compile Include="Abstractions\IHpsServicesConfig.cs" />
+    <Compile Include="Services\PayPlan\HpsPayPlanService.cs" />
     <Compile Include="Services\Token\HpsTokenService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -150,9 +196,7 @@
   <ItemGroup>
     <WebReferences Include="Web References\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\PayPlan\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

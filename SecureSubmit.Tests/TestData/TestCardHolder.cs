@@ -1,21 +1,10 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TestCardHolder.cs" company="Heartland Payment Systems">
-//   Copyright (c) Heartland Payment Systems. All rights reserved.
-// </copyright>
-// <summary>
-//   Address info test data.
-// </summary>
-// --------------------------------------------------------------------------------------------------------------------
-
-namespace SecureSubmit.Tests.TestData
+﻿namespace SecureSubmit.Tests.TestData
 {
-    using SecureSubmit.Entities;
+    using Entities;
 
-    /// <summary>Address info test data.</summary>
     public static class TestCardHolder
     {
-        /// <summary>Valid card holders.</summary>
-        private static HpsCardHolder validCardHolder = new HpsCardHolder
+        public static readonly HpsCardHolder ValidCardHolder = new HpsCardHolder
                 {
                     Address = new HpsAddress
                     {
@@ -27,8 +16,9 @@ namespace SecureSubmit.Tests.TestData
                     },
                     FirstName = "Bill",
                     LastName = "Johnson"
-                },
-                certCardHolderShortZip = new HpsCardHolder
+                };
+
+        public static readonly HpsCardHolder CertCardHolderShortZip = new HpsCardHolder
                 {
                     Address = new HpsAddress
                     {
@@ -40,8 +30,9 @@ namespace SecureSubmit.Tests.TestData
                     },
                     FirstName = "Bill",
                     LastName = "Johnson"
-                },
-                certCardHolderShortZipNoStreet = new HpsCardHolder
+                };
+
+        public static readonly HpsCardHolder CertCardHolderShortZipNoStreet = new HpsCardHolder
                 {
                     Address = new HpsAddress
                     {
@@ -52,8 +43,9 @@ namespace SecureSubmit.Tests.TestData
                     },
                     FirstName = "Bill",
                     LastName = "Johnson"
-                },
-                certCardHolderLongZip = new HpsCardHolder
+                };
+
+        public static readonly HpsCardHolder CertCardHolderLongZip = new HpsCardHolder
                 {
                     Address = new HpsAddress
                     {
@@ -65,8 +57,9 @@ namespace SecureSubmit.Tests.TestData
                     },
                     FirstName = "Bill",
                     LastName = "Johnson"
-                },
-                certCardHolderLongZipNoStreet = new HpsCardHolder
+                };
+
+        public static readonly HpsCardHolder CertCardHolderLongZipNoStreet = new HpsCardHolder
                 {
                     Address = new HpsAddress
                     {
@@ -79,34 +72,22 @@ namespace SecureSubmit.Tests.TestData
                     LastName = "Johnson"
                 };
 
-        /// <summary>Gets a valid card holder.</summary>
-        public static HpsCardHolder ValidCardHolder
-        {
-            get { return validCardHolder; }
-        }
+        public static readonly HpsCardHolder CertCardHolderStreetZipOnly = new HpsCardHolder
+                {
+                    Address = new HpsAddress
+                    {
+                        Address = "6860 Dallas Pkwy",
+                        Zip = "75024",
+                    }
+                };
 
-        /// <summary>Gets a valid card holder to use for certification testing.</summary>
-        public static HpsCardHolder CertCardHolderShortZip
+        public static readonly HpsCardHolder CertCardHolderStreetNumberZipOnly = new HpsCardHolder
         {
-            get { return certCardHolderShortZip; }
-        }
-
-        /// <summary>Gets a valid card holder to use for certification testing.</summary>
-        public static HpsCardHolder CertCardHolderShortZipNoStreet
-        {
-            get { return certCardHolderShortZipNoStreet; }
-        }
-
-        /// <summary>Gets a valid card holder to use for certification testing.</summary>
-        public static HpsCardHolder CertCardHolderLongZip
-        {
-            get { return certCardHolderLongZip; }
-        }
-
-        /// <summary>Gets a valid card holder to use for certification testing.</summary>
-        public static HpsCardHolder CertCardHolderLongZipNoStreet
-        {
-            get { return certCardHolderLongZipNoStreet; }
-        }
+            Address = new HpsAddress
+            {
+                Address = "6860",
+                Zip = "75024",
+            }
+        };
     }
 }

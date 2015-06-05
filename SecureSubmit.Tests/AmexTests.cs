@@ -415,7 +415,7 @@ namespace SecureSubmit.Tests
             Assert.AreEqual("00", authResponse.ResponseCode);
 
             // Capture the authorization.
-            var captureResponse = creditSvc.Capture(authResponse.TransactionId);
+            var captureResponse = creditSvc.Capture(authResponse.TransactionId, null);
             Assert.AreEqual("00", captureResponse.ResponseCode);
         }
 
@@ -425,7 +425,7 @@ namespace SecureSubmit.Tests
         {
             var creditSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
             var creditResponse = creditSvc.Charge(25.00m, "usd", TestCreditCard.ValidAmex, TestCardHolder.CertCardHolderShortZipNoStreet);
-            var voidResponse = creditSvc.Void(creditResponse.TransactionId);
+            var voidResponse = creditSvc.Void(creditResponse.TransactionId).Execute();
             StringAssert.Matches(voidResponse.ResponseCode, new Regex("^00$"));
         }
 
@@ -440,7 +440,7 @@ namespace SecureSubmit.Tests
             var charge = service.Charge(50, "usd", new HpsTrackData
             {
                 Value = "%B3727 006992 51018^AMEX TEST CARD^2512990502700?;372700699251018=2512990502700?",
-                Mehod = HpsTrackDataMethod.Swipe
+                Method = HpsTrackDataMethod.Swipe
             });
 
             Assert.IsNotNull(charge);

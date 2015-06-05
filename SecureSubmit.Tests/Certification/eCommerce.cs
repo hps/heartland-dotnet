@@ -1,170 +1,732 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
+using Hps.Exchange.PosGateway.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SecureSubmit.Entities;
 using SecureSubmit.Infrastructure;
 using SecureSubmit.Services;
 using SecureSubmit.Services.Batch;
 using SecureSubmit.Services.Credit;
-using SecureSubmit.Tests.TestData;
+using SecureSubmit.Services.Fluent.Credit;
+using SecureSubmit.Services.GiftCard;
 
 namespace SecureSubmit.Tests.Certification
 {
     [TestClass]
     public class ECommerce
     {
-        // If using a transaction descriptor for certification, set it here. If not, set to null.
-        private const string TestDescriptor = "Heartland, Inc.";
-
-        /// <summary>Run this test to certify the SDK (tests must be run serially).</summary>
-        [TestMethod]
-        public void Cert_ShouldRun_Ok()
+        private static readonly HpsServicesConfig ServicesConfig = new HpsServicesConfig
         {
-            Batch_ShouldClose_Ok();
-            Visa_ShouldCharge_Ok();
-            MasterCard_ShouldCharge_Ok();
-            Discover_ShouldCharge_Ok();
-            Amex_ShouldCharge_Ok();
-            Jcb_ShouldCharge_Ok();
-            Visa_ShouldVerify_Ok();
-            MasterCard_ShouldVerify_Ok();
-            Discover_ShouldVerify_Ok();
-            Amex_Avs_ShouldBe_Ok();
-            Mastercard_Return_ShouldBe_Ok();
-            Visa_ShouldReverse_Ok();
-            Batch_ShouldClose_Ok();
-        }
+            SecretApiKey = "skapi_cert_MTyMAQBiHVEAewvIzXVFcmUd2UcyBge_eCpaASUp0A"
+        };
 
-        /// <summary>Batch close cert test.</summary>
+        private readonly HpsBatchService _batchService = new HpsBatchService(ServicesConfig);
+        private readonly HpsCreditService _creditService = new HpsCreditService(ServicesConfig);
+        private readonly HpsGiftCardService _giftService = new HpsGiftCardService(ServicesConfig);
+        private const bool UseTokens = true;
+
         [TestMethod]
-        public void Batch_ShouldClose_Ok()
+        public void test_000_CloseBatch()
         {
             try
             {
-                var batchSvc = new HpsBatchService(TestServicesConfig.ValidSecretKeyConfig());
-                var response = batchSvc.CloseBatch();
+                var response = _batchService.Close().Execute();
                 Assert.IsNotNull(response);
+                Console.WriteLine(@"Batch ID: {0}", response.Id);
+                Console.WriteLine(@"Sequence Number: {0}", response.SequenceNumber);
             }
             catch (HpsGatewayException e)
             {
                 if (e.Code != HpsExceptionCodes.NoOpenBatch && e.Code != HpsExceptionCodes.UnknownIssuerError)
-                {
                     Assert.Fail("Something failed other than 'no open batch'.");
-                }
+                else
+                    Console.WriteLine(@"No batch open to close.");
             }
         }
 
-        /// <summary>VISA charge cert test.</summary>
         [TestMethod]
-        public void Visa_ShouldCharge_Ok()
+        public void test_001_verify_visa()
         {
-            var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = chargeSvc.Charge(17.01m, "usd", TestCreditCard.ValidVisa,
-                TestCardHolder.CertCardHolderShortZip, false, TestDescriptor);
+            // ReSharper disable once RedundantArgumentDefaultValue
+            var response = _creditService.Verify()
+                .WithCard(TestData.VisaCard(false))
+                .RequestMultiuseToken(UseTokens)
+                .Execute();
+
             Assert.IsNotNull(response);
-            StringAssert.Matches(response.ResponseCode, new Regex("^00$"));
+            Assert.AreEqual("85", response.ResponseCode);
         }
 
-        /// <summary>MasterCard charge cert test.</summary>
         [TestMethod]
-        public void MasterCard_ShouldCharge_Ok()
+        public void test_002_verify_master_card()
         {
-            var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = chargeSvc.Charge(17.02m, "usd", TestCreditCard.ValidMasterCard,
-                TestCardHolder.CertCardHolderShortZipNoStreet, false, TestDescriptor);
+            // ReSharper disable once RedundantArgumentDefaultValue
+            var response = _creditService.Verify()
+                .WithCard(TestData.MasterCard(false))
+                .RequestMultiuseToken(UseTokens)
+                .Execute();
+
             Assert.IsNotNull(response);
-            StringAssert.Matches(response.ResponseCode, new Regex("^00$"));
+            Assert.AreEqual("85", response.ResponseCode);
         }
 
-        /// <summary>Discover charge cert test.</summary>
         [TestMethod]
-        public void Discover_ShouldCharge_Ok()
+        public void test_003_verify_discover()
         {
-            var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = chargeSvc.Charge(17.03m, "usd", TestCreditCard.ValidDiscover,
-                TestCardHolder.CertCardHolderLongZipNoStreet, false, TestDescriptor);
+            // ReSharper disable once RedundantArgumentDefaultValue
+            var response = _creditService.Verify()
+                .WithCard(TestData.DiscoverCard(false))
+                .WithCardHolder(new HpsCardHolder {Address = new HpsAddress {Zip = "75024"}})
+                .RequestMultiuseToken(UseTokens)
+                .Execute();
+
             Assert.IsNotNull(response);
-            StringAssert.Matches(response.ResponseCode, new Regex("^00$"));
+            Assert.AreEqual("85", response.ResponseCode);
         }
 
-        /// <summary>Amex charge cert test.</summary>
+        // Address Verification
+
         [TestMethod]
-        public void Amex_ShouldCharge_Ok()
+        public void test_004_verify_amex()
         {
-            var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = chargeSvc.Charge(17.04m, "usd", TestCreditCard.ValidAmex,
-                TestCardHolder.CertCardHolderShortZip, false, TestDescriptor);
+            var cardHolder = new HpsCardHolder {Address = new HpsAddress {Zip = "75024"}};
+
+            // ReSharper disable once RedundantArgumentDefaultValue
+            var response = _creditService.Verify()
+                    .WithCard(TestData.AmexCard(false))
+                    .WithCardHolder(cardHolder)
+                    .RequestMultiuseToken(UseTokens)
+                    .Execute();
+
             Assert.IsNotNull(response);
-            StringAssert.Matches(response.ResponseCode, new Regex("^00$"));
+            Assert.AreEqual("00", response.ResponseCode);
         }
 
-        /// <summary>JCB charge cert test.</summary>
+        // Balance Inquiry (for Prepaid Card)
+
         [TestMethod]
-        public void Jcb_ShouldCharge_Ok()
+        public void test_005_balance_inquiry_visa()
         {
-            var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = chargeSvc.Charge(17.05m, "usd", TestCreditCard.ValidJcb,
-                TestCardHolder.CertCardHolderLongZip, false, TestDescriptor);
+            var response = _creditService.PrePaidBalanceInquiry()
+                .WithCard(TestData.VisaCard(false))
+                .Execute();
+
             Assert.IsNotNull(response);
-            StringAssert.Matches(response.ResponseCode, new Regex("^00$"));
+            Assert.AreEqual("00", response.ResponseCode);
         }
 
-        /// <summary>VISA verify cert test.</summary>
+        // CREDIT SALE (For Multi-Use Token Only)
+
         [TestMethod]
-        public void Visa_ShouldVerify_Ok()
+        public void test_006_charge_visa_token()
         {
-            var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = chargeSvc.Verify(TestCreditCard.ValidVisa);
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
+
+            // ReSharper disable once RedundantArgumentDefaultValue
+            var response = _creditService.Charge(13.01m)
+                .WithCard(TestData.VisaCard(false))
+                .WithCardHolder(cardHolder)
+                .RequestMultiuseToken(true)
+                .Execute();
+
             Assert.IsNotNull(response);
-            StringAssert.Matches(response.ResponseCode, new Regex("^85$"));
+            Assert.AreEqual("00", response.ResponseCode);
         }
 
-        /// <summary>MasterCard verify cert test.</summary>
         [TestMethod]
-        public void MasterCard_ShouldVerify_Ok()
+        public void test_007_charge_master_card_token()
         {
-            var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = chargeSvc.Verify(TestCreditCard.ValidMasterCard);
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+
+            // ReSharper disable once RedundantArgumentDefaultValue
+            var response = _creditService.Charge(13.02m)
+                .WithCard(TestData.MasterCard(true))
+                .WithCardHolder(cardHolder)
+                .RequestMultiuseToken(true)
+                .Execute();
+
             Assert.IsNotNull(response);
-            StringAssert.Matches(response.ResponseCode, new Regex("^85$"));
+            Assert.AreEqual("00", response.ResponseCode);
         }
 
-        /// <summary>Discover verify cert test.</summary>
         [TestMethod]
-        public void Discover_ShouldVerify_Ok()
+        public void test_008_charge_discover_token()
         {
-            var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = chargeSvc.Verify(TestCreditCard.ValidDiscover);
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "750241234" } };
+
+            // ReSharper disable once RedundantArgumentDefaultValue
+            var response = _creditService.Charge(13.03m)
+                .WithCard(TestData.DiscoverCard(true))
+                .WithCardHolder(cardHolder)
+                .RequestMultiuseToken(true)
+                .Execute();
+
             Assert.IsNotNull(response);
-            StringAssert.Matches(response.ResponseCode, new Regex("^85$"));
+            Assert.AreEqual("00", response.ResponseCode);
         }
 
-        /// <summary>Amex AVS cert test.</summary>
         [TestMethod]
-        public void Amex_Avs_ShouldBe_Ok()
+        public void test_009_charge_amex_token()
         {
-            var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = chargeSvc.Verify(TestCreditCard.ValidAmex, TestCardHolder.CertCardHolderShortZipNoStreet);
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
+
+            // ReSharper disable once RedundantArgumentDefaultValue
+            var response = _creditService.Charge(13.04m)
+                .WithCard(TestData.AmexCard(true))
+                .WithCardHolder(cardHolder)
+                .RequestMultiuseToken(true)
+                .Execute();
+
             Assert.IsNotNull(response);
-            StringAssert.Matches(response.ResponseCode, new Regex("^00$"));
+            Assert.AreEqual("00", response.ResponseCode);
         }
 
-        /// <summary>Mastercard return test.</summary>
+        // CREDIT SALE
+
         [TestMethod]
-        public void Mastercard_Return_ShouldBe_Ok()
+        public void test_010_charge_visa()
         {
-            var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = chargeSvc.Refund(15.15m, "usd", TestCreditCard.ValidMasterCard, TestCardHolder.CertCardHolderShortZip);
-            Assert.IsNotNull(response);
-            StringAssert.Matches(response.ResponseCode, new Regex("^00$"));
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
+            var directMarketData = new HpsDirectMarketData {InvoiceNumber = "123456", ShipMonth = 1, ShipDay = 1};
+
+            var typeBuilder = _creditService.Charge(17.01m);
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            // ReSharper disable once UnreachableCode
+            // ReSharper disable once CSharpWarnings::CS0162
+            var builder = UseTokens ? typeBuilder.WithToken(TestData.VisaMultiUseToken(TestData.Industry.ECommerce)) :
+                typeBuilder.WithCard(TestData.VisaCard(true));
+
+            var chargeResponse = builder
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+
+            // TEST 35 ONLINE VOID
+            var voidResponse = _creditService.Void(chargeResponse.TransactionId).Execute();
+
+            Assert.IsNotNull(voidResponse);
+            Assert.AreEqual("00", voidResponse.ResponseCode);
         }
 
-        /// <summary>VISA verify cert test.</summary>
         [TestMethod]
-        public void Visa_ShouldReverse_Ok()
+        public void test_011_charge_master_card()
         {
-            var chargeSvc = new HpsCreditService(TestServicesConfig.ValidSecretKeyConfig());
-            var response = chargeSvc.Reverse(17.01m, "usd", TestCreditCard.ValidVisa);
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456", ShipMonth = 1, ShipDay = 1 };
+
+            var typeBuilder = _creditService.Charge(17.02m);
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            // ReSharper disable once UnreachableCode
+            // ReSharper disable once CSharpWarnings::CS0162
+            var builder = UseTokens ? typeBuilder.WithToken(TestData.MasterCardMultiUseToken(TestData.Industry.ECommerce)) :
+                typeBuilder.WithCard(TestData.MasterCard(true));
+
+            var chargeResponse = builder
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_012_charge_discover()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "750241234" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456", ShipMonth = 1, ShipDay = 1 };
+
+            var typeBuilder = _creditService.Charge(17.03m);
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            // ReSharper disable once UnreachableCode
+            // ReSharper disable once CSharpWarnings::CS0162
+            var builder = UseTokens ? typeBuilder.WithToken(TestData.DiscoverMultiUseToken(TestData.Industry.ECommerce)) :
+                typeBuilder.WithCard(TestData.DiscoverCard(true));
+
+            var chargeResponse = builder
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_013_charge_amex()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456", ShipMonth = 1, ShipDay = 1 };
+
+            var typeBuilder = _creditService.Charge(17.04m);
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            // ReSharper disable once UnreachableCode
+            // ReSharper disable once CSharpWarnings::CS0162
+            var builder = UseTokens ? typeBuilder.WithToken(TestData.AmexMultiUseToken(TestData.Industry.ECommerce)) :
+                typeBuilder.WithCard(TestData.AmexCard(true));
+
+            var chargeResponse = builder
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_014_charge_jcb()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "750241234" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456", ShipMonth = 1, ShipDay = 1 };
+
+            var chargeResponse = _creditService.Charge(17.05m)
+                .WithCard(TestData.JcbCard(true))
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+        }
+
+        // AUTHORIZATION
+
+        [TestMethod]
+        public void test_015_authorization_visa()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456", ShipMonth = 1, ShipDay = 1 };
+
+            var authResponse = _creditService.Authorize(17.06m)
+                .WithCard(TestData.VisaCard(true))
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .Execute();
+
+            Assert.IsNotNull(authResponse);
+            Assert.AreEqual("00", authResponse.ResponseCode);
+
+            // test 015b Capture/AddToBatch
+            var captureResponse = _creditService.Capture(authResponse.TransactionId).Execute();
+
+            Assert.IsNotNull(captureResponse);
+            Assert.AreEqual("00", captureResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_016_authorization_master_card()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "750241234" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456", ShipMonth = 1, ShipDay = 1 };
+
+            var authResponse = _creditService.Authorize(17.07m)
+                .WithCard(TestData.MasterCard(true))
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .Execute();
+
+            Assert.IsNotNull(authResponse);
+            Assert.AreEqual("00", authResponse.ResponseCode);
+
+            // test 016b Capture/AddToBatch
+            var captureResponse = _creditService.Capture(authResponse.TransactionId).Execute();
+
+            Assert.IsNotNull(captureResponse);
+            Assert.AreEqual("00", captureResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_017_authorization_discover()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456", ShipMonth = 1, ShipDay = 1 };
+
+            var authResponse = _creditService.Authorize(17.07m)
+                .WithCard(TestData.DiscoverCard(true))
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .Execute();
+
+            Assert.IsNotNull(authResponse);
+            Assert.AreEqual("00", authResponse.ResponseCode);
+        }
+
+        // PARTIALLY - APPROVED SALE
+
+        [TestMethod]
+        public void test_018_partial_approval_visa()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456", ShipMonth = 1, ShipDay = 1 };
+
+            var response = _creditService.Charge(130m)
+                .WithCard(TestData.VisaCard(true))
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .AllowPartialAuth()
+                .Execute();
+
             Assert.IsNotNull(response);
-            StringAssert.Matches(response.ResponseCode, new Regex("^00$"));
+            Assert.AreEqual("10", response.ResponseCode);
+
+            Assert.IsNotNull(response);
+            Assert.AreEqual(110.00m, response.AuthorizedAmount);
+        }
+
+        [TestMethod]
+        public void test_019_partial_approval_discover()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456", ShipMonth = 1, ShipDay = 1 };
+
+            var response = _creditService.Charge(145m)
+                .WithCard(TestData.DiscoverCard(true))
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .AllowPartialAuth()
+                .Execute();
+
+            Assert.IsNotNull(response);
+            Assert.AreEqual("10", response.ResponseCode);
+
+            Assert.IsNotNull(response);
+            Assert.AreEqual(65.00m, response.AuthorizedAmount);
+        }
+
+        [TestMethod]
+        public void test_020_partial_approval_master_card()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456", ShipMonth = 1, ShipDay = 1 };
+
+            var chargeResponse = _creditService.Charge(155m)
+                .WithCard(TestData.MasterCard(true))
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .AllowPartialAuth()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("10", chargeResponse.ResponseCode);
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual(100.00m, chargeResponse.AuthorizedAmount);
+
+            // TEST 36 ONLINE VOID
+            var voidResponse = _creditService.Void(chargeResponse.TransactionId).Execute();
+
+            Assert.IsNotNull(voidResponse);
+            Assert.AreEqual("00", voidResponse.ResponseCode);
+        }
+
+        // LEVEL II CORPORATE PURCHASE CARD
+
+        [TestMethod]
+        public void test_021_level_ii_response_b()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "750241234" } };
+
+            var chargeResponse = _creditService.Charge(112.34m)
+                .WithCard(TestData.VisaCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("B", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData {CardHolderPoNumber = "9876543210", TaxType = taxTypeType.NOTUSED};
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_022_level_ii_response_b()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "750241234" } };
+
+            var chargeResponse = _creditService.Charge(112.34m)
+                .WithCard(TestData.VisaCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("B", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData { TaxType = taxTypeType.SALESTAX, TaxAmount = 1.00m };
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_023_level_ii_response_r()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+
+            var chargeResponse = _creditService.Charge(123.45m)
+                .WithCard(TestData.VisaCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("R", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData { TaxType = taxTypeType.TAXEXEMPT };
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_024_level_ii_response_s()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+
+            var chargeResponse = _creditService.Charge(134.56m)
+                .WithCard(TestData.VisaCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("S", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData { CardHolderPoNumber = "9876543210", TaxType = taxTypeType.SALESTAX, TaxAmount = 1.00m };
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_025_level_ii_response_s()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+
+            var chargeResponse = _creditService.Charge(111.06m)
+                .WithCard(TestData.MasterCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("S", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData { CardHolderPoNumber = "9876543210", TaxType = taxTypeType.NOTUSED };
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_026_level_ii_response_s()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+
+            var chargeResponse = _creditService.Charge(111.07m)
+                .WithCard(TestData.MasterCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("S", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData { TaxAmount = 1.00m, TaxType = taxTypeType.SALESTAX };
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_027_level_ii_response_s()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+
+            var chargeResponse = _creditService.Charge(111.08m)
+                .WithCard(TestData.MasterCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("S", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData { CardHolderPoNumber = "9876543210", TaxAmount = 1.00m, TaxType = taxTypeType.SALESTAX };
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_028_level_ii_response_s()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+
+            var chargeResponse = _creditService.Charge(111.09m)
+                .WithCard(TestData.MasterCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("S", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData { CardHolderPoNumber = "9876543210", TaxType = taxTypeType.TAXEXEMPT };
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_029_level_ii_no_response()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+
+            var chargeResponse = _creditService.Charge(111.10m)
+                .WithCard(TestData.AmexCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("0", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData { CardHolderPoNumber = "9876543210", TaxType = taxTypeType.NOTUSED };
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_030_level_ii_no_response()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "750241234" } };
+
+            var chargeResponse = _creditService.Charge(111.11m)
+                .WithCard(TestData.AmexCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("0", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData { TaxAmount = 1.00m, TaxType = taxTypeType.SALESTAX };
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_031_level_ii_no_response()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "750241234" } };
+
+            var chargeResponse = _creditService.Charge(111.12m)
+                .WithCard(TestData.AmexCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("0", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData { CardHolderPoNumber = "9876543210", TaxAmount = 1.00m, TaxType = taxTypeType.SALESTAX };
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void test_032_level_ii_no_response()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+
+            var chargeResponse = _creditService.Charge(111.13m)
+                .WithCard(TestData.AmexCard(true))
+                .WithCardHolder(cardHolder)
+                .WithCpcReq()
+                .Execute();
+
+            Assert.IsNotNull(chargeResponse);
+            Assert.AreEqual("00", chargeResponse.ResponseCode);
+            Assert.AreEqual("0", chargeResponse.CpcIndicator);
+
+            var cpcData = new HpsCpcData { CardHolderPoNumber = "9876543210", TaxType = taxTypeType.TAXEXEMPT };
+
+            var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
+                .WithCpcData(cpcData)
+                .Execute();
+
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
         }
     }
 }

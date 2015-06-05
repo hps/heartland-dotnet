@@ -4,8 +4,10 @@ namespace SecureSubmit.Entities
 {
     public class HpsTrackData
     {
-        public HpsTrackDataMethod Mehod { get; set; }
+        public HpsTrackDataMethod Method { get; set; }
 
         public string Value { get; set; }
+
+        public HpsEncryptionData EncryptionData { get; set; }
     }
 }
