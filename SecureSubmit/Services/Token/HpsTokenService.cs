@@ -34,6 +34,7 @@ namespace SecureSubmit.Services
 
             Url = env.Equals("prod") ? "https://api2.heartlandportico.com/SecureSubmit.v1/api/token" :
                 "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway.Hpf.v1/api/token";
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
         }
 
         private HpsToken RequestToken(HpsToken inputToken)

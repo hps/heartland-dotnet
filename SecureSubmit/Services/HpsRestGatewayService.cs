@@ -53,6 +53,7 @@ namespace SecureSubmit.Services
             {
                 _url = UatUrl;
             }
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
         }
 
         protected string DoRequest(string verb, string endpoint, object data = null)
