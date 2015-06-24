@@ -37,9 +37,9 @@ namespace SecureSubmit.Services.GiftCard
             return new AddValueBuilder(ServicesConfig, amount, giftCard);
         }
 
-        public AliasBuilder Alias(HpsGiftCard giftCard, HpsGiftCardAliasAction action, string alias)
+        public AliasBuilder Alias(HpsGiftCardAliasAction action, string alias)
         {
-            return new AliasBuilder(ServicesConfig, giftCard, action, alias);
+            return new AliasBuilder(ServicesConfig, action, alias);
         }
 
         public BalanceBuilder Balance(HpsGiftCard giftCard)
@@ -95,7 +95,7 @@ namespace SecureSubmit.Services.GiftCard
                         CardData = new GiftCardDataType
                         {
                             Item = giftCard.Number,
-                            ItemElementName = giftCard.IsTrackData ? ItemChoiceType.TrackData : ItemChoiceType.CardNbr,
+                            ItemElementName = giftCard.NumberType,
                             EncryptionData = (giftCard.EncryptionData == null) ? null : new EncryptionDataType
                             {
                                 EncryptedTrackNumber = giftCard.EncryptionData.EncryptedTrackNumber,
@@ -136,7 +136,7 @@ namespace SecureSubmit.Services.GiftCard
                         CardData = new GiftCardDataType
                         {
                             Item = giftCard.Number,
-                            ItemElementName = giftCard.IsTrackData ? ItemChoiceType.TrackData : ItemChoiceType.CardNbr,
+                            ItemElementName = giftCard.NumberType,
                             EncryptionData = (giftCard.EncryptionData == null) ? null : new EncryptionDataType
                             {
                                 EncryptedTrackNumber = giftCard.EncryptionData.EncryptedTrackNumber,
@@ -687,12 +687,12 @@ namespace SecureSubmit.Services.GiftCard
             return reversal;
         }
 
-        private GiftCardDataType HydrateGiftCardData(HpsGiftCard giftCard)
+        private static GiftCardDataType HydrateGiftCardData(HpsGiftCard giftCard)
         {
             return new GiftCardDataType
             {
                 Item = giftCard.Number,
-                ItemElementName = giftCard.IsTrackData ? ItemChoiceType.TrackData : ItemChoiceType.CardNbr,
+                ItemElementName = giftCard.NumberType,
                 EncryptionData = (giftCard.EncryptionData == null) ? null : new EncryptionDataType
                 {
                     EncryptedTrackNumber = giftCard.EncryptionData.EncryptedTrackNumber,

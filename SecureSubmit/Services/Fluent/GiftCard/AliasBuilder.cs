@@ -9,7 +9,7 @@ namespace SecureSubmit.Services.Fluent.GiftCard
 {
     public class AliasBuilder : GatewayTransactionBuilder<AliasBuilder, HpsGiftCardAlias>
     {
-        public AliasBuilder(IHpsServicesConfig config, HpsGiftCard giftCard, HpsGiftCardAliasAction action, string alias)
+        public AliasBuilder(IHpsServicesConfig config, HpsGiftCardAliasAction action, string alias)
             : base(config)
         {
             var gatewayAction = GiftCardAliasReqBlock1TypeAction.ADD;
@@ -28,8 +28,7 @@ namespace SecureSubmit.Services.Fluent.GiftCard
                                 Block1 = new GiftCardAliasReqBlock1Type
                                 {
                                     Action = gatewayAction,
-                                    Alias = alias,
-                                    CardData = HydrateGiftCardData(giftCard)
+                                    Alias = alias
                                 }
                             },
                             ItemElementName = ItemChoiceType1.GiftCardAlias
@@ -62,6 +61,12 @@ namespace SecureSubmit.Services.Fluent.GiftCard
             };
 
             return response;
+        }
+
+        public AliasBuilder WithGiftCard(HpsGiftCard giftCard)
+        {
+            BuilderActions.Add(n => ((PosGiftCardAliasReqType)n.Transaction.Item).Block1.CardData = HydrateGiftCardData(giftCard));
+            return this;
         }
     }
 }

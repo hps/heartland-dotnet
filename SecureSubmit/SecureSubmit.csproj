@@ -139,7 +139,9 @@
     <Compile Include="Services\Fluent\Check\VoidBuilder.cs" />
     <Compile Include="Services\Fluent\Check\SaleBuilder.cs" />
     <Compile Include="Services\Fluent\Credit\BalanceInquiryBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\AddValueBuilder.cs" />
     <Compile Include="Services\Fluent\Credit\CpcEditBuilder.cs" />
+    <Compile Include="Services\Fluent\Credit\OfflineAuthBuilder.cs" />
     <Compile Include="Services\Fluent\Credit\RecurringBuilder.cs" />
     <Compile Include="Services\Fluent\Credit\VoidBuilder.cs" />
     <Compile Include="Services\Fluent\Credit\CaptureBuilder.cs" />

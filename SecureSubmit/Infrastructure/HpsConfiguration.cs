@@ -209,11 +209,11 @@ namespace SecureSubmit.Infrastructure
                     if (_secretApiKey.Contains("_uat_"))
                         return "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
                     else if (_secretApiKey.Contains("_cert_"))
-                        return "https://posgateway.cert.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                        return "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
                 }
 
                 // all else fails return the default
-                return "https://posgateway.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                return "https://api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
             }
             set
             {

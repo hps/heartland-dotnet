@@ -7,11 +7,19 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
+
 namespace SecureSubmit.Entities
 {
     /// <summary>The HPS token data.</summary>
     public class HpsDirectMarketData
     {
+        public HpsDirectMarketData()
+        {
+            ShipMonth = DateTime.Today.Month;
+            ShipDay = DateTime.Today.Day;
+        }
+
         /// <summary>Gets or sets the invoice number.</summary>
         public string InvoiceNumber { get; set; }
 

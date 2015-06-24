@@ -149,7 +149,7 @@ namespace SecureSubmit.Services.Fluent
             return new GiftCardDataType
             {
                 Item = giftCard.Number,
-                ItemElementName = giftCard.IsTrackData ? ItemChoiceType.TrackData : ItemChoiceType.CardNbr,
+                ItemElementName = giftCard.NumberType,
                 EncryptionData = (giftCard.EncryptionData == null) ? null : new EncryptionDataType
                 {
                     EncryptedTrackNumber = giftCard.EncryptionData.EncryptedTrackNumber,

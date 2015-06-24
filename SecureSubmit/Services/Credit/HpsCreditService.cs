@@ -80,6 +80,24 @@ namespace SecureSubmit.Services.Credit
             return new CpcEditBuilder(ServicesConfig, transactionId);
         }
 
+        public OfflineChargeBuilder.OfflineChargePaymentTypeBuilder OfflineCharge(decimal amount)
+        {
+            HpsInputValidation.CheckAmount(amount);
+            return new OfflineChargeBuilder.OfflineChargePaymentTypeBuilder(new OfflineChargeBuilder(ServicesConfig, amount));
+        }
+
+        public OfflineAuthBuilder.OfflineAuthPaymentTypeBuilder OfflineAuth(decimal amount)
+        {
+            HpsInputValidation.CheckAmount(amount);
+            return new OfflineAuthBuilder.OfflineAuthPaymentTypeBuilder(new OfflineAuthBuilder(ServicesConfig, amount));
+        }
+
+        public AddValueBuilder.AddValueUsingBuilder PrePaidAddValue(decimal amount)
+        {
+            HpsInputValidation.CheckAmount(amount);
+            return new AddValueBuilder.AddValueUsingBuilder(new AddValueBuilder(ServicesConfig, amount));
+        }
+
         /// <summary>Gets an HPS transaction given a Transaction ID.</summary>
         /// <param name="transactionId">The Transaction ID for the transaction.</param>
         /// <returns>The HPS report transaction.</returns>
