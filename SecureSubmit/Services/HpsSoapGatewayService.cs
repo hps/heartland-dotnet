@@ -1,4 +1,3 @@
-using System.Net;
 using Hps.Exchange.PosGateway.Client;
 using SecureSubmit.Abstractions;
 using SecureSubmit.Entities;
@@ -14,7 +13,6 @@ namespace SecureSubmit.Services
         protected HpsSoapGatewayService(IHpsServicesConfig config = null)
         {
             ServicesConfig = config;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
         }
 
         /// <summary>Gets or sets the HPS services config.</summary>

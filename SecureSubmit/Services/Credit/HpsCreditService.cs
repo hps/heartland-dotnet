@@ -1210,7 +1210,7 @@ namespace SecureSubmit.Services.Credit
         {
             var rsp = DoTransaction(transaction, clientTransactionId).Ver10;
             ProcessChargeGatewayResponse(rsp, ItemChoiceType2.CreditSale, amount, currency);
-
+            
             var creditSaleRsp = (AuthRspStatusType)rsp.Transaction.Item;
             ProcessChargeIssuerResponse(creditSaleRsp.RspCode, creditSaleRsp.RspText, rsp.Header.GatewayTxnId, amount, currency);
 
@@ -1389,7 +1389,7 @@ namespace SecureSubmit.Services.Credit
                         "Error occurred while reversing a charge due to HPS gateway time-out.", ex);
                 }
             }
-
+            
             HpsGatewayResponseValidation.CheckResponse(rsp, expectedResponseType);
         }
     }

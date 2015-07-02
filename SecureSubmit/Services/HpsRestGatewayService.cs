@@ -11,8 +11,8 @@ namespace SecureSubmit.Services
 {
     public abstract class HpsRestGatewayService
     {
-        private const string CertUrl = "https://cert.api2.heartlandportico.com/Portico.PayPlan.v2/";
-        private const string ProdUrl = "https://api2.heartlandportico.com/payplan.v2/";
+        private const string CertUrl = "https://posgateway.cert.secureexchange.net/Portico.PayPlan.v2/";
+        private const string ProdUrl = "https://api-cert.heartlandportico.com/payplan.v2/";
         private const string UatUrl = "https://api-uat.heartlandportico.com/payplan.v2/";
 
         int _limit = -1;
@@ -53,7 +53,6 @@ namespace SecureSubmit.Services
             {
                 _url = UatUrl;
             }
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
         }
 
         protected string DoRequest(string verb, string endpoint, object data = null)
