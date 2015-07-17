@@ -1,7 +1,6 @@
 ﻿using SecureSubmit.Entities;
 using SecureSubmit.Infrastructure;
 using SecureSubmit.Services;
-using SecureSubmit.Services.Credit;
 using System;
 
 namespace SecureSubmit.CodeSamples

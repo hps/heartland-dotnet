@@ -19,24 +19,18 @@ namespace SecureSubmit.Tests.TestData
             /// <summary>Various test gift cards</summary>
             public static HpsGiftCard validGiftCardNotEncrypted = new HpsGiftCard
             {
-                Number = "5022440000000000098",
-                ExpMonth = 12,
-                ExpYear = 39
+                Value = "5022440000000000098",
             };
 
             /// <summary>Various test gift cards</summary>
             public static HpsGiftCard validGiftCardNotEncrypted2 = new HpsGiftCard
             {
-                Number = "5022440000000000007",
-                ExpMonth = 12,
-                ExpYear = 39
+                Value = "5022440000000000007",
             };
 
             public static HpsGiftCard invalidGiftCardNotEncrypted = new HpsGiftCard
             {
-                Number = "12345",
-                ExpMonth = 12,
-                ExpYear = 39
+                Value = "12345",
             };
         }
     }

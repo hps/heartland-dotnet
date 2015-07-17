@@ -79,6 +79,8 @@ namespace SecureSubmit.Entities
             }
         }
 
+        public HpsEncryptionData EncryptionData { get; set; }
+
         /// <summary>Gets or sets the HashTable containing all the REGEX tests (by card type name)</summary>
         private Hashtable RegexHash
         {

@@ -2,11 +2,9 @@
 using Hps.Exchange.PosGateway.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SecureSubmit.Entities;
+using SecureSubmit.Fluent.Services;
 using SecureSubmit.Infrastructure;
 using SecureSubmit.Services;
-using SecureSubmit.Services.Batch;
-using SecureSubmit.Services.Credit;
-using SecureSubmit.Services.GiftCard;
 
 namespace SecureSubmit.Tests.Certification
 {
@@ -19,16 +17,27 @@ namespace SecureSubmit.Tests.Certification
         };
 
         private readonly HpsBatchService _batchService = new HpsBatchService(ServicesConfig);
-        private readonly HpsCreditService _creditService = new HpsCreditService(ServicesConfig);
-        private readonly HpsGiftCardService _giftService = new HpsGiftCardService(ServicesConfig);
+        private readonly HpsFluentCreditService _creditService = new HpsFluentCreditService(ServicesConfig);
+        private readonly HpsFluentGiftCardService _giftService = new HpsFluentGiftCardService(ServicesConfig);
         private const bool UseTokens = true;
 
+        private static string visaToken;
+        private static string masterCardToken;
+        private static string discoverToken;
+        private static string amexToken;
+
+        private static int test10TransactionId;
+        private static int test20TransactionId;
+        private static int test39TransactionId;
+        private static int test52TransactionId;
+        private static int test53TransactionId;
+
         [TestMethod]
-        public void test_000_CloseBatch()
+        public void ecomm_000_CloseBatch()
         {
             try
             {
-                var response = _batchService.Close().Execute();
+                var response = _batchService.CloseBatch();
                 Assert.IsNotNull(response);
                 Console.WriteLine(@"Batch ID: {0}", response.Id);
                 Console.WriteLine(@"Sequence Number: {0}", response.SequenceNumber);
@@ -43,12 +52,17 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_001_verify_visa()
-        {
+        public void ecomm_001_verify_visa() {
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015
+            };
+
             // ReSharper disable once RedundantArgumentDefaultValue
             var response = _creditService.Verify()
-                .WithCard(TestData.VisaCard(false))
-                .RequestMultiuseToken(UseTokens)
+                .WithCard(card)
+                .WithRequestMultiUseToken(UseTokens)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -56,12 +70,17 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_002_verify_master_card()
-        {
+        public void ecomm_002_verify_master_card() {
+            var card = new HpsCreditCard {
+                Number = "5473500000000014",
+                ExpMonth = 12,
+                ExpYear = 2015
+            };
+
             // ReSharper disable once RedundantArgumentDefaultValue
             var response = _creditService.Verify()
-                .WithCard(TestData.MasterCard(false))
-                .RequestMultiuseToken(UseTokens)
+                .WithCard(card)
+                .WithRequestMultiUseToken(UseTokens)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -69,13 +88,18 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_003_verify_discover()
-        {
+        public void ecomm_003_verify_discover() {
+            var card = new HpsCreditCard {
+                Number = "6011000990156527",
+                ExpMonth = 12,
+                ExpYear = 2015
+            };
+
             // ReSharper disable once RedundantArgumentDefaultValue
             var response = _creditService.Verify()
-                .WithCard(TestData.DiscoverCard(false))
-                .WithCardHolder(new HpsCardHolder {Address = new HpsAddress {Zip = "75024"}})
-                .RequestMultiuseToken(UseTokens)
+                .WithCard(card)
+                .WithCardHolder(new HpsCardHolder { Address = new HpsAddress { Zip = "75024" } })
+                .WithRequestMultiUseToken(UseTokens)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -85,15 +109,20 @@ namespace SecureSubmit.Tests.Certification
         // Address Verification
 
         [TestMethod]
-        public void test_004_verify_amex()
-        {
-            var cardHolder = new HpsCardHolder {Address = new HpsAddress {Zip = "75024"}};
+        public void ecomm_004_verify_amex() {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Zip = "75024" } };
+
+            var card = new HpsCreditCard {
+                Number = "372700699251018",
+                ExpMonth = 12,
+                ExpYear = 2015
+            };
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var response = _creditService.Verify()
-                    .WithCard(TestData.AmexCard(false))
+                    .WithCard(card)
                     .WithCardHolder(cardHolder)
-                    .RequestMultiuseToken(UseTokens)
+                    .WithRequestMultiUseToken(UseTokens)
                     .Execute();
 
             Assert.IsNotNull(response);
@@ -103,10 +132,15 @@ namespace SecureSubmit.Tests.Certification
         // Balance Inquiry (for Prepaid Card)
 
         [TestMethod]
-        public void test_005_balance_inquiry_visa()
-        {
+        public void ecomm_005_balance_inquiry_visa() {
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015
+            };
+
             var response = _creditService.PrePaidBalanceInquiry()
-                .WithCard(TestData.VisaCard(false))
+                .WithCard(card)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -116,84 +150,117 @@ namespace SecureSubmit.Tests.Certification
         // CREDIT SALE (For Multi-Use Token Only)
 
         [TestMethod]
-        public void test_006_charge_visa_token()
-        {
+        public void ecomm_006_charge_visa_token() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
+
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015
+            };
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var response = _creditService.Charge(13.01m)
-                .WithCard(TestData.VisaCard(false))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .RequestMultiuseToken(true)
+                .WithRequestMultiUseToken(true)
                 .Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
+            visaToken = response.TokenData.TokenValue;
         }
 
         [TestMethod]
-        public void test_007_charge_master_card_token()
-        {
+        public void ecomm_007_charge_master_card_token() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+
+            var card = new HpsCreditCard {
+                Number = "5473500000000014",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var response = _creditService.Charge(13.02m)
-                .WithCard(TestData.MasterCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .RequestMultiuseToken(true)
+                .WithRequestMultiUseToken(true)
                 .Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
+            masterCardToken = response.TokenData.TokenValue;
         }
 
         [TestMethod]
-        public void test_008_charge_discover_token()
-        {
+        public void ecomm_008_charge_discover_token() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "750241234" } };
+
+            var card = new HpsCreditCard {
+                Number = "6011000990156527",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var response = _creditService.Charge(13.03m)
-                .WithCard(TestData.DiscoverCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .RequestMultiuseToken(true)
+                .WithRequestMultiUseToken(true)
                 .Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
+            discoverToken = response.TokenData.TokenValue;
         }
 
         [TestMethod]
-        public void test_009_charge_amex_token()
-        {
+        public void ecomm_009_charge_amex_token() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
+
+            var card = new HpsCreditCard {
+                Number = "372700699251018",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "1234"
+            };
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var response = _creditService.Charge(13.04m)
-                .WithCard(TestData.AmexCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .RequestMultiuseToken(true)
+                .WithRequestMultiUseToken(true)
                 .Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
+            amexToken = response.TokenData.TokenValue;
         }
 
         // CREDIT SALE
 
         [TestMethod]
-        public void test_010_charge_visa()
-        {
+        public void ecomm_010_charge_visa() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
             var typeBuilder = _creditService.Charge(17.01m);
 
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             // ReSharper disable once UnreachableCode
             // ReSharper disable once CSharpWarnings::CS0162
-            var builder = UseTokens ? typeBuilder.WithToken(TestData.VisaMultiUseToken(TestData.Industry.ECommerce)) :
-                typeBuilder.WithCard(TestData.VisaCard(true));
+            var builder = UseTokens ? typeBuilder.WithToken(visaToken) :
+                typeBuilder.WithCard(card);
 
             var chargeResponse = builder
                 .WithCardHolder(cardHolder)
@@ -202,27 +269,28 @@ namespace SecureSubmit.Tests.Certification
 
             Assert.IsNotNull(chargeResponse);
             Assert.AreEqual("00", chargeResponse.ResponseCode);
-
-            // TEST 35 ONLINE VOID
-            var voidResponse = _creditService.Void(chargeResponse.TransactionId).Execute();
-
-            Assert.IsNotNull(voidResponse);
-            Assert.AreEqual("00", voidResponse.ResponseCode);
+            test10TransactionId = chargeResponse.TransactionId;
         }
 
         [TestMethod]
-        public void test_011_charge_master_card()
-        {
+        public void ecomm_011_charge_master_card() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
             var typeBuilder = _creditService.Charge(17.02m);
 
+            var card = new HpsCreditCard {
+                Number = "5473500000000014",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             // ReSharper disable once UnreachableCode
             // ReSharper disable once CSharpWarnings::CS0162
-            var builder = UseTokens ? typeBuilder.WithToken(TestData.MasterCardMultiUseToken(TestData.Industry.ECommerce)) :
-                typeBuilder.WithCard(TestData.MasterCard(true));
+            var builder = UseTokens ? typeBuilder.WithToken(masterCardToken) :
+                typeBuilder.WithCard(card);
 
             var chargeResponse = builder
                 .WithCardHolder(cardHolder)
@@ -234,18 +302,24 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_012_charge_discover()
-        {
+        public void ecomm_012_charge_discover() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "750241234" } };
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
             var typeBuilder = _creditService.Charge(17.03m);
 
+            var card = new HpsCreditCard {
+                Number = "6011000990156527",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             // ReSharper disable once UnreachableCode
             // ReSharper disable once CSharpWarnings::CS0162
-            var builder = UseTokens ? typeBuilder.WithToken(TestData.DiscoverMultiUseToken(TestData.Industry.ECommerce)) :
-                typeBuilder.WithCard(TestData.DiscoverCard(true));
+            var builder = UseTokens ? typeBuilder.WithToken(discoverToken) :
+                typeBuilder.WithCard(card);
 
             var chargeResponse = builder
                 .WithCardHolder(cardHolder)
@@ -257,18 +331,24 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_013_charge_amex()
-        {
+        public void ecomm_013_charge_amex() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
             var typeBuilder = _creditService.Charge(17.04m);
 
+            var card = new HpsCreditCard {
+                Number = "372700699251018",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "1234"
+            };
+
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             // ReSharper disable once UnreachableCode
             // ReSharper disable once CSharpWarnings::CS0162
-            var builder = UseTokens ? typeBuilder.WithToken(TestData.AmexMultiUseToken(TestData.Industry.ECommerce)) :
-                typeBuilder.WithCard(TestData.AmexCard(true));
+            var builder = UseTokens ? typeBuilder.WithToken(amexToken) :
+                typeBuilder.WithCard(card);
 
             var chargeResponse = builder
                 .WithCardHolder(cardHolder)
@@ -280,13 +360,19 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_014_charge_jcb()
-        {
+        public void ecomm_014_charge_jcb() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "750241234" } };
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
+            var card = new HpsCreditCard {
+                Number = "3566007770007321",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var chargeResponse = _creditService.Charge(17.05m)
-                .WithCard(TestData.JcbCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
                 .Execute();
@@ -298,13 +384,19 @@ namespace SecureSubmit.Tests.Certification
         // AUTHORIZATION
 
         [TestMethod]
-        public void test_015_authorization_visa()
-        {
+        public void ecomm_015_authorization_visa() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var authResponse = _creditService.Authorize(17.06m)
-                .WithCard(TestData.VisaCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
                 .Execute();
@@ -320,13 +412,19 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_016_authorization_master_card()
-        {
+        public void ecomm_016_authorization_master_card() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "750241234" } };
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
+            var card = new HpsCreditCard {
+                Number = "5473500000000014",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var authResponse = _creditService.Authorize(17.07m)
-                .WithCard(TestData.MasterCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
                 .Execute();
@@ -342,13 +440,19 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_017_authorization_discover()
-        {
+        public void ecomm_017_authorization_discover() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
+            var card = new HpsCreditCard {
+                Number = "6011000990156527",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var authResponse = _creditService.Authorize(17.07m)
-                .WithCard(TestData.DiscoverCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
                 .Execute();
@@ -360,16 +464,22 @@ namespace SecureSubmit.Tests.Certification
         // PARTIALLY - APPROVED SALE
 
         [TestMethod]
-        public void test_018_partial_approval_visa()
-        {
+        public void ecomm_018_partial_approval_visa() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var response = _creditService.Charge(130m)
-                .WithCard(TestData.VisaCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
-                .AllowPartialAuth()
+                .WithAllowPartialAuth(true)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -380,16 +490,22 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_019_partial_approval_discover()
-        {
+        public void ecomm_019_partial_approval_discover() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
+            var card = new HpsCreditCard {
+                Number = "6011000990156527",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var response = _creditService.Charge(145m)
-                .WithCard(TestData.DiscoverCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
-                .AllowPartialAuth()
+                .WithAllowPartialAuth(true)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -400,16 +516,22 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_020_partial_approval_master_card()
-        {
+        public void ecomm_020_partial_approval_master_card() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
+            var card = new HpsCreditCard {
+                Number = "5473500000000014",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var chargeResponse = _creditService.Charge(155m)
-                .WithCard(TestData.MasterCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
-                .AllowPartialAuth()
+                .WithAllowPartialAuth(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -417,32 +539,33 @@ namespace SecureSubmit.Tests.Certification
 
             Assert.IsNotNull(chargeResponse);
             Assert.AreEqual(100.00m, chargeResponse.AuthorizedAmount);
-
-            // TEST 36 ONLINE VOID
-            var voidResponse = _creditService.Void(chargeResponse.TransactionId).Execute();
-
-            Assert.IsNotNull(voidResponse);
-            Assert.AreEqual("00", voidResponse.ResponseCode);
+            test20TransactionId = chargeResponse.TransactionId;
         }
 
         // LEVEL II CORPORATE PURCHASE CARD
 
         [TestMethod]
-        public void test_021_level_ii_response_b()
-        {
+        public void ecomm_021_level_ii_response_b() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "750241234" } };
 
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var chargeResponse = _creditService.Charge(112.34m)
-                .WithCard(TestData.VisaCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .WithCpcReq()
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
             Assert.AreEqual("00", chargeResponse.ResponseCode);
             Assert.AreEqual("B", chargeResponse.CpcIndicator);
 
-            var cpcData = new HpsCpcData {CardHolderPoNumber = "9876543210", TaxType = taxTypeType.NOTUSED};
+            var cpcData = new HpsCpcData { CardHolderPoNumber = "9876543210", TaxType = taxTypeType.NOTUSED };
 
             var cpcResponse = _creditService.CpcEdit(chargeResponse.TransactionId)
                 .WithCpcData(cpcData)
@@ -453,15 +576,21 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_022_level_ii_response_b()
-        {
+        public void ecomm_022_level_ii_response_b() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "750241234" } };
 
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var chargeResponse = _creditService.Charge(112.34m)
-                .WithCard(TestData.VisaCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .AllowDuplicates()
-                .WithCpcReq()
+                .WithAllowDuplicates(true)
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -479,14 +608,20 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_023_level_ii_response_r()
-        {
+        public void ecomm_023_level_ii_response_r() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var chargeResponse = _creditService.Charge(123.45m)
-                .WithCard(TestData.VisaCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .WithCpcReq()
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -504,14 +639,20 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_024_level_ii_response_s()
-        {
+        public void ecomm_024_level_ii_response_s() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var chargeResponse = _creditService.Charge(134.56m)
-                .WithCard(TestData.VisaCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .WithCpcReq()
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -529,14 +670,20 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_025_level_ii_response_s()
-        {
+        public void ecomm_025_level_ii_response_s() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
+            var card = new HpsCreditCard {
+                Number = "5473500000000014",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var chargeResponse = _creditService.Charge(111.06m)
-                .WithCard(TestData.MasterCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .WithCpcReq()
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -554,14 +701,20 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_026_level_ii_response_s()
-        {
+        public void ecomm_026_level_ii_response_s() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
+            var card = new HpsCreditCard {
+                Number = "5473500000000014",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var chargeResponse = _creditService.Charge(111.07m)
-                .WithCard(TestData.MasterCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .WithCpcReq()
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -579,14 +732,20 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_027_level_ii_response_s()
-        {
+        public void ecomm_027_level_ii_response_s() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
+            var card = new HpsCreditCard {
+                Number = "5473500000000014",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var chargeResponse = _creditService.Charge(111.08m)
-                .WithCard(TestData.MasterCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .WithCpcReq()
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -604,14 +763,20 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_028_level_ii_response_s()
-        {
+        public void ecomm_028_level_ii_response_s() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
+            var card = new HpsCreditCard {
+                Number = "5473500000000014",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var chargeResponse = _creditService.Charge(111.09m)
-                .WithCard(TestData.MasterCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .WithCpcReq()
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -629,14 +794,20 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_029_level_ii_no_response()
-        {
+        public void ecomm_029_level_ii_no_response() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
+            var card = new HpsCreditCard {
+                Number = "372700699251018",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "1234"
+            };
+
             var chargeResponse = _creditService.Charge(111.10m)
-                .WithCard(TestData.AmexCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .WithCpcReq()
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -654,14 +825,20 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_030_level_ii_no_response()
-        {
+        public void ecomm_030_level_ii_no_response() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "750241234" } };
 
+            var card = new HpsCreditCard {
+                Number = "372700699251018",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "1234"
+            };
+
             var chargeResponse = _creditService.Charge(111.11m)
-                .WithCard(TestData.AmexCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .WithCpcReq()
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -679,14 +856,20 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_031_level_ii_no_response()
-        {
+        public void ecomm_031_level_ii_no_response() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "750241234" } };
 
+            var card = new HpsCreditCard {
+                Number = "372700699251018",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "1234"
+            };
+
             var chargeResponse = _creditService.Charge(111.12m)
-                .WithCard(TestData.AmexCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .WithCpcReq()
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -704,14 +887,20 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_032_level_ii_no_response()
-        {
+        public void ecomm_032_level_ii_no_response() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
+            var card = new HpsCreditCard {
+                Number = "372700699251018",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "1234"
+            };
+
             var chargeResponse = _creditService.Charge(111.13m)
-                .WithCard(TestData.AmexCard(true))
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
-                .WithCpcReq()
+                .WithCpcReq(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -731,12 +920,18 @@ namespace SecureSubmit.Tests.Certification
         // PRIOR / VOICE AUTHORIZATION
 
         [TestMethod]
-        public void test_033_offline_sale()
-        {
+        public void ecomm_033_offline_sale() {
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var response = _creditService.OfflineCharge(17.10m)
-                .WithCard(TestData.VisaCard(true))
+                .WithCard(card)
                 .WithOfflineAuthCode("654321")
                 .WithDirectMarketData(directMarketData)
                 .Execute();
@@ -746,12 +941,18 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_033_offline_authorization()
-        {
+        public void ecomm_033_offline_authorization() {
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
+            var card = new HpsCreditCard {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var response = _creditService.OfflineAuth(17.10m)
-                .WithCard(TestData.VisaCard(true))
+                .WithCard(card)
                 .WithOfflineAuthCode("654321")
                 .WithDirectMarketData(directMarketData)
                 .Execute();
@@ -763,12 +964,18 @@ namespace SecureSubmit.Tests.Certification
         // RETURN
 
         [TestMethod]
-        public void test_034_offline_credit_return()
-        {
+        public void ecomm_034_offline_credit_return() {
             var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
 
+            var card = new HpsCreditCard {
+                Number = "5473500000000014",
+                ExpMonth = 12,
+                ExpYear = 2015,
+                Cvv = "123"
+            };
+
             var response = _creditService.Refund(15.15m)
-                .WithCard(TestData.MasterCard(true))
+                .WithCard(card)
                 .WithDirectMarketData(directMarketData)
                 .Execute();
 
@@ -778,20 +985,34 @@ namespace SecureSubmit.Tests.Certification
 
         // ONLINE VOID / REVERSAL
 
-        // test_035_void_test_10: SEE TEST 10
-        // test_036_void_test_20: SEE TEST 20
+        [TestMethod]
+        public void ecomm_035_void_ecomm_10() {
+            var voidResponse = _creditService.Void(test10TransactionId).Execute();
+
+            Assert.IsNotNull(voidResponse);
+            Assert.AreEqual("00", voidResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void ecomm_036_void_ecomm_20() {
+            var voidResponse = _creditService.Void(test20TransactionId).Execute();
+
+            Assert.IsNotNull(voidResponse);
+            Assert.AreEqual("00", voidResponse.ResponseCode);
+        }
 
         // ONE CARD - GSB CARD FUNCTIONS
 
         // BALANCE INQUIRY
 
         [TestMethod]
-        public void test_037_balance_inquiry_gsb()
-        {
+        public void ecomm_037_balance_inquiry_gsb() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
+            var card = new HpsCreditCard { Number = "6277220572999800", ExpYear = 2049, ExpMonth = 12 };
+
             var response = _creditService.PrePaidBalanceInquiry()
-                .WithCard(TestData.GsbCardECommerce())
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .Execute();
 
@@ -800,11 +1021,9 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_038_add_value_gsb()
-        {
-            var trackData = new HpsTrackData
-            {
-                Value = "%B6277220330000248^ TEST CARD^49121010000000000694?;6277220330000248=49121010000000000694?"
+        public void ecomm_038_add_value_gsb() {
+            var trackData = new HpsTrackData {
+                Value = "%B6277220572999800^   /                         ^49121010557010000016000000?F;6277220572999800=49121010557010000016?"
             };
 
             var response = _creditService.PrePaidAddValue(15.00m)
@@ -818,35 +1037,29 @@ namespace SecureSubmit.Tests.Certification
         // SALE
 
         [TestMethod]
-        public void test_039_charge_gsb()
-        {
+        public void ecomm_039_charge_gsb() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
+            var card = new HpsCreditCard { Number = "6277220572999800", ExpYear = 2049, ExpMonth = 12 };
+
             var chargeResponse = _creditService.Charge(2.05m)
-                .WithCard(TestData.GsbCardECommerce())
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(new HpsDirectMarketData { InvoiceNumber = "123456" })
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
             Assert.AreEqual("00", chargeResponse.ResponseCode);
-
-            // VOID TRANSACTION
-
-            var voidResponse = _creditService.Void(chargeResponse.TransactionId)
-                .Execute();
-
-            Assert.IsNotNull(voidResponse);
-            Assert.AreEqual("00", voidResponse.ResponseCode);
+            test39TransactionId = chargeResponse.TransactionId;
         }
 
         [TestMethod]
-        public void test_040_charge_gsb()
-        {
+        public void ecomm_040_charge_gsb() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
+            var card = new HpsCreditCard { Number = "6277220572999800", ExpYear = 2049, ExpMonth = 12 };
 
             var chargeResponse = _creditService.Charge(2.10m)
-                .WithCard(TestData.GsbCardECommerce())
+                .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(new HpsDirectMarketData { InvoiceNumber = "123456" })
                 .Execute();
@@ -857,25 +1070,32 @@ namespace SecureSubmit.Tests.Certification
 
         // ONLINE VOID / REVERSAL
 
-        // test_041_void_gsb: SEE TEST 39
+        [TestMethod]
+        public void ecomm_041_void_gsb() {
+            var voidResponse = _creditService.Void(test39TransactionId)
+                .Execute();
+
+            Assert.IsNotNull(voidResponse);
+            Assert.AreEqual("00", voidResponse.ResponseCode);
+        }
 
         // HMS GIFT - REWARDS
 
         // ACTIVATE
 
         [TestMethod]
-        public void test_042_activate_gift_1()
-        {
-            var response = _giftService.Activate(6.00m, TestData.GiftCard1()).Execute();
+        public void ecomm_042_activate_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var response = _giftService.Activate(6.00m).WithCard(giftCard1).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_043_activate_gift_2()
-        {
-            var response = _giftService.Activate(7.00m, TestData.GiftCard2()).Execute();
+        public void ecomm_043_activate_gift_2() {
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Activate(7.00m).WithCard(giftCard2).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -884,18 +1104,18 @@ namespace SecureSubmit.Tests.Certification
         // LOAD / ADD VALUE
 
         [TestMethod]
-        public void test_044_add_value_gift_1()
-        {
-            var response = _giftService.Activate(8.00m, TestData.GiftCard1()).Execute();
+        public void ecomm_044_add_value_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var response = _giftService.Activate(8.00m).WithCard(giftCard1).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_045_add_value_gift_2()
-        {
-            var response = _giftService.Activate(8.00m, TestData.GiftCard2()).Execute();
+        public void ecomm_045_add_value_gift_2() {
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Activate(8.00m).WithCard(giftCard2).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -904,9 +1124,9 @@ namespace SecureSubmit.Tests.Certification
         // BALANCE INQUIRY
 
         [TestMethod]
-        public void test_046_balance_inquiry_gift_1()
-        {
-            var response = _giftService.Balance(TestData.GiftCard1()).Execute();
+        public void ecomm_046_balance_inquiry_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var response = _giftService.Balance().WithCard(giftCard1).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -914,9 +1134,9 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_047_balance_inquiry_gift_2()
-        {
-            var response = _giftService.Balance(TestData.GiftCard2()).Execute();
+        public void ecomm_047_balance_inquiry_gift_2() {
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Balance().WithCard(giftCard2).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -926,9 +1146,10 @@ namespace SecureSubmit.Tests.Certification
         // REPLACE / TRANSFER
 
         [TestMethod]
-        public void test_048_replace_gift_1()
-        {
-            var response = _giftService.Replace(TestData.GiftCard1(), TestData.GiftCard2()).Execute();
+        public void ecomm_048_replace_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Replace().WithOldCard(giftCard1).WithNewCard(giftCard2).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -936,9 +1157,10 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_049_replace_gift_2()
-        {
-            var response = _giftService.Replace(TestData.GiftCard2(), TestData.GiftCard1()).Execute();
+        public void ecomm_049_replace_gift_2() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Replace().WithOldCard(giftCard2).WithNewCard(giftCard1).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -948,66 +1170,70 @@ namespace SecureSubmit.Tests.Certification
         // SALE / REDEEM
 
         [TestMethod]
-        public void test_050_sale_gift_1()
-        {
-            var response = _giftService.Sale(1.0m, TestData.GiftCard1()).Execute();
+        public void ecomm_050_sale_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var response = _giftService.Sale(1.0m).WithCard(giftCard1).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_051_sale_gift_2()
-        {
-            var response = _giftService.Sale(2.0m, TestData.GiftCard2()).Execute();
+        public void ecomm_051_sale_gift_2() {
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Sale(2.0m).WithCard(giftCard2).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_052_sale_gift_1_void()
-        {
-            var saleResponse = _giftService.Sale(3.0m, TestData.GiftCard1()).Execute();
+        public void ecomm_052_sale_gift_1_void() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var saleResponse = _giftService.Sale(3.0m)
+                .WithCard(giftCard1)
+                .Execute();
 
             Assert.IsNotNull(saleResponse);
             Assert.AreEqual("0", saleResponse.ResponseCode);
+            test52TransactionId = saleResponse.TransactionId;
+        }
 
-            // VOID TRANSACTION
-            var voidResponse = _giftService.Void(saleResponse.TransactionId).Execute();
+        [TestMethod]
+        public void ecomm_053_sale_gift_2_reversal() {
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var saleResponse = _giftService.Sale(4.0m).WithCard(giftCard2).Execute();
+
+            Assert.IsNotNull(saleResponse);
+            Assert.AreEqual("0", saleResponse.ResponseCode);
+            test53TransactionId = saleResponse.TransactionId;
+        }
+
+        // VOID
+
+        [TestMethod]
+        public void ecomm_054_void_gift() {
+            var voidResponse = _giftService.VoidSale(test52TransactionId).Execute();
 
             Assert.IsNotNull(voidResponse);
             Assert.AreEqual("0", voidResponse.ResponseCode);
         }
 
+        // REVERSAL
+
         [TestMethod]
-        public void test_053_sale_gift_2_reversal()
-        {
-            var saleResponse = _giftService.Sale(4.0m, TestData.GiftCard2()).Execute();
-
-            Assert.IsNotNull(saleResponse);
-            Assert.AreEqual("0", saleResponse.ResponseCode);
-
-            // REVERSE TRANSACTION
-            var reverseResponse = _giftService.Reverse(4.0m).UsingTransactionId(saleResponse.TransactionId).Execute();
+        public void ecomm_055_reversal_gift() {
+            var reverseResponse = _giftService.Reverse(4.0m).WithTransactionId(test53TransactionId).Execute();
 
             Assert.IsNotNull(reverseResponse);
             Assert.AreEqual("0", reverseResponse.ResponseCode);
         }
 
-        // VOID
-
-        // test_054_void_gift: SEE TEST 52
-
-        // REVERSAL
-
-        // test_055_reversal_gift: SEE TEST 53
-
         [TestMethod]
-        public void test_056_reversal_gift_2()
-        {
+        public void ecomm_056_reversal_gift_2() {
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
             var response = _giftService.Reverse(2.0m)
-                .UsingCard(TestData.GiftCard2())
+                .WithCard(giftCard2)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -1017,9 +1243,9 @@ namespace SecureSubmit.Tests.Certification
         // DEACTIVATE
 
         [TestMethod]
-        public void test_057_deactivate_gift_1()
-        {
-            var response = _giftService.Deactivate(TestData.GiftCard1()).Execute();
+        public void ecomm_057_deactivate_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var response = _giftService.Deactivate().WithCard(giftCard1).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -1027,14 +1253,14 @@ namespace SecureSubmit.Tests.Certification
 
         // RECEIPTS MESSAGING
 
-        // test_058_receipts_messaging: print and scan receipt for test 51
+        // ecomm_058_receipts_messaging: print and scan receipt for test 51
 
         // BALANCE INQUIRY
 
         [TestMethod]
-        public void test_059_balance_inquiry_rewards_1()
-        {
-            var response = _giftService.Balance(TestData.GiftCard1()).Execute();
+        public void ecomm_059_balance_inquiry_rewards_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var response = _giftService.Balance().WithCard(giftCard1).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -1042,9 +1268,9 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_060_balance_inquiry_rewards_2()
-        {
-            var response = _giftService.Balance(TestData.GiftCard2()).Execute();
+        public void ecomm_060_balance_inquiry_rewards_2() {
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Balance().WithCard(giftCard2).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -1054,28 +1280,28 @@ namespace SecureSubmit.Tests.Certification
         // ALIAS
 
         [TestMethod]
-        public void test_061_create_alias_gift_1()
-        {
-            var response = _giftService.Alias(HpsGiftCardAliasAction.Create, "9725550100").Execute();
+        public void ecomm_061_create_alias_gift_1() {
+            var response = _giftService.Alias().WithAction(GiftCardAliasReqBlock1TypeAction.CREATE).WithAlias("9725550100").Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_062_create_alias_gift_2()
-        {
-            var response = _giftService.Alias(HpsGiftCardAliasAction.Create, "9725550100").Execute();
+        public void ecomm_062_create_alias_gift_2() {
+            var response = _giftService.Alias().WithAction(GiftCardAliasReqBlock1TypeAction.CREATE).WithAlias("9725550100").Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_063_add_alias_gift_1()
-        {
-            var response = _giftService.Alias(HpsGiftCardAliasAction.Add, "2145550199")
-                .WithGiftCard(TestData.GiftCard1())
+        public void ecomm_063_add_alias_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var response = _giftService.Alias()
+                .WithAction(GiftCardAliasReqBlock1TypeAction.ADD)
+                .WithAlias("2145550199")
+                .WithCard(giftCard1)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -1083,10 +1309,12 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_064_add_alias_gift_2()
-        {
-            var response = _giftService.Alias(HpsGiftCardAliasAction.Add, "2145550199")
-                .WithGiftCard(TestData.GiftCard2())
+        public void ecomm_064_add_alias_gift_2() {
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Alias()
+                .WithAction(GiftCardAliasReqBlock1TypeAction.ADD)
+                .WithAlias("2145550199")
+                .WithCard(giftCard2)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -1094,10 +1322,12 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_065_delete_alias_gift_1()
-        {
-            var response = _giftService.Alias(HpsGiftCardAliasAction.Delete, "2145550199")
-                .WithGiftCard(TestData.GiftCard1())
+        public void ecomm_065_delete_alias_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var response = _giftService.Alias()
+                .WithAction(GiftCardAliasReqBlock1TypeAction.DELETE)
+                .WithAlias("2145550199")
+                .WithCard(giftCard1)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -1107,9 +1337,9 @@ namespace SecureSubmit.Tests.Certification
         // SALE / REDEEM
 
         [TestMethod]
-        public void test_066_redeem_points_gift_1()
-        {
-            var response = _giftService.Sale(100.00m, TestData.GiftCard1())
+        public void ecomm_066_redeem_points_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var response = _giftService.Sale(100m).WithCard(giftCard1)
                 .WithCurrency(currencyType.POINTS)
                 .Execute();
 
@@ -1118,9 +1348,9 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_067_redeem_points_gift_2()
-        {
-            var response = _giftService.Sale(200.00m, TestData.GiftCard2())
+        public void ecomm_067_redeem_points_gift_2() {
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Sale(200m).WithCard(giftCard2)
                 .WithCurrency(currencyType.POINTS)
                 .Execute();
 
@@ -1129,11 +1359,10 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_068_redeem_points_gift_2()
-        {
-            var giftCard = new HpsGiftCard { Number = "9725550100", NumberType = ItemChoiceType.Alias };
+        public void ecomm_068_redeem_points_gift_2() {
+            var giftCard = new HpsGiftCard { Value = "9725550100", ValueType = ItemChoiceType.Alias };
 
-            var response = _giftService.Sale(300.00m, giftCard)
+            var response = _giftService.Sale(300.00m).WithCard(giftCard)
                 .WithCurrency(currencyType.POINTS)
                 .Execute();
 
@@ -1144,18 +1373,18 @@ namespace SecureSubmit.Tests.Certification
         // REWARDS
 
         [TestMethod]
-        public void test_069_rewards_gift_1()
-        {
-            var response = _giftService.Reward(10.00m, TestData.GiftCard1()).Execute();
+        public void ecomm_069_rewards_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var response = _giftService.Reward(10.00m).WithCard(giftCard1).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_070_rewards_gift_2()
-        {
-            var response = _giftService.Reward(11.00m, TestData.GiftCard2()).Execute();
+        public void ecomm_070_rewards_gift_2() {
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Reward(11.00m).WithCard(giftCard2).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -1164,18 +1393,20 @@ namespace SecureSubmit.Tests.Certification
         // REPLACE / TRANSFER
 
         [TestMethod]
-        public void test_071_replace_gift_1()
-        {
-            var response = _giftService.Replace(TestData.GiftCard1(), TestData.GiftCard2()).Execute();
+        public void ecomm_071_replace_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Replace().WithOldCard(giftCard1).WithNewCard(giftCard2).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_072_replace_gift_2()
-        {
-            var response = _giftService.Replace(TestData.GiftCard2(), TestData.GiftCard1()).Execute();
+        public void ecomm_072_replace_gift_2() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Replace().WithOldCard(giftCard2).WithNewCard(giftCard1).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -1184,18 +1415,18 @@ namespace SecureSubmit.Tests.Certification
         // DEACTIVATE
 
         [TestMethod]
-        public void test_073_deactivate_gift_1()
-        {
-            var response = _giftService.Deactivate(TestData.GiftCard1()).Execute();
+        public void ecomm_073_deactivate_gift_1() {
+            var giftCard1 = new HpsGiftCard { Value = "5022440000000000098" };
+            var response = _giftService.Deactivate().WithCard(giftCard1).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_074_deactivate_gift_2()
-        {
-            var response = _giftService.Deactivate(TestData.GiftCard2()).Execute();
+        public void ecomm_074_deactivate_gift_2() {
+            var giftCard2 = new HpsGiftCard { Value = "5022440000000000007" };
+            var response = _giftService.Deactivate().WithCard(giftCard2).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -1203,22 +1434,19 @@ namespace SecureSubmit.Tests.Certification
 
         // RECEIPTS MESSAGING
 
-        // test_075_receipts_messaging: print and scan receipt for test 51
+        // ecomm_075_receipts_messaging: print and scan receipt for test 51
 
         // CLOSE BATCH
 
         [TestMethod]
-        public void test_999_CloseBatch()
-        {
-            try
-            {
-                var response = _batchService.Close().Execute();
+        public void ecomm_999_CloseBatch() {
+            try {
+                var response = _batchService.CloseBatch();
                 Assert.IsNotNull(response);
                 Console.WriteLine(@"Batch ID: {0}", response.Id);
                 Console.WriteLine(@"Sequence Number: {0}", response.SequenceNumber);
             }
-            catch (HpsGatewayException e)
-            {
+            catch (HpsGatewayException e) {
                 if (e.Code != HpsExceptionCodes.NoOpenBatch && e.Code != HpsExceptionCodes.UnknownIssuerError)
                     Assert.Fail("Something failed other than 'no open batch'.");
                 else

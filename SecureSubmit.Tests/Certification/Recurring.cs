@@ -1,12 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SecureSubmit.Entities.PayPlan;
+using SecureSubmit.Entities;
+using SecureSubmit.Fluent.Services;
 using SecureSubmit.Infrastructure;
 using SecureSubmit.Services;
-using SecureSubmit.Services.Batch;
-using SecureSubmit.Services.Check;
-using SecureSubmit.Services.Credit;
-using SecureSubmit.Services.PayPlan;
 
 namespace SecureSubmit.Tests.Certification
 {
@@ -20,8 +17,8 @@ namespace SecureSubmit.Tests.Certification
 
         private readonly HpsPayPlanService _payPlanService = new HpsPayPlanService(ServicesConfig);
         private readonly HpsBatchService _batchService = new HpsBatchService(ServicesConfig);
-        private readonly HpsCreditService _creditService = new HpsCreditService(ServicesConfig);
-        private readonly HpsCheckService _checkService = new HpsCheckService(ServicesConfig);
+        private readonly HpsFluentCreditService _creditService = new HpsFluentCreditService(ServicesConfig);
+        private readonly HpsFluentCheckService _checkService = new HpsFluentCheckService(ServicesConfig);
 
         private static string _customerPersonKey;
         private static string _customerCompanyKey;
@@ -45,11 +42,11 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_000_CloseBatch()
+        public void recurring_000_CloseBatch()
         {
             try
             {
-                var response = _batchService.Close().Execute();
+                var response = _batchService.CloseBatch();
                 Assert.IsNotNull(response);
                 Console.WriteLine(@"Batch ID: {0}", response.Id);
                 Console.WriteLine(@"Sequence Number: {0}", response.SequenceNumber);
@@ -64,36 +61,29 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_000_CleanUp()
-        {
+        public void recurring_000_CleanUp() {
             // Remove Schedules
-            try
-            {
+            try {
                 var schResults = _payPlanService.FindAllSchedules();
-                foreach (var schedule in schResults.Results)
-                {
+                foreach (var schedule in schResults.Results) {
                     _payPlanService.DeleteSchedule(schedule, true);
                 }
             }
             catch { }
 
             // Remove Payment Methods
-            try
-            {
+            try {
                 var pmResults = _payPlanService.FindAllPaymentMethods();
-                foreach (var pm in pmResults.Results)
-                {
+                foreach (var pm in pmResults.Results) {
                     _payPlanService.DeletePaymentMethod(pm, true);
                 }
             }
             catch { }
-            
+
             // Remove Customers
-            try
-            {
+            try {
                 var custResults = _payPlanService.FindAllCustomers();
-                foreach (var c in custResults.Results)
-                {
+                foreach (var c in custResults.Results) {
                     _payPlanService.DeleteCustomer(c, true);
                 }
             }
@@ -103,10 +93,8 @@ namespace SecureSubmit.Tests.Certification
         // CUSTOMER SETUP
 
         [TestMethod]
-        public void test_001_AddCustomerPerson()
-        {
-            var customer = new HpsPayPlanCustomer
-            {
+        public void recurring_001_AddCustomerPerson() {
+            var customer = new HpsPayPlanCustomer {
                 CustomerIdentifier = GetIdentifier("Person"),
                 FirstName = "John",
                 LastName = "Doe",
@@ -123,15 +111,13 @@ namespace SecureSubmit.Tests.Certification
             var response = _payPlanService.AddCustomer(customer);
             Assert.IsNotNull(response);
             Assert.IsNotNull(response.CustomerKey);
-            
+
             _customerPersonKey = response.CustomerKey;
         }
 
         [TestMethod]
-        public void test_002_AddCustomerBusiness()
-        {
-            var customer = new HpsPayPlanCustomer
-            {
+        public void recurring_002_AddCustomerBusiness() {
+            var customer = new HpsPayPlanCustomer {
                 CustomerIdentifier = GetIdentifier("Business"),
                 Company = "AcmeCo",
                 CustomerStatus = HpsPayPlanCustomerStatus.Active,
@@ -154,10 +140,8 @@ namespace SecureSubmit.Tests.Certification
         // PAYMENT METHOD SETUP
 
         [TestMethod]
-        public void test_003_AddPaymentCreditVisa()
-        {
-            var paymentMethod = new HpsPayPlanPaymentMethod
-            {
+        public void recurring_003_AddPaymentCreditVisa() {
+            var paymentMethod = new HpsPayPlanPaymentMethod {
                 PaymentMethodIdentifier = GetIdentifier("CreditV"),
                 PaymentMethodType = HpsPayPlanPaymentMethodType.CreditCard,
                 NameOnAccount = "John Doe",
@@ -175,10 +159,8 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_004_AddPaymentCreditMasterCard()
-        {
-            var paymentMethod = new HpsPayPlanPaymentMethod
-            {
+        public void recurring_004_AddPaymentCreditMasterCard() {
+            var paymentMethod = new HpsPayPlanPaymentMethod {
                 PaymentMethodIdentifier = GetIdentifier("CreditMC"),
                 PaymentMethodType = HpsPayPlanPaymentMethodType.CreditCard,
                 NameOnAccount = "John Doe",
@@ -196,10 +178,8 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_005_AddPaymentCheckPPD()
-        {
-            var paymentMethod = new HpsPayPlanPaymentMethod
-            {
+        public void recurring_005_AddPaymentCheckPPD() {
+            var paymentMethod = new HpsPayPlanPaymentMethod {
                 PaymentMethodIdentifier = GetIdentifier("CheckPPD"),
                 PaymentMethodType = HpsPayPlanPaymentMethodType.Ach,
                 AchType = "Checking",
@@ -227,10 +207,8 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_006_AddPaymentCheckCCD()
-        {
-            var paymentMethod = new HpsPayPlanPaymentMethod
-            {
+        public void recurring_006_AddPaymentCheckCCD() {
+            var paymentMethod = new HpsPayPlanPaymentMethod {
                 PaymentMethodIdentifier = GetIdentifier("CheckCCD"),
                 PaymentMethodType = HpsPayPlanPaymentMethodType.Ach,
                 AchType = "Checking",
@@ -261,10 +239,8 @@ namespace SecureSubmit.Tests.Certification
 
         [TestMethod]
         [ExpectedException(typeof(HpsException))]
-        public void test_007_AddPaymentCheckPPD()
-        {
-            var paymentMethod = new HpsPayPlanPaymentMethod
-            {
+        public void recurring_007_AddPaymentCheckPPD() {
+            var paymentMethod = new HpsPayPlanPaymentMethod {
                 PaymentMethodIdentifier = GetIdentifier("CheckPPD"),
                 PaymentMethodType = HpsPayPlanPaymentMethodType.Ach,
                 AchType = "Checking",
@@ -290,10 +266,8 @@ namespace SecureSubmit.Tests.Certification
         // Recurring Billing using PayPlan - Managed Schedule
 
         [TestMethod]
-        public void test_008_AddScheduleCreditVisa()
-        {
-            var schedule = new HpsPayPlanSchedule
-            {
+        public void recurring_008_AddScheduleCreditVisa() {
+            var schedule = new HpsPayPlanSchedule {
                 ScheduleIdentifier = GetIdentifier("CreditV"),
                 CustomerKey = _customerPersonKey,
                 ScheduleStatus = HpsPayPlanScheduleStatus.Active,
@@ -313,10 +287,8 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_009_AddScheduleCreditMasterCard()
-        {
-            var schedule = new HpsPayPlanSchedule
-            {
+        public void recurring_009_AddScheduleCreditMasterCard() {
+            var schedule = new HpsPayPlanSchedule {
                 ScheduleIdentifier = GetIdentifier("CreditMC"),
                 CustomerKey = _customerPersonKey,
                 ScheduleStatus = HpsPayPlanScheduleStatus.Active,
@@ -337,10 +309,8 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_010_AddScheduleCheckPPD()
-        {
-            var schedule = new HpsPayPlanSchedule
-            {
+        public void recurring_010_AddScheduleCheckPPD() {
+            var schedule = new HpsPayPlanSchedule {
                 ScheduleIdentifier = GetIdentifier("CheckPPD"),
                 CustomerKey = _customerPersonKey,
                 ScheduleStatus = HpsPayPlanScheduleStatus.Active,
@@ -362,10 +332,8 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_011_AddScheduleCheckCCD()
-        {
-            var schedule = new HpsPayPlanSchedule
-            {
+        public void recurring_011_AddScheduleCheckCCD() {
+            var schedule = new HpsPayPlanSchedule {
                 ScheduleIdentifier = GetIdentifier("CheckCCD"),
                 CustomerKey = _customerCompanyKey,
                 ScheduleStatus = HpsPayPlanScheduleStatus.Active,
@@ -386,10 +354,8 @@ namespace SecureSubmit.Tests.Certification
 
         [TestMethod]
         [ExpectedException(typeof(HpsException))]
-        public void test_012_AddScheduleCreditVisa()
-        {
-            var schedule = new HpsPayPlanSchedule
-            {
+        public void recurring_012_AddScheduleCreditVisa() {
+            var schedule = new HpsPayPlanSchedule {
                 ScheduleIdentifier = GetIdentifier("CreditV"),
                 CustomerKey = _customerPersonKey,
                 ScheduleStatus = HpsPayPlanScheduleStatus.Active,
@@ -400,16 +366,14 @@ namespace SecureSubmit.Tests.Certification
                 Duration = HpsPayPlanScheduleDuration.Ongoing,
                 ReprocessingCount = 1
             };
-            
+
             _payPlanService.AddSchedule(schedule);
         }
 
         [TestMethod]
         [ExpectedException(typeof(HpsException))]
-        public void test_013_AddScheduleCCheckPPD()
-        {
-            var schedule = new HpsPayPlanSchedule
-            {
+        public void recurring_013_AddScheduleCCheckPPD() {
+            var schedule = new HpsPayPlanSchedule {
                 ScheduleIdentifier = GetIdentifier("CheckPPD"),
                 CustomerKey = _customerPersonKey,
                 ScheduleStatus = HpsPayPlanScheduleStatus.Active,
@@ -422,15 +386,14 @@ namespace SecureSubmit.Tests.Certification
                 NumberOfPayments = 2,
                 ProcessingDateInfo = "1"
             };
-            
+
             _payPlanService.AddSchedule(schedule);
         }
 
         // Recurring Billing using PayPlan - Managed Schedule
 
         [TestMethod]
-        public void test_014_RecurringBillingVisa()
-        {
+        public void recurring_014_RecurringBillingVisa() {
             var response = _creditService.Recurring(20.01m)
                 .WithPaymentMethodKey(_paymentMethodKeyVisa)
                 .WithScheduleId(_scheduleKeyVisa)
@@ -441,8 +404,7 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_015_RecurringBillingMasterCard()
-        {
+        public void recurring_015_RecurringBillingMasterCard() {
             var response = _creditService.Recurring(20.02m)
                 .WithPaymentMethodKey(_paymentMethodKeyMasterCard)
                 .WithScheduleId(_scheduleKeyMasterCard)
@@ -453,8 +415,7 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_016_RecurringBillingCheckPPD()
-        {
+        public void recurring_016_RecurringBillingCheckPPD() {
             var response = _checkService.Recurring(20.03m)
                 .WithPaymentMethodKey(_paymentMethodKeyCheckPpd)
                 .WithScheduleId(_scheduleKeyCheckPpd)
@@ -465,8 +426,7 @@ namespace SecureSubmit.Tests.Certification
         }
 
         [TestMethod]
-        public void test_017_RecurringBillingCheckCCD()
-        {
+        public void recurring_017_RecurringBillingCheckCCD() {
             var response = _checkService.Recurring(20.04m)
                 .WithPaymentMethodKey(_paymentMethodKeyCheckCcd)
                 .WithScheduleId(_scheduleKeyCheckCcd)
@@ -479,44 +439,40 @@ namespace SecureSubmit.Tests.Certification
         // One time bill payment
 
         [TestMethod]
-        public void test_018_RecurringBillingVisa()
-        {
+        public void recurring_018_RecurringBillingVisa() {
             var response = _creditService.Recurring(20.06m)
                 .WithPaymentMethodKey(_paymentMethodKeyVisa)
-                .OneTime().Execute();
+                .WithOneTime(true).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_019_RecurringBillingMasterCard()
-        {
+        public void recurring_019_RecurringBillingMasterCard() {
             var response = _creditService.Recurring(20.07m)
                 .WithPaymentMethodKey(_paymentMethodKeyMasterCard)
-                .OneTime().Execute();
+                .WithOneTime(true).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_020_RecurringBillingCheckPPD()
-        {
+        public void recurring_020_RecurringBillingCheckPPD() {
             var response = _checkService.Recurring(20.08m)
                 .WithPaymentMethodKey(_paymentMethodKeyCheckPpd)
-                .OneTime().Execute();
+                .WithOneTime(true).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
         [TestMethod]
-        public void test_021_RecurringBillingCheckCCD()
-        {
+        public void recurring_021_RecurringBillingCheckCCD() {
             var response = _checkService.Recurring(20.09m)
                 .WithPaymentMethodKey(_paymentMethodKeyCheckCcd)
-                .OneTime().Execute();
+                .WithOneTime(true).Execute();
 
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
@@ -526,26 +482,24 @@ namespace SecureSubmit.Tests.Certification
 
         [TestMethod]
         [ExpectedException(typeof(HpsCreditException))]
-        public void test_022_RecurringBillingVisa()
-        {
+        public void recurring_022_RecurringBillingVisa() {
             _creditService.Recurring(10.08m)
                 .WithPaymentMethodKey(_paymentMethodKeyVisa)
-                .OneTime().Execute();
+                .WithOneTime(true).Execute();
         }
 
         [TestMethod]
         [ExpectedException(typeof(HpsCheckException))]
-        public void test_023_RecurringBillingCheckPPD()
-        {
+        public void recurring_023_RecurringBillingCheckPPD() {
             _checkService.Recurring(25.02m)
                 .WithPaymentMethodKey(_paymentMethodKeyCheckPpd)
-                .OneTime().Execute();
+                .WithOneTime(true).Execute();
         }
 
         [TestMethod]
-        public void test_999_CloseBatch()
+        public void recurring_999_CloseBatch()
         {
-            var response = _batchService.Close().Execute();
+            var response = _batchService.CloseBatch();
             Assert.IsNotNull(response);
             Console.WriteLine(@"Batch ID: {0}", response.Id);
             Console.WriteLine(@"Sequence Number: {0}", response.SequenceNumber);

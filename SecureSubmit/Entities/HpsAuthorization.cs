@@ -7,6 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Hps.Exchange.PosGateway.Client;
 namespace SecureSubmit.Entities
 {
     /// <summary>The HPS auth.</summary>
@@ -43,5 +44,36 @@ namespace SecureSubmit.Entities
 
         /// <summary>Gets or sets the token data.</summary>
         public HpsTokenData TokenData { get; set; }
+
+        internal new HpsAuthorization FromResponse(PosResponseVer10 response) {
+            base.FromResponse(response);
+
+            if (response.Transaction == null)
+                return this;
+
+            var authResponse = (AuthRspStatusType)response.Transaction.Item;
+
+            this.AuthorizationCode = authResponse.AuthCode;
+            this.AvsResultCode = authResponse.AVSRsltCode;
+            this.AvsResultText = authResponse.AVSRsltText;
+            this.CvvResultCode = authResponse.CVVRsltCode;
+            this.CvvResultText = authResponse.CVVRsltText;
+            this.AuthorizedAmount = authResponse.AuthAmt;
+            this.CardType = authResponse.CardType;
+            this.Descriptor = authResponse.TxnDescriptor;
+            this.CpcIndicator = authResponse.CPCInd;
+
+            if (response.Header.TokenData != null) {
+                HpsTokenData token = new HpsTokenData {
+                    TokenRspCode = response.Header.TokenData.TokenRspCode,
+                    TokenRspMsg = response.Header.TokenData.TokenRspMsg,
+                    TokenValue = response.Header.TokenData.TokenValue
+                };
+
+                this.TokenData = token;
+            }
+
+            return this;
+        }
     }
 }

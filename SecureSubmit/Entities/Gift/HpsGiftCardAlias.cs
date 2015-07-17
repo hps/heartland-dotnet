@@ -7,11 +7,21 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Hps.Exchange.PosGateway.Client;
 namespace SecureSubmit.Entities
 {
     public class HpsGiftCardAlias : HpsTransaction
     {
-        /// <summary>Gets or sets the gift card data.</summary>
         public HpsGiftCard GiftCard { get; set; }
+        internal new HpsGiftCardAlias FromResponse(PosResponseVer10 response) {
+            base.FromResponse(response);
+
+            var transaction = (PosGiftCardAliasRspType)response.Transaction.Item;
+            GiftCard = HpsGiftCard.FromResponse(transaction.CardData);
+            ResponseCode = transaction.RspCode.ToString();
+            ResponseText = transaction.RspText;
+
+            return this;
+        }
     }
 }

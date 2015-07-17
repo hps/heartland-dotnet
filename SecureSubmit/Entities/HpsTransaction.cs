@@ -111,5 +111,50 @@ namespace SecureSubmit.Entities
 
             return null;
         }
+
+        internal HpsTransaction FromResponse(PosResponseVer10 response) {
+            var header = response.Header;
+
+            long? clientTransactionId = null;
+            if (header.ClientTxnIdSpecified)
+                clientTransactionId = header.ClientTxnId;
+
+            this.Header = new HpsTransactionHeader {
+                ClientTxnId = clientTransactionId,
+                GatewayRspCode = header.GatewayRspCode,
+                GatewayRspMsg = header.GatewayRspMsg,
+                RspDt = header.RspDT
+            };
+
+            this.TransactionId = header.GatewayTxnId;
+            this.ClientTransactionId = clientTransactionId;
+
+            if (response.Transaction != null) {
+                var transaction = response.Transaction.Item;
+
+                var rspCodeField = transaction.GetType().GetProperty("RspCode");
+                if (rspCodeField != null) {
+                    var rspCode = rspCodeField.GetValue(transaction);
+                    if (rspCode != null)
+                        this.ResponseCode = rspCode.ToString();
+                }
+
+                var rspTextField = transaction.GetType().GetProperty("RspText");
+                if (rspTextField != null) {
+                    var rspText = rspTextField.GetValue(transaction);
+                    if (rspText != null)
+                        this.ResponseText = (string)rspText;
+                }
+
+                var refNbrField = transaction.GetType().GetProperty("RefNbr");
+                if (refNbrField != null) {
+                    var refNbr = refNbrField.GetValue(transaction);
+                    if (refNbr != null)
+                        this.ReferenceNumber = (string)refNbr;
+                }
+            }
+
+            return this;
+        }
     }
 }

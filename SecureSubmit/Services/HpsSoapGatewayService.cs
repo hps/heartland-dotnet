@@ -1,32 +1,27 @@
+using System.Net;
 using Hps.Exchange.PosGateway.Client;
 using SecureSubmit.Abstractions;
 using SecureSubmit.Entities;
+using SecureSubmit.Entities.Credit;
 using SecureSubmit.Infrastructure;
 
-namespace SecureSubmit.Services
-{
+namespace SecureSubmit.Services {
     /// <summary>The HPS service.</summary>
-    public abstract class HpsSoapGatewayService
-    {
-        /// <summary>Initializes a new instance of the <see cref="HpsSoapGatewayService"/> class.</summary>
-        /// <param name="config">The HPS services config.</param>
-        protected HpsSoapGatewayService(IHpsServicesConfig config = null)
-        {
+    public abstract class HpsSoapGatewayService {
+        bool enableLogging = false;
+
+        protected HpsSoapGatewayService(IHpsServicesConfig config = null, bool enableLogging = false) {
             ServicesConfig = config;
+            this.enableLogging = enableLogging;
         }
 
-        /// <summary>Gets or sets the HPS services config.</summary>
         protected IHpsServicesConfig ServicesConfig { get; set; }
 
         internal static PosResponse DoTransaction(IHpsServicesConfig config, PosRequestVer10Transaction transaction,
-            long? clientTransactionId = null)
-        {
-            var req = new PosRequest
-            {
-                Ver10 = new PosRequestVer10
-                {
-                    Header = new PosRequestVer10Header
-                    {
+            long? clientTransactionId = null) {
+            var req = new PosRequest {
+                Ver10 = new PosRequestVer10 {
+                    Header = new PosRequestVer10Header {
                         SecretAPIKey = config.SecretApiKey,
                         LicenseId = config.LicenseId,
                         SiteId = config.SiteId,
@@ -41,36 +36,25 @@ namespace SecureSubmit.Services
                 }
             };
 
-            if (clientTransactionId.HasValue)
-            {
+            if (clientTransactionId.HasValue) {
                 req.Ver10.Header.ClientTxnId = clientTransactionId.Value;
                 req.Ver10.Header.ClientTxnIdSpecified = true;
             }
 
-            using (var client = new PosGatewayService { Url = HpsConfiguration.SoapServiceUri })
-            {
+            using (var client = new PosGatewayService { Url = HpsConfiguration.SoapServiceUri }) {
                 return client.DoTransaction(req);
             }
         }
 
-        /// <summary>The do transaction.</summary>
-        /// <param name="transaction">The transaction.</param>
-        /// <param name="clientTransactionId">An optional client transaction ID.</param>
-        /// <returns>The <see cref="PosResponse"/>.</returns>
-        protected PosResponse DoTransaction(PosRequestVer10Transaction transaction, long? clientTransactionId = null)
-        {
+        internal PosResponse DoTransaction(PosRequestVer10Transaction transaction, long? clientTransactionId = null) {
             // Check for a valid config.
-            if (IsConfigInvalid())
-            {
+            if (IsConfigInvalid()) {
                 throw new HpsAuthenticationException(HpsExceptionCodes.InvalidConfiguration, Resource.Exception_Message_InvalidConfig);
             }
 
-            var req = new PosRequest
-            {
-                Ver10 = new PosRequestVer10
-                {
-                    Header = new PosRequestVer10Header
-                    {
+            var req = new PosRequest {
+                Ver10 = new PosRequestVer10 {
+                    Header = new PosRequestVer10Header {
                         SecretAPIKey = (ServicesConfig == null) ? HpsConfiguration.SecretApiKey : ServicesConfig.SecretApiKey,
                         LicenseId = (ServicesConfig == null) ? HpsConfiguration.LicenseId : ServicesConfig.LicenseId,
                         SiteId = (ServicesConfig == null) ? HpsConfiguration.SiteId : ServicesConfig.SiteId,
@@ -85,25 +69,29 @@ namespace SecureSubmit.Services
                 }
             };
 
-            if (clientTransactionId.HasValue)
-            {
+            if (clientTransactionId.HasValue) {
                 req.Ver10.Header.ClientTxnId = clientTransactionId.Value;
                 req.Ver10.Header.ClientTxnIdSpecified = true;
             }
 
-            using (var client = new PosGatewayService { Url = HpsConfiguration.SoapServiceUri })
-            {
+            using (var client = new PosGatewayService { Url = HpsConfiguration.SoapServiceUri }) {
                 return client.DoTransaction(req);
             }
+        }
+
+        private bool IsConfigInvalid() {
+            return ServicesConfig == null
+                   && (HpsConfiguration.SecretApiKey == null
+                       || HpsConfiguration.LicenseId == -1 || HpsConfiguration.DeviceId == -1
+                       || HpsConfiguration.Password == null || HpsConfiguration.SoapServiceUri == null
+                       || HpsConfiguration.SiteId == -1 || HpsConfiguration.UserName == null);
         }
 
         /// <summary>Hydrate a new HPS transaction response header.</summary>
         /// <param name="header">The response header from the HPS gateway.</param>
         /// <returns>The <see cref="HpsTransactionHeader"/>.</returns>
-        internal HpsTransactionHeader HydrateTransactionHeader(PosResponseVer10Header header)
-        {
-            var hpsTransactionHeader = new HpsTransactionHeader
-            {
+        internal HpsTransactionHeader HydrateTransactionHeader(PosResponseVer10Header header) {
+            var hpsTransactionHeader = new HpsTransactionHeader {
                 GatewayRspMsg = header.GatewayRspMsg,
                 GatewayRspCode = header.GatewayRspCode,
                 RspDt = header.RspDT
@@ -112,27 +100,19 @@ namespace SecureSubmit.Services
             return hpsTransactionHeader;
         }
 
-        /// <summary>Determine whether the HPS config has been initialized, in one way or another.</summary>
-        /// <returns>The <see cref="bool"/>.</returns>
-        private bool IsConfigInvalid()
-        {
-            return ServicesConfig == null
-                   && (HpsConfiguration.SecretApiKey == null 
-                       || HpsConfiguration.LicenseId == -1 || HpsConfiguration.DeviceId == -1
-                       || HpsConfiguration.Password == null || HpsConfiguration.SoapServiceUri == null
-                       || HpsConfiguration.SiteId == -1 || HpsConfiguration.UserName == null);
-        }
-
-        protected long? GetClientTransactionId(PosResponseVer10Header header)
-        {
+        internal long? GetClientTransactionId(PosResponseVer10Header header) {
             if (header.ClientTxnIdSpecified) { return header.ClientTxnId; }
             return null;
         }
 
-        protected CardHolderDataType HydrateCardHolderData(HpsConsumer consumer)
-        {
-            return new CardHolderDataType
-            {
+        internal long? GetClientTransactionId(HpsTransactionDetails details) {
+            if (details != null)
+                return details.ClientTransactionId;
+            return null;
+        }
+
+        internal CardHolderDataType HydrateCardHolderData(HpsConsumer consumer) {
+            return new CardHolderDataType {
                 CardHolderFirstName = consumer.FirstName,
                 CardHolderLastName = consumer.LastName,
                 CardHolderEmail = consumer.Email,
@@ -144,10 +124,8 @@ namespace SecureSubmit.Services
             };
         }
 
-        protected CardDataTypeManualEntry HydrateCardManualEntry(HpsCreditCard card)
-        {
-            return new CardDataTypeManualEntry
-            {
+        internal CardDataTypeManualEntry HydrateCardManualEntry(HpsCreditCard card, bool cardPresent = false, bool readerPresent = false) {
+            return new CardDataTypeManualEntry {
                 CardNbr = card.Number,
                 ExpMonth = card.ExpMonth,
                 ExpYear = card.ExpYear,
@@ -160,20 +138,16 @@ namespace SecureSubmit.Services
             };
         }
 
-        protected AdditionalTxnFieldsType HydrateAdditionalTxnFields(HpsTransactionDetails details)
-        {
-            return details == null ? null : new AdditionalTxnFieldsType
-            {
+        internal AdditionalTxnFieldsType HydrateAdditionalTxnFields(HpsTransactionDetails details) {
+            return details == null ? null : new AdditionalTxnFieldsType {
                 Description = details.Memo,
                 CustomerID = details.CustomerId,
                 InvoiceNbr = details.InvoiceNumber
             };
         }
 
-        protected EncryptionDataType HydrateEncryptionData(HpsEncryptionData encryptionData)
-        {
-            return encryptionData != null ? new EncryptionDataType
-            {
+        internal EncryptionDataType HydrateEncryptionData(HpsEncryptionData encryptionData) {
+            return encryptionData != null ? new EncryptionDataType {
                 EncryptedTrackNumber = encryptionData.EncryptedTrackNumber,
                 KSN = encryptionData.Ksn,
                 KTB = encryptionData.Ktb,
@@ -181,41 +155,144 @@ namespace SecureSubmit.Services
             } : null;
         }
 
-        protected EMVDataType HydrateEmvData(string emvData)
-        {
-            return string.IsNullOrEmpty(emvData) ? null : new EMVDataType
-            {
+        internal EMVDataType HydrateEmvData(string emvData) {
+            return string.IsNullOrEmpty(emvData) ? null : new EMVDataType {
                 EMVTagData = emvData
             };
         }
 
-        protected CardDataTypeTrackData HydrateCardTrackData(HpsTrackData trackData)
-        {
-            return trackData != null ? new CardDataTypeTrackData
-            {
+        internal CardDataTypeTrackData HydrateCardTrackData(HpsTrackData trackData) {
+            return trackData != null ? new CardDataTypeTrackData {
                 method = trackData.Method == HpsTrackDataMethod.Swipe ? CardDataTypeTrackDataMethod.swipe : CardDataTypeTrackDataMethod.proximity,
                 methodSpecified = true,
                 Value = trackData.Value
             } : null;
         }
 
-        protected DirectMktDataType HydrateDirectMktData(HpsDirectMarketData directMarketData)
-        {
-            return directMarketData != null ? new DirectMktDataType
-            {
+        internal DirectMktDataType HydrateDirectMktData(HpsDirectMarketData directMarketData) {
+            return directMarketData != null ? new DirectMktDataType {
                 DirectMktInvoiceNbr = directMarketData.InvoiceNumber,
                 DirectMktShipDay = directMarketData.ShipDay,
                 DirectMktShipMonth = directMarketData.ShipMonth
             } : null;
         }
 
-        protected TAuthorization HydrateAuthorization<TAuthorization>(PosResponseVer10 response)
-            where TAuthorization : HpsAuthorization, new()
-        {
-            var authRsp = (AuthRspStatusType) response.Transaction.Item;
+        internal CPCDataType HydrateCpcData(HpsCpcData cpcData) {
+            if (cpcData != null) {
+                var cpcElement = new CPCDataType();
+                if (cpcData.CardHolderPoNumber != null)
+                    cpcElement.CardHolderPONbr = cpcData.CardHolderPoNumber;
 
-            return new TAuthorization
-            {
+                cpcElement.TaxAmtSpecified = cpcData.TaxAmount.HasValue;
+                if (cpcElement.TaxAmtSpecified)
+                    cpcElement.TaxAmt = cpcData.TaxAmount.Value;
+
+                cpcElement.TaxTypeSpecified = cpcData.TaxType.HasValue;
+                if (cpcElement.TaxTypeSpecified)
+                    cpcElement.TaxType = cpcData.TaxType.Value;
+
+                return cpcElement;
+            }
+            return null;
+        }
+
+        internal CardDataTypeTokenData HydrateTokenData(string token, bool cardPresent = false, bool readerPresent = false) {
+            return new CardDataTypeTokenData {
+                TokenValue = token,
+                CardPresent = cardPresent ? booleanType.Y : booleanType.N,
+                ReaderPresent = readerPresent ? booleanType.Y : booleanType.N
+            };
+        }
+
+        internal AutoSubstantiationType HydrateAutoSubstantiation(HpsAutoSubstantiation autoSubstantiation) {
+            if (autoSubstantiation != null) {
+                var autoElement = new AutoSubstantiationType();
+                if (autoSubstantiation.MerchantVerificationValue != null)
+                    autoElement.MerchantVerificationValue = autoSubstantiation.MerchantVerificationValue;
+                autoElement.RealTimeSubstantiation = autoSubstantiation.RealTimeSubstantiation ? booleanType.Y : booleanType.N;
+
+                string[] amountCount = new string[] { "First", "Second", "Third", "Fourth" };
+                HpsAdditionalAmount[] values = autoSubstantiation.AdditionalAmounts;
+                for (int i = 0; i < values.Length; i++) {
+                    HpsAdditionalAmount value = values[i];
+
+                    AdditionalAmtType amount = new AdditionalAmtType {
+                        Amt = value.Amount,
+                        AmtType = value.AmountType
+                    };
+
+                    var field = autoElement.GetType().GetField(amountCount[i] + "AdditionalAmtInfo");
+                    field.SetValue(autoElement, amount);
+                }
+
+                return autoElement;
+            }
+            return null;
+        }
+
+        internal GiftCardDataType HydrateGiftCardData(HpsGiftCard card, string elementName = "CardData") {
+            GiftCardDataType cardElement = new GiftCardDataType {
+                Item = card.Value,
+                ItemElementName = card.ValueType,
+                EncryptionData = HydrateEncryptionData(card.EncryptionData),
+                PIN = card.Pin
+            };
+
+            return cardElement;
+        }
+
+        internal ConsumerInfoType HydrateConsumerInfo(HpsCheckHolder checkHolder) {
+            var consumerInfo = new ConsumerInfoType();
+
+            if (checkHolder.Address != null) {
+                HpsAddress address = checkHolder.Address;
+
+                consumerInfo.Address1 = address.Address;
+                consumerInfo.City = address.City;
+                consumerInfo.State = address.State;
+                consumerInfo.Zip = address.Zip;
+            }
+
+            consumerInfo.CheckName = checkHolder.CheckName;
+            consumerInfo.CourtesyCard = checkHolder.CourtesyCard;
+            consumerInfo.DLNumber = checkHolder.DlNumber;
+            consumerInfo.DLState = checkHolder.DlState;
+            consumerInfo.EmailAddress = checkHolder.Email;
+            consumerInfo.FirstName = checkHolder.FirstName;
+            consumerInfo.LastName = checkHolder.LastName;
+            consumerInfo.PhoneNumber = checkHolder.Phone;
+
+            if (checkHolder.Ssl4 != null || checkHolder.DobYear != null) {
+                consumerInfo.IdentityInfo = new IdentityInfoType();
+                
+                if(checkHolder.DobYear.HasValue)
+                    consumerInfo.IdentityInfo.DOBYear = checkHolder.DobYear.Value.ToString();
+                if(!string.IsNullOrEmpty(checkHolder.Ssl4))
+                    consumerInfo.IdentityInfo.SSNL4 = checkHolder.Ssl4;
+            }
+
+            return consumerInfo;
+        }
+
+        internal AccountInfoType HydrateCheckData(HpsCheck check) {
+            var accountInfo = new AccountInfoType();
+            accountInfo.AccountNumber = check.AccountNumber;
+            accountInfo.CheckNumber = check.CheckNumber;
+            accountInfo.MICRData = check.MicrNumber;
+            accountInfo.RoutingNumber = check.RoutingNumber;
+            if (check.AccountType.HasValue) {
+                accountInfo.AccountType = check.AccountType.Value;
+                accountInfo.AccountTypeSpecified = true;
+            }
+
+            return accountInfo;
+        }
+
+        protected TAuthorization HydrateAuthorization<TAuthorization>(PosResponseVer10 response)
+            where TAuthorization : HpsAuthorization, new() {
+            var authRsp = (AuthRspStatusType)response.Transaction.Item;
+
+            return new TAuthorization {
                 Header = HydrateTransactionHeader(response.Header),
                 TransactionId = response.Header.GatewayTxnId,
                 ClientTransactionId = GetClientTransactionId(response.Header),

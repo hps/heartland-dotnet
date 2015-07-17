@@ -1,6 +1,5 @@
 ﻿using SecureSubmit.Entities;
 using SecureSubmit.Services;
-using SecureSubmit.Services.Credit;
 using SecureSubmit.Tests.TestData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

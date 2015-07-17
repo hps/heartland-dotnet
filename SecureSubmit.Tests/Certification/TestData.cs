@@ -36,99 +36,99 @@ namespace SecureSubmit.Tests.Certification
 
         // CREDIT CARDS
 
-        public static HpsCreditCard VisaCard(bool cvv)
-        {
-            var card = Card();
-            card.Number = "4012002000060016";
-            if (cvv) { card.Cvv = "123"; }
+        //public static HpsCreditCard VisaCard(bool cvv)
+        //{
+        //    var card = Card();
+        //    card.Number = "4012002000060016";
+        //    if (cvv) { card.Cvv = "123"; }
 
-            return card;
-        }
+        //    return card;
+        //}
 
-        public static HpsCreditCard MasterCard(bool cvv)
-        {
-            var card = Card();
-            card.Number = "5473500000000014";
-            if (cvv) { card.Cvv = "123"; }
+        //public static HpsCreditCard MasterCard(bool cvv)
+        //{
+        //    var card = Card();
+        //    card.Number = ;
+        //    if (cvv) { card.Cvv = "123"; }
 
-            return card;
-        }
+        //    return card;
+        //}
 
-        public static HpsCreditCard DiscoverCard(bool cvv)
-        {
-            var card = Card();
-            card.Number = "6011000990156527";
-            if (cvv) { card.Cvv = "123"; }
+        //public static HpsCreditCard DiscoverCard(bool cvv)
+        //{
+        //    var card = Card();
+        //    card.Number = "6011000990156527";
+        //    if (cvv) { card.Cvv = "123"; }
 
-            return card;
-        }
+        //    return card;
+        //}
 
-        public static HpsCreditCard AmexCard(bool cvv)
-        {
-            var card = Card();
-            card.Number = "372700699251018";
-            if (cvv) { card.Cvv = "1234"; }
+        //public static HpsCreditCard AmexCard(bool cvv)
+        //{
+        //    var card = Card();
+        //    card.Number = "372700699251018";
+        //    if (cvv) { card.Cvv = "1234"; }
 
-            return card;
-        }
+        //    return card;
+        //}
 
-        public static HpsCreditCard JcbCard(bool cvv)
-        {
-            var card = Card();
-            card.Number = "3566007770007321";
-            if (cvv) { card.Cvv = "1234"; }
+        //public static HpsCreditCard JcbCard(bool cvv)
+        //{
+        //    var card = Card();
+        //    card.Number = "3566007770007321";
+        //    if (cvv) { card.Cvv = "1234"; }
 
-            return card;
-        }
+        //    return card;
+        //}
 
         // CARD MULTI_USE TOKENS
 
-        public enum Industry { ECommerce, Retail }
+        //public enum Industry { ECommerce, Retail }
 
-        public static string VisaMultiUseToken(Industry industry)
-        {
-            switch (industry)
-            {
-                case Industry.ECommerce: return "Wf4LD1084WQUbf1S6Kcd0016";
-                case Industry.Retail: return "Wf4LD1084WQUbf1S6Kcd0016";
-                default: return "Wf4LD1084WQUbf1S6Kcd0016";
-            }
-        }
+        //public static string VisaMultiUseToken(Industry industry)
+        //{
+        //    switch (industry)
+        //    {
+        //        case Industry.ECommerce: return "Wf4LD1084WQUbf1S6Kcd0016";
+        //        case Industry.Retail: return "Wf4LD1084WQUbf1S6Kcd0016";
+        //        default: return "Wf4LD1084WQUbf1S6Kcd0016";
+        //    }
+        //}
 
-        public static string MasterCardMultiUseToken(Industry industry)
-        {
-            switch (industry)
-            {
-                case Industry.ECommerce: return "e51Af108vAsB6Tx0PfmG0014";
-                case Industry.Retail: return "e51Af108vAsB6Tx0PfmG0014";
-                default: return "e51Af108vAsB6Tx0PfmG0014";
-            }
-        }
+        //public static string MasterCardMultiUseToken(Industry industry)
+        //{
+        //    switch (industry)
+        //    {
+        //        case Industry.ECommerce: return "e51Af108vAsB6Tx0PfmG0014";
+        //        case Industry.Retail: return "e51Af108vAsB6Tx0PfmG0014";
+        //        default: return "e51Af108vAsB6Tx0PfmG0014";
+        //    }
+        //}
 
-        public static string DiscoverMultiUseToken(Industry industry)
-        {
-            switch (industry)
-            {
-                case Industry.ECommerce: return "ubeZ3f08W1aaEV643ZJa6527";
-                case Industry.Retail: return "ubeZ3f08W1aaEV643ZJa6527";
-                default: return "ubeZ3f08W1aaEV643ZJa6527";
-            }
-        }
+        //public static string DiscoverMultiUseToken(Industry industry)
+        //{
+        //    switch (industry)
+        //    {
+        //        case Industry.ECommerce: return "ubeZ3f08W1aaEV643ZJa6527";
+        //        case Industry.Retail: return "ubeZ3f08W1aaEV643ZJa6527";
+        //        default: return "ubeZ3f08W1aaEV643ZJa6527";
+        //    }
+        //}
 
-        public static string AmexMultiUseToken(Industry industry)
-        {
-            switch (industry)
-            {
-                case Industry.ECommerce: return "94oIbE08e30G0fVcH12d1018";
-                case Industry.Retail: return "94oIbE08e30G0fVcH12d1018";
-                default: return "94oIbE08e30G0fVcH12d1018";
-            }
-        }
+        //public static string AmexMultiUseToken(Industry industry)
+        //{
+        //    switch (industry)
+        //    {
+        //        case Industry.ECommerce: return "94oIbE08e30G0fVcH12d1018";
+        //        case Industry.Retail: return "94oIbE08e30G0fVcH12d1018";
+        //        default: return "94oIbE08e30G0fVcH12d1018";
+        //    }
+        //}
 
-        public static HpsCreditCard GsbCardECommerce()
-        {
-            return new HpsCreditCard {Number = "6277220020010671", ExpYear = 2049, ExpMonth = 12};
-        }
+        //public static HpsCreditCard GsbCardECommerce()
+        //{
+        //    return new HpsCreditCard {Number = "6277220020010671", ExpYear = 2049, ExpMonth = 12};
+        //}
 
         // CARD SWIPE DATA
 
@@ -235,22 +235,22 @@ namespace SecureSubmit.Tests.Certification
 
         // GIFT CARDS
 
-        public static HpsGiftCard GiftCard1()
-        {
-            return new HpsGiftCard {Number = "5022440000000000098"};
-        }
+        //public static HpsGiftCard GiftCard1()
+        //{
+        //    return new HpsGiftCard {Number = "5022440000000000098"};
+        //}
 
-        public static HpsGiftCard GiftCard2()
-        {
-            return new HpsGiftCard {Number = "5022440000000000098"};
-        }
+        //public static HpsGiftCard GiftCard2()
+        //{
+        //    return new HpsGiftCard {Number = "5022440000000000098"};
+        //}
 
-        public static HpsGiftCard GiftCardSwipe1()
-        {
-            return new HpsGiftCard
-            {
-                Number = "%B5022440000000000098^^391200081613?;5022440000000000098=391200081613?"
-            };
-        }
+        //public static HpsGiftCard GiftCardSwipe1()
+        //{
+        //    return new HpsGiftCard
+        //    {
+        //        Number = "%B5022440000000000098^^391200081613?;5022440000000000098=391200081613?"
+        //    };
+        //}
     }
 }

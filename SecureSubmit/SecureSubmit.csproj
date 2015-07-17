@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SecureSubmit</RootNamespace>
     <AssemblyName>SecureSubmit</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -27,6 +27,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,6 +36,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Staging|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -44,6 +46,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -58,9 +61,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstractions\IHpsTransaction.cs" />
     <Compile Include="Entities\Check\HpsCheck.cs" />
+    <Compile Include="Entities\Credit\HpsAdditionalAmount.cs" />
     <Compile Include="Entities\Credit\HpsAdditionalTransactionFields.cs" />
+    <Compile Include="Entities\Credit\HpsAutoSubstantiation.cs" />
     <Compile Include="Entities\Credit\HpsCpcData.cs" />
+    <Compile Include="Entities\Credit\HpsTxnReferenceData.cs" />
+    <Compile Include="Entities\Debit\HpsDebitAuthorization.cs" />
+    <Compile Include="Entities\Ebt\HpsEbtAuthorization.cs" />
+    <Compile Include="Entities\Gift\HpsGiftCardResponse.cs" />
     <Compile Include="Entities\HpsDirectMarketData.cs" />
     <Compile Include="Entities\HpsTrackData.cs" />
     <Compile Include="Entities\PayPlan\FormatDate.cs" />
@@ -77,23 +87,17 @@
     <Compile Include="Entities\PayPlan\HpsPayPlanResource.cs" />
     <Compile Include="Entities\PayPlan\HpsPayPlanSchedule.cs" />
     <Compile Include="Entities\PayPlan\HpsPayPlanScheduleCollection.cs" />
+    <Compile Include="Fluent\EbtBalanceInquiryBuilder.cs" />
+    <Compile Include="Infrastructure\HpsArgumentException.cs" />
     <Compile Include="Infrastructure\HpsCheckException.cs" />
     <Compile Include="Entities\Check\HpsCheckHolder.cs" />
     <Compile Include="Entities\Check\HpsCheckResponse.cs" />
     <Compile Include="Entities\Check\HpsCheckResponseDetails.cs" />
     <Compile Include="Entities\HpsConsumer.cs" />
-    <Compile Include="Entities\Gift\HpsGiftCardReversal.cs" />
-    <Compile Include="Entities\Gift\HpsGiftCardVoid.cs" />
     <Compile Include="Entities\Gift\HpsGiftCardSale.cs" />
-    <Compile Include="Entities\Gift\HpsGiftCardReward.cs" />
-    <Compile Include="Entities\Gift\HpsGiftCardReplace.cs" />
-    <Compile Include="Entities\Gift\HpsGiftCardDeactivate.cs" />
-    <Compile Include="Entities\Gift\HpsGiftCardBalance.cs" />
-    <Compile Include="Entities\Gift\HpsGiftCardAddValue.cs" />
     <Compile Include="Entities\Credit\HpsAmountDetails.cs" />
     <Compile Include="Entities\HpsEncryptionData.cs" />
     <Compile Include="Entities\Gift\HpsGiftCard.cs" />
-    <Compile Include="Entities\Gift\HpsGiftCardActivate.cs" />
     <Compile Include="Entities\Gift\HpsGiftCardAlias.cs" />
     <Compile Include="Entities\PayPlan\HpsPayPlanCustomer.cs" />
     <Compile Include="Entities\HpsTransactionDetails.cs" />
@@ -134,52 +138,64 @@
     </Compile>
     <Compile Include="Serialization\HpsError.cs" />
     <Compile Include="Serialization\HpsToken.cs" />
-    <Compile Include="Services\Fluent\Batch\HpsCloseBuilder.cs" />
-    <Compile Include="Services\Fluent\Check\RecurringBuilder.cs" />
-    <Compile Include="Services\Fluent\Check\VoidBuilder.cs" />
-    <Compile Include="Services\Fluent\Check\SaleBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\BalanceInquiryBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\AddValueBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\CpcEditBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\OfflineAuthBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\RecurringBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\VoidBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\CaptureBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\ChargeBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\EditBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\AuthBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\OfflineChargeBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\VerifyBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\ReverseBuilder.cs" />
-    <Compile Include="Services\Fluent\Credit\RefundBuilder.cs" />
-    <Compile Include="Services\Fluent\Debit\AddValueBuilder.cs" />
-    <Compile Include="Services\Fluent\Debit\ReverseBuilder.cs" />
-    <Compile Include="Services\Fluent\Debit\ReturnBuilder.cs" />
-    <Compile Include="Services\Fluent\Debit\ChargeBuilder.cs" />
-    <Compile Include="Services\Fluent\GiftCard\ReverseBuilder.cs" />
-    <Compile Include="Services\Fluent\GiftCard\VoidBuilder.cs" />
-    <Compile Include="Services\Fluent\GiftCard\SaleBuilder.cs" />
-    <Compile Include="Services\Fluent\GiftCard\RewardBuilder.cs" />
-    <Compile Include="Services\Fluent\GiftCard\ReplaceBuilder.cs" />
-    <Compile Include="Services\Fluent\GiftCard\DeactivateBuilder.cs" />
-    <Compile Include="Services\Fluent\GiftCard\BalanceBuilder.cs" />
-    <Compile Include="Services\Fluent\GiftCard\AliasBuilder.cs" />
-    <Compile Include="Services\Fluent\GiftCard\AddValueBuilder.cs" />
-    <Compile Include="Services\Fluent\GiftCard\ActivateBuilder.cs" />
-    <Compile Include="Services\Fluent\TransactionBuilder.cs" />
-    <Compile Include="Services\Fluent\GatewayTransactionBuilder.cs" />
-    <Compile Include="Services\Batch\HpsBatchService.cs" />
-    <Compile Include="Services\Check\HpsCheckService.cs" />
+    <Compile Include="Fluent\CheckRecurringBuilder.cs" />
+    <Compile Include="Fluent\CheckVoidBuilder.cs" />
+    <Compile Include="Fluent\CheckSaleBuilder.cs" />
+    <Compile Include="Fluent\CreditAdditionalAuthBuilder.cs" />
+    <Compile Include="Fluent\CreditBalanceInquiryBuilder.cs" />
+    <Compile Include="Fluent\CreditAddValueBuilder.cs" />
+    <Compile Include="Fluent\CreditCpcEditBuilder.cs" />
+    <Compile Include="Fluent\CreditGetBuilder.cs" />
+    <Compile Include="Fluent\CreditListBuilder.cs" />
+    <Compile Include="Fluent\CreditOfflineAuthBuilder.cs" />
+    <Compile Include="Fluent\CreditRecurringBuilder.cs" />
+    <Compile Include="Fluent\CreditVoidBuilder.cs" />
+    <Compile Include="Fluent\CreditCaptureBuilder.cs" />
+    <Compile Include="Fluent\CreditChargeBuilder.cs" />
+    <Compile Include="Fluent\CreditEditBuilder.cs" />
+    <Compile Include="Fluent\CreditAuthBuilder.cs" />
+    <Compile Include="Fluent\CreditOfflineChargeBuilder.cs" />
+    <Compile Include="Fluent\CreditVerifyBuilder.cs" />
+    <Compile Include="Fluent\CreditReverseBuilder.cs" />
+    <Compile Include="Fluent\CreditRefundBuilder.cs" />
+    <Compile Include="Fluent\DebitAddValueBuilder.cs" />
+    <Compile Include="Fluent\DebitReverseBuilder.cs" />
+    <Compile Include="Fluent\DebitReturnBuilder.cs" />
+    <Compile Include="Fluent\DebitChargeBuilder.cs" />
+    <Compile Include="Fluent\EbtBenefitWithdrawalBuilder.cs" />
+    <Compile Include="Fluent\EbtCashBackPurchaseBuilder.cs" />
+    <Compile Include="Fluent\EbtPurchaseBuilder.cs" />
+    <Compile Include="Fluent\EbtRefundBuilder.cs" />
+    <Compile Include="Fluent\EbtVoucherPurchaseBuilder.cs" />
+    <Compile Include="Fluent\GiftCardReverseBuilder.cs" />
+    <Compile Include="Fluent\GiftCardVoidBuilder.cs" />
+    <Compile Include="Fluent\GiftCardSaleBuilder.cs" />
+    <Compile Include="Fluent\GiftCardRewardBuilder.cs" />
+    <Compile Include="Fluent\GiftCardReplaceBuilder.cs" />
+    <Compile Include="Fluent\GiftCardDeactivateBuilder.cs" />
+    <Compile Include="Fluent\GiftCardBalanceBuilder.cs" />
+    <Compile Include="Fluent\GiftCardAliasBuilder.cs" />
+    <Compile Include="Fluent\GiftCardAddValueBuilder.cs" />
+    <Compile Include="Fluent\GiftCardActivateBuilder.cs" />
+    <Compile Include="Fluent\HpsBuilderAbstract.cs" />
+    <Compile Include="Fluent\HpsBuilderValidation.cs" />
+    <Compile Include="Fluent\Services\HpsFluentCheckService.cs" />
+    <Compile Include="Fluent\Services\HpsFluentCreditService.cs" />
+    <Compile Include="Fluent\Services\HpsFluentDebitService.cs" />
+    <Compile Include="Fluent\Services\HpsFluentEbtService.cs" />
+    <Compile Include="Fluent\Services\HpsFluentGiftCardService.cs" />
+    <Compile Include="Services\HpsBatchService.cs" />
+    <Compile Include="Services\HpsCheckService.cs" />
     <Compile Include="Entities\HpsRecurringData.cs" />
-    <Compile Include="Services\Credit\HpsCreditService.cs" />
-    <Compile Include="Services\Debit\HpsDebitService.cs" />
-    <Compile Include="Services\GiftCard\HpsGiftCardService.cs" />
+    <Compile Include="Services\HpsCreditService.cs" />
+    <Compile Include="Services\HpsDebitService.cs" />
+    <Compile Include="Services\HpsGiftCardService.cs" />
     <Compile Include="Services\HpsRestGatewayService.cs" />
     <Compile Include="Services\HpsSoapGatewayService.cs" />
     <Compile Include="Services\HpsServicesConfig.cs" />
     <Compile Include="Abstractions\IHpsServicesConfig.cs" />
-    <Compile Include="Services\PayPlan\HpsPayPlanService.cs" />
-    <Compile Include="Services\Token\HpsTokenService.cs" />
+    <Compile Include="Services\HpsPayPlanService.cs" />
+    <Compile Include="Services\HpsTokenService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource.resx">

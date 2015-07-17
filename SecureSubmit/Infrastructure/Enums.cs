@@ -39,7 +39,9 @@
         UnknownIssuerError,
 
         /* Gift Issuer Codes */
-        CardAlreadyActivated
+        CardAlreadyActivated,
+
+        MissingCheckName
     }
 
     public enum HpsTransactionType

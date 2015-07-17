@@ -7,10 +7,15 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
+using Hps.Exchange.PosGateway.Client;
 namespace SecureSubmit.Entities
 {
     /// <summary>The HPS account verify.</summary>
     public class HpsAccountVerify : HpsAuthorization
     {
+        internal new HpsAccountVerify FromResponse(PosResponseVer10 response) {
+            base.FromResponse(response);
+            return this;
+        }
     }
 }

@@ -7,10 +7,13 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SecureSubmit.Entities
-{
+using Hps.Exchange.PosGateway.Client;
+namespace SecureSubmit.Entities {
     /// <summary>The HPS charge transaction.</summary>
-    public class HpsCharge : HpsAuthorization
-    {
+    public class HpsCharge : HpsAuthorization {
+        internal new HpsCharge FromResponse(PosResponseVer10 response) {
+            base.FromResponse(response);
+            return this;
+        }
     }
 }

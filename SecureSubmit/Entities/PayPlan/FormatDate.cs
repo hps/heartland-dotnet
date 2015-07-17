@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SecureSubmit.Entities.PayPlan
+namespace SecureSubmit.Entities
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class FormatDate : Attribute

@@ -1,4 +1,4 @@
-﻿namespace SecureSubmit.Entities.PayPlan
+﻿namespace SecureSubmit.Entities
 {
     public class HpsPayPlanPaymentMethodCollection
     {

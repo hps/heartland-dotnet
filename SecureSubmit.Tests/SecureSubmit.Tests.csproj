@@ -54,20 +54,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AmexTests.cs" />
-    <Compile Include="Certification\CardPresent.cs" />
     <Compile Include="Certification\eCommerce.cs" />
-    <Compile Include="Certification\Gift.cs" />
+    <Compile Include="Certification\MOTO.cs" />
     <Compile Include="Certification\Recurring.cs" />
-    <Compile Include="CheckTests.cs" />
-    <Compile Include="DiscoverTests.cs" />
-    <Compile Include="FluentTests.cs" />
-    <Compile Include="GiftCardTests.cs" />
-    <Compile Include="MasterCardTests.cs" />
-    <Compile Include="GeneralTests.cs" />
-    <Compile Include="PayPlan\PaymentMethod.cs" />
-    <Compile Include="PayPlan\Customer.cs" />
-    <Compile Include="PayPlan\Schedule.cs" />
+    <Compile Include="Certification\Retail.cs" />
     <Compile Include="Certification\TestData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestData\TestCardHolder.cs" />
@@ -76,7 +66,6 @@
     <Compile Include="TestData\TestGiftCard.cs" />
     <Compile Include="TestData\TestServicesConfig.cs" />
     <Compile Include="TokenServiceTests.cs" />
-    <Compile Include="VisaTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SecureSubmit\SecureSubmit.csproj">
@@ -87,12 +76,16 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Certification\eCommerce.orderedtest">
+    <None Include="Certification\eCommerce.OrderedTest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certification\MOTO.orderedtest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Certification\Recurring.OrderedTest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Certification\Retail.orderedtest" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

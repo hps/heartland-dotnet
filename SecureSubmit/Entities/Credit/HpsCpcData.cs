@@ -34,5 +34,18 @@ namespace SecureSubmit.Entities
                 _taxAmount = value;
             }
         }
+
+        public HpsCpcData() { }
+        public HpsCpcData(taxTypeType taxType, decimal? taxAmount = null)
+        {
+            this.TaxType = taxType;
+            this.TaxAmount = taxAmount;
+        }
+        public HpsCpcData(string cardHolderPoNumber, taxTypeType? taxType = null, decimal? taxAmount = null)
+        {
+            this.CardHolderPoNumber = cardHolderPoNumber;
+            this.TaxType = taxType;
+            this.TaxAmount = taxAmount;
+        }
     }
 }
