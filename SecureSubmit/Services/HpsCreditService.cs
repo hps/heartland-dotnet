@@ -849,6 +849,50 @@ namespace SecureSubmit.Services
             return SubmitReverse(transaction, (details == null) ? null : details.ClientTransactionId);
         }
 
+        /// <summary>
+        /// The <b>credit return transaction</b> returns funds to the cardholder. The transaction is generally used
+        /// as a counterpart to a credit card transaction that needs to be reversed, and the batch containing
+        /// the original transaction has already been closed. The credit return transaction is placed in the
+        /// current open batch. If a batch is not open, this transaction will create an open batch.
+        /// </summary>
+        /// <param name="amount">The amount (in dollars).</param>
+        /// <param name="currency">The currency (3-letter ISO code for currency).</param>
+        /// <param name="trackData">The card data</param>
+        /// <param name="encryptionData">encryption data</param>
+        /// <param name="cardHolder">The card holder information (used for AVS).</param>
+        /// <param name="details">The transaction details.</param>
+        /// <returns>The <see cref="HpsRefund"/>.</returns>
+        public HpsRefund Refund(decimal amount, string currency, HpsTrackData trackData, HpsEncryptionData encryptionData = null,
+            HpsCardHolder cardHolder = null, HpsTransactionDetails details = null)
+        {
+            HpsInputValidation.CheckAmount(amount);
+            HpsInputValidation.CheckCurrency(currency);
+
+            /* Build the transaction request. */
+            var transaction = new PosRequestVer10Transaction
+            {
+                Item = new PosCreditReturnReqType
+                {
+                    Block1 = new CreditReturnReqBlock1Type
+                    {
+                        AllowDup = booleanType.Y,
+                        AllowDupSpecified = true,
+                        CardHolderData = cardHolder == null ? null : HydrateCardHolderData(cardHolder),
+                        CardData = new CardDataType
+                        {
+                            Item = HydrateCardTrackData(trackData),
+                            EncryptionData = HydrateEncryptionData(encryptionData)
+                        },
+                        Amt = amount,
+                        AdditionalTxnFields = HydrateAdditionalTxnFields(details)
+                    }
+                },
+                ItemElementName = ItemChoiceType1.CreditReturn
+            };
+
+            return SubmitRefund(transaction, (details == null) ? null : details.ClientTransactionId);
+        }
+ 
         /// <summary>A <b>credit void</b> transaction is used to inactivate a transaction.
         /// The transaction must be an <b>Authorize</b>, <b>Charge</b> or <b>Return</b>.
         /// The transaction must be active in order to be voided. <b>Authorize</b>

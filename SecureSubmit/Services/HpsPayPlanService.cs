@@ -161,7 +161,10 @@ namespace SecureSubmit.Services
         {
             var data = method.GetEditableFieldsWithValues();
             data.Add("customerKey", method.CustomerKey);
-            data.Add("accountNumber", method.AccountNumber);
+            if (!string.IsNullOrEmpty(method.AccountNumber))
+                data.Add("accountNumber", method.AccountNumber);
+            else if (!string.IsNullOrEmpty(method.PaymentToken))
+                data.Add("paymentToken", method.PaymentToken);
             return DoRequest("POST", "paymentMethodsCreditCard", data);
         }
 

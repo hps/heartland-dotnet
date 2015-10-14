@@ -27,7 +27,7 @@ namespace SecureSubmit.Entities
         public string AchType { get; set; }
         public string AccountType { get; set; }
         public string RoutingNumber { get; set; }
-        public int? TelephoneIndicator { get; set; }
+        public bool TelephoneIndicator { get; set; }
         public string AddressLine1 { get; set; }
         public string AddressLine2 { get; set; }
         public string City { get; set; }
@@ -40,6 +40,7 @@ namespace SecureSubmit.Entities
         public string SocialSecurityLast4 { get; set; }
         public string HasSchedules { get; set; }
         public string HasActiveSchedules { get; set; }
+        public string PaymentToken { get; set; }
 
         private IEnumerable<string> GetEditableFields()
         {

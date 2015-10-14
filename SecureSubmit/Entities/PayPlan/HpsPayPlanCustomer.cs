@@ -28,8 +28,8 @@ namespace SecureSubmit.Entities
         public string Country { get; set; }
         public string StateProvince { get; set; }
         public string ZipPostalCode { get; set; }
-        HpsPayPlanPaymentMethod[] PaymentMethods { get; set; }
-        HpsPayPlanSchedule[] Schedules { get; set; }
+        public HpsPayPlanPaymentMethod[] PaymentMethods { get; set; }
+        public HpsPayPlanSchedule[] Schedules { get; set; }
 
         private static IEnumerable<string> GetEditableFields()
         {
