@@ -155,10 +155,13 @@ namespace SecureSubmit.Services {
             } : null;
         }
 
-        internal EMVDataType HydrateEmvData(string emvData) {
-            return string.IsNullOrEmpty(emvData) ? null : new EMVDataType {
-                EMVTagData = emvData
-            };
+        internal EMVDataType HydrateEmvData(HpsEmvDataType emvData) {
+            return emvData != null ? new EMVDataType {
+                EMVTagData = emvData.TagData,
+                EMVChipCondition =  emvData.ChipCondition,
+                PINBlock = emvData.PinBlock,
+                EMVChipConditionSpecified = emvData.ChipConditionSpecified
+            } : null;
         }
 
         internal CardDataTypeTrackData HydrateCardTrackData(HpsTrackData trackData) {

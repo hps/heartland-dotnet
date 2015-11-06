@@ -40,7 +40,7 @@ namespace SecureSubmit.Tests {
                 Method = HpsTrackDataMethod.Swipe
             };
 
-            var creditService = new HpsCreditService(TestServicesConfig.ValidServicesConfig());
+            var creditService = new HpsCreditService(ServicesConfig);
             HpsRefund response = creditService.Refund(12.00M, "USD", trackData);
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -92,6 +92,30 @@ namespace SecureSubmit.Tests {
             var result = payPlanService.AddPaymentMethod(newPaymentMethod);
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.PaymentMethodKey);
+        }
+
+        [TestMethod]
+        public void GetTransactionHasTxnStatus()
+        {
+            // Make transaction
+            var card = new HpsCreditCard
+            {
+                Number = "4111111111111111",
+                ExpMonth = 12,
+                ExpYear = 2025,
+                Cvv = "012"
+            };
+
+            var creditService = new HpsCreditService(ServicesConfig);
+            var response = creditService.Charge(15.15m, "usd", card);
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+
+            // Get details
+            var details = creditService.Get(response.TransactionId);
+            Assert.IsNotNull(details);
+            Assert.IsNotNull(details.TransactionStatus);
+            Assert.AreNotEqual("", details.TransactionStatus);
         }
 
         private static string GetIdentifier(string identifier)

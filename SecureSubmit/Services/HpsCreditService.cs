@@ -67,6 +67,7 @@ namespace SecureSubmit.Services
                 ReferenceNumber = reportResponse.Data.RefNbr,
                 ResponseCode = reportResponse.Data.RspCode,
                 ResponseText = reportResponse.Data.RspText,
+                TransactionStatus = reportResponse.Data.TxnStatus,
                 TokenData = string.IsNullOrEmpty(reportResponse.Data.TokenizationMsg) ? null : new HpsTokenData
                 {
                     TokenRspMsg = reportResponse.Data.TokenizationMsg
@@ -270,7 +271,7 @@ namespace SecureSubmit.Services
 
         public HpsCharge Charge(decimal amount, string currency, HpsTrackData trackData, HpsEncryptionData encryptionData = null,
             decimal gratuity = 0, bool allowPartialAuthorization = false, bool requestMultiUseToken = false,
-            HpsDirectMarketData directMarketData = null, string emvData = "", bool allowDuplicates = false)
+            HpsDirectMarketData directMarketData = null, HpsEmvDataType emvData = null, bool allowDuplicates = false)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -388,9 +389,10 @@ namespace SecureSubmit.Services
         /// <param name="encryptionData">Optional encryption data.</param>
         /// <param name="requestMultiUseToken">Request a multi-use token.</param>
         /// <param name="clientTransactionId">Optional client transaction ID.</param>
+        /// <param name="emvData">Optional EMV card data</param>
         /// <returns>The <see cref="HpsAccountVerify"/>.</returns>
         public HpsAccountVerify Verify(HpsTrackData trackData, HpsEncryptionData encryptionData = null,
-            bool requestMultiUseToken = false, long? clientTransactionId = null)
+            bool requestMultiUseToken = false, long? clientTransactionId = null, HpsEmvDataType emvData = null)
         {
             var transaction = new PosRequestVer10Transaction
             {
@@ -403,7 +405,8 @@ namespace SecureSubmit.Services
                             TokenRequest = requestMultiUseToken ? booleanType.Y : booleanType.N,
                             Item = HydrateCardTrackData(trackData),
                             EncryptionData = HydrateEncryptionData(encryptionData)
-                        }
+                        },
+                        EMVData = HydrateEmvData(emvData)
                     }
                 },
                 ItemElementName = ItemChoiceType1.CreditAccountVerify
@@ -412,6 +415,7 @@ namespace SecureSubmit.Services
             return SubmitVerify(transaction, clientTransactionId);
         }
 
+  
         /// <summary>
         /// A <b>credit authorization</b> transaction authorizes a credit card transaction. The authorization is NOT placed
         /// in the batch. The <b>credit authorization</b> transaction can be committed by using the capture method.
@@ -520,7 +524,7 @@ namespace SecureSubmit.Services
         }
 
         public HpsAuthorization Authorize(decimal amount, string currency, HpsTrackData trackData, HpsEncryptionData encryptionData = null,
-            decimal gratuity = 0, bool allowPartialAuthorization = false, bool requestMultiUseToken = false, HpsDirectMarketData directMarketData = null)
+            decimal gratuity = 0, bool allowPartialAuthorization = false, bool requestMultiUseToken = false, HpsDirectMarketData directMarketData = null, HpsEmvDataType emvData = null)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -543,7 +547,8 @@ namespace SecureSubmit.Services
                             Item = HydrateCardTrackData(trackData),
                             EncryptionData = HydrateEncryptionData(encryptionData)
                         },
-                        DirectMktData = HydrateDirectMktData(directMarketData)
+                        DirectMktData = HydrateDirectMktData(directMarketData),
+                        EMVData = HydrateEmvData(emvData)
                     }
                 },
                 ItemElementName = ItemChoiceType1.CreditAuth
@@ -1039,7 +1044,7 @@ namespace SecureSubmit.Services
         }
 
         public HpsTransaction OfflineCharge(decimal amount, string currency, HpsTrackData trackData, HpsEncryptionData encryptionData = null,
-            decimal gratuity = 0, decimal surcharge = 0, long? clientTransactionId = null)
+            decimal gratuity = 0, decimal surcharge = 0, long? clientTransactionId = null, EMVDataType emvData = null)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -1060,7 +1065,8 @@ namespace SecureSubmit.Services
                         {
                             Item = HydrateCardTrackData(trackData),
                             EncryptionData = HydrateEncryptionData(encryptionData)
-                        }
+                        },
+                        EMVTagData = emvData != null ? emvData.EMVTagData : null
                     }
                 },
                 ItemElementName = ItemChoiceType1.CreditOfflineSale
@@ -1196,7 +1202,8 @@ namespace SecureSubmit.Services
                 CvvResultText = creditSaleRsp.CVVRsltText,
                 ReferenceNumber = creditSaleRsp.RefNbr,
                 ResponseCode = creditSaleRsp.RspCode,
-                ResponseText = creditSaleRsp.RspText
+                ResponseText = creditSaleRsp.RspText,
+                EMVIssuerResp = creditSaleRsp.EMVIssuerResp
             };
 
             /* Check to see if the header contains Token Data. If so include it in the response obj. */
@@ -1241,7 +1248,8 @@ namespace SecureSubmit.Services
                 CvvResultText = creditVerifyRsp.CVVRsltText,
                 AvsResultText = creditVerifyRsp.AVSRsltText,
                 AuthorizationCode = creditVerifyRsp.AuthCode,
-                AuthorizedAmount = creditVerifyRsp.AuthAmt
+                AuthorizedAmount = creditVerifyRsp.AuthAmt,
+                EMVIssuerResp = creditVerifyRsp.EMVIssuerResp
             };
 
             /* Check to see if the header contains Token Data. If so include it in the response obj. */

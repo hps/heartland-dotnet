@@ -60,6 +60,7 @@
     <Compile Include="Certification\Recurring.cs" />
     <Compile Include="Certification\Retail.cs" />
     <Compile Include="Certification\TestData.cs" />
+    <Compile Include="General\EMVTests.cs" />
     <Compile Include="General\GeneralTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestData\TestCardHolder.cs" />

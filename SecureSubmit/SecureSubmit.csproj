@@ -72,6 +72,7 @@
     <Compile Include="Entities\Ebt\HpsEbtAuthorization.cs" />
     <Compile Include="Entities\Gift\HpsGiftCardResponse.cs" />
     <Compile Include="Entities\HpsDirectMarketData.cs" />
+    <Compile Include="Entities\HpsEMVDataType.cs" />
     <Compile Include="Entities\HpsTrackData.cs" />
     <Compile Include="Entities\PayPlan\FormatDate.cs" />
     <Compile Include="Entities\PayPlan\HpsPayPlanAmount.cs" />

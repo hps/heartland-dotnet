@@ -51,6 +51,9 @@ namespace SecureSubmit.Entities {
         /// (for Merchant reporting/record-keeping purposes only).</summary>
         public string CustomerId { get; set; }
 
+        /// <summary>Gets or sets the transaction status.</summary>
+        public string TransactionStatus { get; set; }
+
         internal new HpsReportTransactionDetails FromResponse(PosResponseVer10 response) {
             var reportResponse = (PosReportTxnDetailRspType)response.Transaction.Item;
 
@@ -74,6 +77,7 @@ namespace SecureSubmit.Entities {
             ReferenceNumber = data.RefNbr;
             ResponseCode = data.RspCode;
             ResponseText = data.RspText;
+            TransactionStatus = data.TxnStatus;
             if (data.TokenizationMsg != null)
                 TokenData = new HpsTokenData {
                     TokenRspMsg = data.TokenizationMsg

@@ -154,6 +154,7 @@ namespace SecureSubmit.Tests.Certification
             var response = _payPlanService.AddPaymentMethod(paymentMethod);
             Assert.IsNotNull(response);
             Assert.IsNotNull(response.PaymentMethodKey);
+            Assert.IsNotNull(response.CreationDate);
 
             _paymentMethodKeyVisa = response.PaymentMethodKey;
         }
@@ -173,6 +174,7 @@ namespace SecureSubmit.Tests.Certification
             var response = _payPlanService.AddPaymentMethod(paymentMethod);
             Assert.IsNotNull(response);
             Assert.IsNotNull(response.PaymentMethodKey);
+            Assert.IsNotNull(response.CreationDate);
 
             _paymentMethodKeyMasterCard = response.PaymentMethodKey;
         }
@@ -202,6 +204,7 @@ namespace SecureSubmit.Tests.Certification
             var response = _payPlanService.AddPaymentMethod(paymentMethod);
             Assert.IsNotNull(response);
             Assert.IsNotNull(response.PaymentMethodKey);
+            Assert.IsNotNull(response.CreationDate);
 
             _paymentMethodKeyCheckPpd = response.PaymentMethodKey;
         }
@@ -231,6 +234,7 @@ namespace SecureSubmit.Tests.Certification
             var response = _payPlanService.AddPaymentMethod(paymentMethod);
             Assert.IsNotNull(response);
             Assert.IsNotNull(response.PaymentMethodKey);
+            Assert.IsNotNull(response.CreationDate);
 
             _paymentMethodKeyCheckCcd = response.PaymentMethodKey;
         }

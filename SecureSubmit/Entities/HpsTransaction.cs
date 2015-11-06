@@ -33,6 +33,10 @@ namespace SecureSubmit.Entities
         /// <summary>Gets or sets the reference number.</summary>
         public string ReferenceNumber { get; set; }
 
+        /// <summary>Gets or sets the EMV Issuer response.</summary>
+        public string EMVIssuerResp { get; set; }
+
+
         internal static string TransactionTypeToServiceName(HpsTransactionType transactionType)
         {
             switch (transactionType)
@@ -151,6 +155,13 @@ namespace SecureSubmit.Entities
                     var refNbr = refNbrField.GetValue(transaction);
                     if (refNbr != null)
                         this.ReferenceNumber = (string)refNbr;
+                }
+
+                var EMVIssuerRespField = transaction.GetType().GetProperty("EMVIssuerResp");
+                if (EMVIssuerRespField != null) {
+                    var emvIssuerResp = EMVIssuerRespField.GetValue(transaction);
+                    if (emvIssuerResp != null)
+                        this.EMVIssuerResp = (string)emvIssuerResp;
                 }
             }
 

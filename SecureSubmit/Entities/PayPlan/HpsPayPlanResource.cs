@@ -2,8 +2,8 @@
 {
     public abstract class HpsPayPlanResource
     {
-        string StatusSetDate { get; set; }
-        string CreationDate { get; set; }
-        string LastChangeDate { get; set; }
+        public string StatusSetDate { get; set; }
+        public string CreationDate { get; set; }
+        public string LastChangeDate { get; set; }
     }
 }

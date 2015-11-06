@@ -23,6 +23,7 @@ namespace SecureSubmit.Fluent {
         decimal? gratuity;
         HpsAutoSubstantiation autoSubstantiation;
         string offlineAuthCode;
+        EMVDataType emvData;
 
         public CreditOfflineChargeBuilder WithAmount(decimal? amount) {
             this.amount = amount;
@@ -38,6 +39,10 @@ namespace SecureSubmit.Fluent {
         }
         public CreditOfflineChargeBuilder WithTrackData(HpsTrackData trackData) {
             this.trackData = trackData;
+            return this;
+        }
+        public CreditOfflineChargeBuilder WithEMVData(EMVDataType emvData) {
+            this.emvData = emvData;
             return this;
         }
         public CreditOfflineChargeBuilder WithCardHolder(HpsCardHolder cardHolder) {
@@ -138,6 +143,9 @@ namespace SecureSubmit.Fluent {
                 block1.DirectMktData = service.HydrateDirectMktData(directMarketData);
             block1.OfflineAuthCode = offlineAuthCode;
 
+            if (emvData != null)
+                block1.EMVTagData = emvData.EMVTagData;
+
             var transaction = new PosRequestVer10Transaction {
                 Item = new PosCreditOfflineSaleReqType {
                     Block1 = block1
@@ -156,7 +164,7 @@ namespace SecureSubmit.Fluent {
         protected override void SetupValidations() {
             AddValidation(() => { return amount.HasValue; }, "Amount is required.");
             AddValidation(OnlyOnePaymentMethod, "Only one payment method is required.");
-            AddValidation(() => { return offlineAuthCode != null; }, "Offline auth code is required.");
+            AddValidation(() => { return (offlineAuthCode != null) || ((offlineAuthCode == null) && (emvData.EMVTagData.Length > 0)); }, "Offline auth code is required.");
         }
 
         private bool OnlyOnePaymentMethod() {

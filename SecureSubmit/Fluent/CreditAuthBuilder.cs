@@ -27,6 +27,7 @@ namespace SecureSubmit.Fluent
         private decimal? gratuity;
         private HpsAutoSubstantiation autoSubstantiation;
         private HpsTxnReferenceData originalTxnReferenceData;
+        private HpsEmvDataType emvData;
 
         public CreditAuthBuilder WithAmount(decimal? amount)
         {
@@ -51,6 +52,11 @@ namespace SecureSubmit.Fluent
         public CreditAuthBuilder WithTrackData(HpsTrackData trackData)
         {
             this.trackData = trackData;
+            return this;
+        }
+        public CreditAuthBuilder WithEMVData(HpsEmvDataType emvData)
+        {
+            this.emvData = emvData;
             return this;
         }
         public CreditAuthBuilder WithCardHolder(HpsCardHolder cardHolder)
@@ -173,6 +179,9 @@ namespace SecureSubmit.Fluent
             if (directMarketData != null)
                 block1.DirectMktData = service.HydrateDirectMktData(directMarketData);
             block1.CardData = cardData;
+
+            if (emvData != null)
+                block1.EMVData = service.HydrateEmvData(emvData);
 
             var transaction = new PosRequestVer10Transaction {
                 Item = new PosCreditAuthReqType {
