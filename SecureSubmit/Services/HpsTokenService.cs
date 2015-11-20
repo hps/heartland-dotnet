@@ -33,7 +33,7 @@ namespace SecureSubmit.Services
             var env = components[1].ToLower();
 
             Url = env.Equals("prod") ? "https://api.heartlandportico.com/SecureSubmit.v1/api/token" :
-                "https://posgateway.cert.secureexchange.net/Hps.Exchange.PosGateway.Hpf.v1/api/token";
+                "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway.Hpf.v1/api/token";
         }
 
         private HpsToken RequestToken(HpsToken inputToken)
