@@ -37,7 +37,7 @@ namespace SecureSubmit.Infrastructure.Validation
             {
                 {HpsExceptionCodes.CardDeclined, "The card was declined"},
                 {HpsExceptionCodes.ProcessingError, "An error occurred while processing the card."},
-                {HpsExceptionCodes.InvalidAmount, "Must be greater than or equal 0."},
+                {HpsExceptionCodes.InvalidAmount, "Must be greater than or equal to 0."},
                 {HpsExceptionCodes.ExpiredCard, "The card has expired."},
                 {HpsExceptionCodes.InvalidPin, "The 4-digit pin is invalid."},
                 {HpsExceptionCodes.PinRetriesExceeded, "Maximum number of pin retries exceeded."},

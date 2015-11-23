@@ -1,4 +1,6 @@
-﻿namespace SecureSubmit.Infrastructure
+﻿using SecureSubmit.Entities;
+
+namespace SecureSubmit.Infrastructure
 {
     public enum HpsExceptionCodes
     {
@@ -70,5 +72,15 @@
     {
         Swipe,
         Proximity
+    }
+
+    public abstract class HpsSECCode
+    {
+        public const string PPD = "PPD";
+        public const string CCD = "CCD";
+        public const string POP = "POP";
+        public const string WEB = "WEB";
+        public const string TEL = "TEL";
+        public const string EBRONZE = "EBRONZE";
     }
 }

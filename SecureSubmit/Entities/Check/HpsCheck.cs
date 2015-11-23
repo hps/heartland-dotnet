@@ -27,7 +27,11 @@
 
         /// <summary>Indicates check verify. Requires processor setup to utilize. Please contact your HPS representative
         /// for more information on the GETI eBronze program.</summary>
-        public string CheckVerify { get; set; }
+        public bool CheckVerify { get; set; }
+
+        /// <summary>Indicates check verify. Requires processor setup to utilize. Please contact your HPS representative
+        /// for more information on the GETI eBronze program.</summary>
+        public bool AchVerify { get; set; }
 
         /// <summary>NACHA Standard Entry Class Code. NOTE: If processing with Colonnade, SECCode is required for Check
         /// Sale transactions.</summary>

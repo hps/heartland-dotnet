@@ -34,7 +34,9 @@ namespace SecureSubmit.Tests.TestData
                 DlState = "TX",
                 FirstName = "John",
                 LastName = "Doe",
-                Phone = "1234567890"
+                Phone = "1234567890",
+                DobYear = 1997,
+                Ssl4 = "4321"
             }
         },
         invalidCheckHolder = new HpsCheck
@@ -56,7 +58,9 @@ namespace SecureSubmit.Tests.TestData
                 DlState = "",
                 FirstName = "John",
                 LastName = "Doe",
-                Phone = ""
+                Phone = "",
+                DobYear = 1997,
+                Ssl4 = "4321"
             }
         },
         decline = new HpsCheck
@@ -79,7 +83,34 @@ namespace SecureSubmit.Tests.TestData
                 DlState = "TX",
                 FirstName = "John",
                 LastName = "Doe",
-                Phone = "1234567890"
+                Phone = "1234567890",
+                DobYear = 1997,
+                Ssl4 = "4321"
+            }
+        },
+        certification = new HpsCheck
+        {
+            AccountNumber = "24413815",
+            RoutingNumber = "490000018",
+            CheckType = checkTypeType.PERSONAL,
+            SecCode = "PPD",
+            AccountType = accountTypeType.CHECKING,
+            CheckHolder = new HpsCheckHolder
+            {
+                Address = new HpsAddress
+                {
+                    Address = "123 Main St.",
+                    City = "Downtown",
+                    State = "NJ",
+                    Zip = "12345"
+                },
+                DlNumber = "09876543210",
+                DlState = "TX",
+                FirstName = "John",
+                LastName = "Doe",
+                Phone = "8003214567",
+                DobYear = 1997,
+                Ssl4 = "4321"
             }
         };
 
@@ -109,5 +140,15 @@ namespace SecureSubmit.Tests.TestData
                 return decline;
             }
         }
+
+        /// <summary>Gets a check that will decline.</summary>
+        public static HpsCheck Certification
+        {
+            get
+            {
+                return certification;
+            }
+        }
+
     }
 }

@@ -209,7 +209,7 @@ namespace SecureSubmit.Infrastructure
                     if (_secretApiKey.Contains("_uat_"))
                         return "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
                     else if (_secretApiKey.Contains("_cert_"))
-                        return "https://posgateway.cert.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                        return "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
                 }
 
                 // all else fails return the default
@@ -231,7 +231,7 @@ namespace SecureSubmit.Infrastructure
                 _payPlanBaseUri = ConfigurationManager.AppSettings["HpsPayPlanBaseUri"];
                 if (string.IsNullOrEmpty(_payPlanBaseUri))
                 {
-                    _payPlanBaseUri = "https://posgateway.cert.secureexchange.net/Portico.PayPlan.v1/";
+                    _payPlanBaseUri = "https://cert.api2.heartlandportico.com/Portico.PayPlan.v1/";
                 }
 
                 return _payPlanBaseUri;

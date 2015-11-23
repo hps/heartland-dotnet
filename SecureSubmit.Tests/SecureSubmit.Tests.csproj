@@ -60,6 +60,7 @@
     <Compile Include="Certification\Recurring.cs" />
     <Compile Include="Certification\Retail.cs" />
     <Compile Include="Certification\TestData.cs" />
+    <Compile Include="Certification\CheckTests.cs" />
     <Compile Include="General\EMVTests.cs" />
     <Compile Include="General\GeneralTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,8 +80,8 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Certification\eCommerce.OrderedTest">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Include="Certification\eCommerce-eCheck.OrderedTest">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Certification\MOTO.orderedtest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

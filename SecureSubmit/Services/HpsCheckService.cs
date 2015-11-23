@@ -50,7 +50,14 @@ namespace SecureSubmit.Services
                         },
                         AmtSpecified = true,
                         CheckAction = action,
-                        SECCode = check.SecCode
+                        SECCode = check.SecCode,
+                        VerifyInfo = new VerifyInfoType
+                        {
+                            CheckVerify = check.CheckVerify ? booleanType.Y : booleanType.N,
+                            CheckVerifySpecified = true,
+                            ACHVerify =  check.AchVerify ? booleanType.Y : booleanType.N,
+                            ACHVerifySpecified = true
+                        }
                     }
                 },
                 ItemElementName = ItemChoiceType1.CheckSale
@@ -103,8 +110,10 @@ namespace SecureSubmit.Services
                     LastName = check.CheckHolder.LastName,
                     PhoneNumber = check.CheckHolder.Phone,
                     State = check.CheckHolder.Address != null ? check.CheckHolder.Address.State : null,
-                    Zip = check.CheckHolder.Address != null ? check.CheckHolder.Address.Zip : null
+                    Zip = check.CheckHolder.Address != null ? check.CheckHolder.Address.Zip : null,
+                    IdentityInfo = new IdentityInfoType{ DOBYear = check.CheckHolder.DobYear != null ? check.CheckHolder.DobYear.ToString() : null, SSNL4 = check.CheckHolder.Ssl4 != null ? check.CheckHolder.Ssl4 : null}
                 };
+                
             }
 
             /* Submit the transaction. */
