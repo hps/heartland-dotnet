@@ -1,4 +1,5 @@
-﻿using Hps.Exchange.PosGateway.Client;
+﻿using System.Net;
+using Hps.Exchange.PosGateway.Client;
 using SecureSubmit.Abstractions;
 using SecureSubmit.Entities;
 using SecureSubmit.Infrastructure.Validation;
@@ -30,6 +31,7 @@ namespace SecureSubmit.Services
             };
 
             /* Submit the transaction. */
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             var rsp = DoTransaction(transaction).Ver10;
             HpsGatewayResponseValidation.CheckResponse(rsp, ItemChoiceType2.BatchClose);
             

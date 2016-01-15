@@ -16,7 +16,7 @@ namespace SecureSubmit.Tests.TestData
     {
         private const string UatServiceUri = "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx";
         private const string CertServiceUri = "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx";
-        private const string PayPlanBaseUri = "https://posgateway.cert.secureexchange.net/Portico.PayPlan.v1/";
+        private const string PayPlanBaseUri = "https://cert.api2.heartlandportico.com/Portico.PayPlan.v1/";
 
         /// <summary>A valid HPS services config.</summary>
         /// <returns>The <see cref="HpsServicesConfig"/>.</returns>

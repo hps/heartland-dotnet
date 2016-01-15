@@ -213,7 +213,7 @@ namespace SecureSubmit.Infrastructure
                 }
 
                 // all else fails return the default
-                return "https://posgateway.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                return "https://api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
             }
             set
             {

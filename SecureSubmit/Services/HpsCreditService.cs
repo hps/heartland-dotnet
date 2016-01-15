@@ -230,7 +230,8 @@ namespace SecureSubmit.Services
         /// <returns>The <see cref="HpsCharge"/>.</returns>
         public HpsCharge Charge(decimal amount, string currency, string token, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
-            HpsTransactionDetails details = null, decimal gratuity = 0, HpsDirectMarketData directMarketData = null)
+            HpsTransactionDetails details = null, decimal gratuity = 0, HpsDirectMarketData directMarketData = null,
+            int? tokenExpMonth = null, int? tokenExpYear = null)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -255,7 +256,11 @@ namespace SecureSubmit.Services
                             TokenRequest = requestMultiUseToken ? booleanType.Y : booleanType.N,
                             Item = new CardDataTypeTokenData
                             {
-                                TokenValue = token
+                                TokenValue = token,
+                                ExpMonth = tokenExpMonth.HasValue ? tokenExpMonth.Value : default(int),
+                                ExpMonthSpecified = tokenExpMonth.HasValue,
+                                ExpYear = tokenExpYear.HasValue ? tokenExpYear.Value : default(int),
+                                ExpYearSpecified = tokenExpYear.HasValue
                             }
                         },
                         AdditionalTxnFields = HydrateAdditionalTxnFields(details),
@@ -353,7 +358,8 @@ namespace SecureSubmit.Services
         /// <param name="clientTransactionId">Optional client transaction ID.</param>
         /// <returns>The <see cref="HpsCharge"/>.</returns>
         public HpsAccountVerify Verify(string token, HpsCardHolder cardHolder = null,
-            bool requestMultiUseToken = false, long? clientTransactionId = null)
+            bool requestMultiUseToken = false, long? clientTransactionId = null,
+            int? tokenExpMonth = null, int? tokenExpYear = null)
         {
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
@@ -368,7 +374,11 @@ namespace SecureSubmit.Services
                             TokenRequest = requestMultiUseToken ? booleanType.Y : booleanType.N,
                             Item = new CardDataTypeTokenData
                             {
-                                TokenValue = token
+                                TokenValue = token,
+                                ExpMonth = tokenExpMonth.HasValue ? tokenExpMonth.Value : default(int),
+                                ExpMonthSpecified = tokenExpMonth.HasValue,
+                                ExpYear = tokenExpYear.HasValue ? tokenExpYear.Value : default(int),
+                                ExpYearSpecified = tokenExpYear.HasValue
                             }
                         }
                     }
@@ -485,7 +495,7 @@ namespace SecureSubmit.Services
         /// <returns>The <see cref="HpsAuthorization"/>.</returns>
         public HpsAuthorization Authorize(decimal amount, string currency, string token, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
-            HpsTransactionDetails details = null, decimal gratuity = 0)
+            HpsTransactionDetails details = null, decimal gratuity = 0, int? tokenExpMonth = null, int? tokenExpYear = null)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -510,7 +520,11 @@ namespace SecureSubmit.Services
                             TokenRequest = requestMultiUseToken ? booleanType.Y : booleanType.N,
                             Item = new CardDataTypeTokenData
                             {
-                                TokenValue = token
+                                TokenValue = token,
+                                ExpMonth = tokenExpMonth.HasValue ? tokenExpMonth.Value : default(int),
+                                ExpMonthSpecified = tokenExpMonth.HasValue,
+                                ExpYear = tokenExpYear.HasValue ? tokenExpYear.Value : default(int),
+                                ExpYearSpecified = tokenExpYear.HasValue
                             }
                         },
                         AdditionalTxnFields = HydrateAdditionalTxnFields(details),

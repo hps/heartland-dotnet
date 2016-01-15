@@ -18,7 +18,7 @@ namespace SecureSubmit.Tests.Certification
 
         private static HpsCreditCard Card()
         {
-            return new HpsCreditCard {ExpMonth = 12, ExpYear = 2015};
+            return new HpsCreditCard {ExpMonth = 12, ExpYear = 2025};
         }
 
         public static HpsToken TokenizeCard(HpsCreditCard card)

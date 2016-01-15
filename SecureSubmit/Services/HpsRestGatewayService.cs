@@ -35,6 +35,8 @@ namespace SecureSubmit.Services
 
         protected HpsRestGatewayService(IHpsServicesConfig config)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
             if (config == null) return;
             _servicesConfig = config;
 

@@ -126,5 +126,64 @@ namespace SecureSubmit.Tests {
             return rValue;
         }
 
+        [TestMethod]
+        public void CreditSaleWithTokenExpiry() {
+            var card = new HpsCreditCard {
+                Number = "4111111111111111",
+                ExpMonth = 12,
+                ExpYear = 2014,
+                Cvv = "123"
+            };
+
+            var tokenService = new HpsTokenService("pkapi_cert_m0e9bI2WbBHk0ALyQL");
+            var token_reponse = tokenService.GetToken(card);
+
+            var creditService = new HpsCreditService(new HpsServicesConfig {
+                SecretApiKey = "skapi_cert_MTeSAQAfG1UA9qQDrzl-kz4toXvARyieptFwSKP24w"
+            });
+            var response = creditService.Charge(10m, "usd", token_reponse.token_value, null, false, null, false, null, 0, null, 12, 2025);
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+        }
+
+        [TestMethod]
+        public void CreditAuthWithTokenExpiry() {
+            var card = new HpsCreditCard {
+                Number = "4111111111111111",
+                ExpMonth = 12,
+                ExpYear = 2014,
+                Cvv = "123"
+            };
+
+            var tokenService = new HpsTokenService("pkapi_cert_m0e9bI2WbBHk0ALyQL");
+            var token_reponse = tokenService.GetToken(card);
+
+            var creditService = new HpsCreditService(new HpsServicesConfig {
+                SecretApiKey = "skapi_cert_MTeSAQAfG1UA9qQDrzl-kz4toXvARyieptFwSKP24w"
+            });
+            var response = creditService.Authorize(10m, "usd", token_reponse.token_value, null, false, null, false, null, 0, 12, 2025);
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+        }
+
+        [TestMethod]
+        public void CreditVerifyWithTokenExpiry() {
+            var card = new HpsCreditCard {
+                Number = "4111111111111111",
+                ExpMonth = 12,
+                ExpYear = 2014,
+                Cvv = "123"
+            };
+
+            var tokenService = new HpsTokenService("pkapi_cert_m0e9bI2WbBHk0ALyQL");
+            var token_reponse = tokenService.GetToken(card);
+
+            var creditService = new HpsCreditService(new HpsServicesConfig {
+                SecretApiKey = "skapi_cert_MTeSAQAfG1UA9qQDrzl-kz4toXvARyieptFwSKP24w"
+            });
+            var response = creditService.Verify(token_reponse.token_value, null, false, null, 12, 2025);
+            Assert.IsNotNull(response);
+            Assert.AreEqual("85", response.ResponseCode);
+        }
     }
 }

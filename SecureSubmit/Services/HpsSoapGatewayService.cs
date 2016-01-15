@@ -10,7 +10,9 @@ namespace SecureSubmit.Services {
     public abstract class HpsSoapGatewayService {
         bool enableLogging = false;
 
-        protected HpsSoapGatewayService(IHpsServicesConfig config = null, bool enableLogging = false) {
+        protected HpsSoapGatewayService(IHpsServicesConfig config = null, bool enableLogging = false) 
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             ServicesConfig = config;
             this.enableLogging = enableLogging;
         }
