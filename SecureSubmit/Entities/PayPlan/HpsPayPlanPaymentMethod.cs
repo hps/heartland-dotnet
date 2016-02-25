@@ -78,7 +78,7 @@ namespace SecureSubmit.Entities
             return fields.ToArray();
         }
 
-        public Dictionary<string, Object> GetEditableFieldsWithValues()
+        internal Dictionary<string, Object> GetEditableFieldsWithValues()
         {
             var map = new Dictionary<string, object>();
 

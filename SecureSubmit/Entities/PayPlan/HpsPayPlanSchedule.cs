@@ -88,7 +88,7 @@ namespace SecureSubmit.Entities
             };
         }
 
-        public Dictionary<String, Object> GetEditableFieldsWithValues()
+        internal Dictionary<String, Object> GetEditableFieldsWithValues()
         {
             var map = new Dictionary<string, object>();
 
