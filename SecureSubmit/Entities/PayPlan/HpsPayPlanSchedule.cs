@@ -59,10 +59,9 @@ namespace SecureSubmit.Entities
             this.EmailAdvanceNotice = "No";
         }
 
-        private static IEnumerable<string> GetEditableFields()
+        private static IEnumerable<string> GetEditableFields(bool isStarted)
         {
-            return new[]
-            {
+            var rvalue = new List<string> {
                 "ScheduleName",
                 "ScheduleStatus",
                 "DeviceId",
@@ -76,23 +75,25 @@ namespace SecureSubmit.Entities
                 "EmailReceipt",
                 "EmailAdvanceNotice",
                 "ProcessingDateInfo",
-
-                // Only editable when scheduleStarted = false
-                "ScheduleIdentifier",
-                "StartDate",
-                "Frequency",
-                "Duration",
-
-                // Only editable when scheduleStarted = true
-                "NextProcessingDate"
             };
+
+            if (!isStarted) {
+                rvalue.AddRange(new[] {
+                    "ScheduleIdentifier",
+                    "StartDate",
+                    "Frequency",
+                    "Duration",
+                });
+            }
+            else rvalue.Add("NextProcessingDate");
+            return rvalue;
         }
 
         internal Dictionary<String, Object> GetEditableFieldsWithValues()
         {
             var map = new Dictionary<string, object>();
 
-            foreach (var fieldName in GetEditableFields())
+            foreach (var fieldName in GetEditableFields(bool.Parse(ScheduleStarted ?? "False")))
             {
                 var prop = GetType().GetProperty(fieldName);
                 var value = prop.GetValue(this, null);
