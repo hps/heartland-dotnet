@@ -44,6 +44,7 @@ namespace SecureSubmit.Fluent {
                 Item = new PosCheckSaleReqType {
                     Block1 = new CheckSaleReqBlock1Type {
                         Amt = amount.Value,
+                        AmtSpecified = amount.HasValue,
                         CheckAction = checkActionType.SALE,
                         PaymentMethodKey = paymentMethodKey,
                         RecurringData = new RecurringDataType {
