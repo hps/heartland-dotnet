@@ -18,8 +18,6 @@ namespace SecureSubmit.Services
         {
         }
 
-        
-
         [Obsolete("This 'Activate' method is deprecated, please use the fluent version instead.")]
         public HpsGiftCardResponse Activate(decimal amount, string currency, HpsGiftCard giftCard)
         {

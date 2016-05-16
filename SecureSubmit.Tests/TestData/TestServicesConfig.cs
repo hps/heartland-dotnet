@@ -30,8 +30,38 @@ namespace SecureSubmit.Tests.TestData
                 SiteId = 20856,
                 SiteTrace = "trace0001",
                 UserName = "777700004035",
-                SoapServiceUri = CertServiceUri,
-                PayPlanBaseUri = PayPlanBaseUri
+                ServiceUrl = CertServiceUri
+            };
+        }
+
+        public static HpsOrcaServiceConfig ValidOrcaServiceConfig()
+        {
+            return new HpsOrcaServiceConfig
+            {
+                DeviceId = 5315938,
+                LicenseId = 101433,
+                Password = "$Test1234",
+                SiteId = 101436,
+                SiteTrace = "trace0001",
+                UserName = "777700857994",
+                VersionNumber = "1234",
+                IsTest = true,
+                ApplicationId = "Mobuyle Retail",
+                HardwareTypeName = "Heartland Mobuyle"
+            };
+        }
+
+        public static HpsPayPlanServicesConfig ValidPayplanServiceConfig()
+        {
+            return new HpsPayPlanServicesConfig
+            {
+                DeviceId = 1525384,
+                LicenseId = 21081,
+                Password = "$Test1234",
+                SiteId = 21084,
+                SiteTrace = "trace0001",
+                UserName = "777700005974A",
+                VersionNumber = "1234"
             };
         }
 
@@ -46,8 +76,7 @@ namespace SecureSubmit.Tests.TestData
                 SiteTrace = "trace0001",
                 UserName = "777700005974A",
                 VersionNumber = "1234",
-                SoapServiceUri = UatServiceUri,
-                PayPlanBaseUri = PayPlanBaseUri
+                ServiceUrl = CertServiceUri
             };
         }
 
@@ -57,7 +86,7 @@ namespace SecureSubmit.Tests.TestData
                 {
                     CredentialToken = "pkapi_cert_P6dRqs1LzfWJ6HgGVZ",
                     SecretApiKey = "skapi_cert_MYl2AQAowiQAbLp5JesGKh7QFkcizOP2jcX9BrEMqQ",
-                    PayPlanBaseUri = PayPlanBaseUri
+                    ServiceUrl = PayPlanBaseUri
                 };
         }
 
@@ -73,8 +102,7 @@ namespace SecureSubmit.Tests.TestData
                 SiteId = 20856,
                 SiteTrace = "trace0001",
                 UserName = "777700004035",
-                SoapServiceUri = UatServiceUri,
-                PayPlanBaseUri = PayPlanBaseUri
+                ServiceUrl = CertServiceUri
             };
         }
 
@@ -109,8 +137,7 @@ namespace SecureSubmit.Tests.TestData
                 UserName = "777700004597",
                 DeveloperId = "123456",
                 VersionNumber = "1234",
-                SoapServiceUri = CertServiceUri,
-                PayPlanBaseUri = PayPlanBaseUri
+                ServiceUrl = CertServiceUri
             };
         }
     }

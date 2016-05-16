@@ -3,17 +3,55 @@ using System.Collections.Generic;
 using SecureSubmit.Abstractions;
 using SecureSubmit.Entities;
 using SecureSubmit.Infrastructure;
+using System.Text;
 
 namespace SecureSubmit.Services
 {
     public class HpsPayPlanService : HpsRestGatewayService
     {
-        public HpsPayPlanService(IHpsServicesConfig config)
+        private HpsPayPlanServicesConfig _config;
+        private Dictionary<string, string> _authHeader = new Dictionary<string, string>();
+        private Dictionary<string, string> _pagination = null;
+
+        public HpsPayPlanService(HpsPayPlanServicesConfig config)
             : base(config)
         {
+            _config = (HpsPayPlanServicesConfig)config;
+
+            var keyBytes = Encoding.UTF8.GetBytes(_config.SecretApiKey);
+            var encoded = Convert.ToBase64String(keyBytes);
+            var auth = String.Format("Basic {0}", encoded);
+            _authHeader.Add("Authorization", auth);
+
+            var components = _config.SecretApiKey.Split('_');
+            var env = components[1].ToLower();
+
+            if (env.Equals("prod"))
+            {
+                _config.ServiceUrl = _config.ProdUrl;
+            }
+            else if (env.Equals("cert"))
+            {
+                _config.ServiceUrl = _config.CertUrl;
+            }
+            else
+            {
+                _config.ServiceUrl = _config.UatUrl;
+            }
         }
 
         /* CUSTOMER METHODS */
+        public void SetPagination(int limit, int offset)
+        {
+            _pagination = new Dictionary<string, string>();
+            _pagination.Add("limit", limit.ToString());
+            _pagination.Add("offset", offset.ToString());
+        }
+
+        public void ResetPagination()
+        {
+            _pagination = null;
+        }
 
         public HpsPayPlanCustomer AddCustomer(HpsPayPlanCustomer customer)
         {
@@ -21,7 +59,7 @@ namespace SecureSubmit.Services
                 throw new HpsInvalidRequestException(HpsExceptionCodes.InvalidArgument,
                     "Customer must be an instance of HpsPayPlanCustomer.", "customer");
 
-            var response = DoRequest("POST", "customers", customer);
+            var response = DoRequest("POST", "customers", customer, _authHeader, _pagination);
             return HydrateObject<HpsPayPlanCustomer>(response);
         }
 
@@ -36,8 +74,10 @@ namespace SecureSubmit.Services
                 throw new HpsInvalidRequestException(HpsExceptionCodes.InvalidArgument,
                     "searchFields cannot be null.", "searchFields");
 
-            var response = DoRequest("POST", "searchCustomers", searchFields);
+            var response = DoRequest("POST", "searchCustomers", searchFields, _authHeader, _pagination);
+            ResetPagination();
             return HydrateObject<HpsPayPlanCustomerCollection>(response);
+
         }
 
         public HpsPayPlanCustomer GetCustomer(HpsPayPlanCustomer customer)
@@ -51,7 +91,8 @@ namespace SecureSubmit.Services
 
         public HpsPayPlanCustomer GetCustomer(string customerId)
         {
-            var response = DoRequest("GET", "customers/" + customerId);
+            var response = DoRequest("GET", "customers/" + customerId, null, _authHeader, _pagination);
+            ResetPagination();
             return HydrateObject<HpsPayPlanCustomer>(response);
         }
 
@@ -61,7 +102,8 @@ namespace SecureSubmit.Services
                 throw new HpsInvalidRequestException(HpsExceptionCodes.InvalidArgument,
                     "customer must be an instance of HpsPayPlanCustomer.", "customer");
 
-            var response = DoRequest("PUT", "customers/" + customer.CustomerKey, customer.GetEditableFieldsWithValues());
+            var response = DoRequest("PUT", "customers/" + customer.CustomerKey, customer.GetEditableFieldsWithValues(), _authHeader, _pagination);
+            ResetPagination();
             return HydrateObject<HpsPayPlanCustomer>(response);
         }
 
@@ -72,7 +114,8 @@ namespace SecureSubmit.Services
                     "customerId must be a valid PayPlan customer ID.", "customerId");
 
             var data = new Dictionary<string, object> {{"forceDelete", forceDelete}};
-            var response = DoRequest("DELETE", "customers/" + customerId, data);
+            var response = DoRequest("DELETE", "customers/" + customerId, data, _authHeader, _pagination);
+            ResetPagination();
 
             return HydrateObject<HpsPayPlanCustomer>(response);
         }
@@ -90,7 +133,8 @@ namespace SecureSubmit.Services
 
         public HpsPayPlanPaymentMethod GetPaymentMethod(string methodId)
         {
-            return HydrateObject<HpsPayPlanPaymentMethod>(DoRequest("GET", "paymentMethods/" + methodId));
+            return HydrateObject<HpsPayPlanPaymentMethod>(DoRequest("GET", "paymentMethods/" + methodId, null, _authHeader, _pagination));
+            ResetPagination();
         }
 
         public HpsPayPlanPaymentMethod GetPaymentMethod(HpsPayPlanPaymentMethod method)
@@ -99,7 +143,8 @@ namespace SecureSubmit.Services
                 throw new HpsInvalidRequestException(HpsExceptionCodes.InvalidArgument,
                     "method must be an instance of HpsPayPlanPaymentMethod.", "method");
 
-            return HydrateObject<HpsPayPlanPaymentMethod>(DoRequest("GET", "paymentMethods/" + method.PaymentMethodKey));
+            return HydrateObject<HpsPayPlanPaymentMethod>(DoRequest("GET", "paymentMethods/" + method.PaymentMethodKey, null, _authHeader,_pagination));
+            ResetPagination();
         }
 
         public HpsPayPlanPaymentMethod AddPaymentMethod(HpsPayPlanPaymentMethod method)
@@ -125,14 +170,18 @@ namespace SecureSubmit.Services
         public HpsPayPlanPaymentMethodCollection FindAllPaymentMethods(Dictionary<string, object> searchFields = null)
         {
             var sf = searchFields ?? new Dictionary<string, object>();
-            var response = DoRequest("POST", "searchPaymentMethods", sf);
+            var response = DoRequest("POST", "searchPaymentMethods", sf, _authHeader, _pagination);
+            ResetPagination();
             return HydrateObject<HpsPayPlanPaymentMethodCollection>(response);
         }
 
         public HpsPayPlanPaymentMethod DeletePaymentMethod(string methodId, bool forceDelete = false)
         {
             var data = new Dictionary<string, object> {{"forceDelete", forceDelete}};
-            return HydrateObject<HpsPayPlanPaymentMethod>(DoRequest("DELETE", "paymentMethods/" + methodId, data));
+            var response = HydrateObject<HpsPayPlanPaymentMethod>(DoRequest("DELETE", "paymentMethods/" + methodId, data, _authHeader, _pagination));
+
+            ResetPagination();
+            return response;
         }
 
         public HpsPayPlanPaymentMethod DeletePaymentMethod(HpsPayPlanPaymentMethod method, bool forceDelete = false)
@@ -148,13 +197,21 @@ namespace SecureSubmit.Services
         {
             var data = method.GetEditableFieldsWithValues();
             data.Add("customerKey", method.CustomerKey);
-            return DoRequest("POST", "paymentMethodsACH", data);
+
+            var response = DoRequest("POST", "paymentMethodsACH", data, _authHeader, _pagination);
+
+            ResetPagination();
+            return response;
         }
 
         private string EditAch(HpsPayPlanPaymentMethod method)
         {
             var data = method.GetEditableFieldsWithValues();
-            return DoRequest("PUT", "paymentMethodsACH/" + method.PaymentMethodKey, data);
+            var response = DoRequest("PUT", "paymentMethodsACH/" + method.PaymentMethodKey, data, _authHeader, _pagination);
+
+            ResetPagination();
+            return response;
+            
         }
 
         private string AddCreditCard(HpsPayPlanPaymentMethod method)
@@ -165,13 +222,18 @@ namespace SecureSubmit.Services
                 data.Add("accountNumber", method.AccountNumber);
             else if (!string.IsNullOrEmpty(method.PaymentToken))
                 data.Add("paymentToken", method.PaymentToken);
-            return DoRequest("POST", "paymentMethodsCreditCard", data);
+
+            var response = DoRequest("POST", "paymentMethodsCreditCard", data, _authHeader, _pagination);
+
+            ResetPagination();
+            return response;
+
         }
 
         private string EditCreditCard(HpsPayPlanPaymentMethod method)
         {
             var data = method.GetEditableFieldsWithValues();
-            return DoRequest("PUT", "paymentMethodsCreditCard/" + method.PaymentMethodKey, data);
+            return DoRequest("PUT", "paymentMethodsCreditCard/" + method.PaymentMethodKey, data, _authHeader, _pagination);
         }
 
         /* SCHEDULE METHODS */
@@ -186,7 +248,8 @@ namespace SecureSubmit.Services
             data.Add("customerKey", schedule.CustomerKey);
             data.Add("numberOfPayments", schedule.NumberOfPayments);
 
-            var response = DoRequest("POST", "schedules", data);
+            var response = DoRequest("POST", "schedules", data, _authHeader, _pagination);
+            ResetPagination();
             return HydrateObject<HpsPayPlanSchedule>(response);
         }
 
@@ -202,16 +265,16 @@ namespace SecureSubmit.Services
             schedule.PreviousProcessingDate = string.IsNullOrEmpty(schedule.PreviousProcessingDate) ? null : schedule.PreviousProcessingDate;
 
             var data = schedule.GetEditableFieldsWithValues();
-            var response = DoRequest("PUT", "schedules/" + schedule.ScheduleKey, data);
-
+            var response = DoRequest("PUT", "schedules/" + schedule.ScheduleKey, data, _authHeader, _pagination);
+            ResetPagination();
             return HydrateObject<HpsPayPlanSchedule>(response);
         }
 
         public HpsPayPlanScheduleCollection FindAllSchedules(Dictionary<string, object> searchFields = null)
         {
             var sf = searchFields ?? new Dictionary<string, object>();
-            var response = DoRequest("POST", "searchSchedules", sf);
-
+            var response = DoRequest("POST", "searchSchedules", sf, _authHeader, _pagination);
+            ResetPagination();
             return HydrateObject<HpsPayPlanScheduleCollection>(response);
         }
 
@@ -226,15 +289,16 @@ namespace SecureSubmit.Services
 
         public HpsPayPlanSchedule GetSchedule(string scheduleId)
         {
-            var response = DoRequest("GET", "schedules/" + scheduleId);
+            var response = DoRequest("GET", "schedules/" + scheduleId, null, _authHeader, _pagination);
+            ResetPagination();
             return HydrateObject<HpsPayPlanSchedule>(response);
         }
 
         public HpsPayPlanSchedule DeleteSchedule(string scheduleId, bool forceDelete = false)
         {
             var data = new Dictionary<string, object> {{"forceDelete", forceDelete}};
-            var response = DoRequest("DELETE", "schedules/" + scheduleId, data);
-
+            var response = DoRequest("DELETE", "schedules/" + scheduleId, data, _authHeader, _pagination);
+            ResetPagination();
             return HydrateObject<HpsPayPlanSchedule>(response);
         }
 

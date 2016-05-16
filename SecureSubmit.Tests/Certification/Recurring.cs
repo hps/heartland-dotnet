@@ -14,8 +14,13 @@ namespace SecureSubmit.Tests.Certification
         {
             SecretApiKey = "skapi_cert_MTyMAQBiHVEAewvIzXVFcmUd2UcyBge_eCpaASUp0A"
         };
+        
+        private static readonly HpsPayPlanServicesConfig PayPlanServicesConfig = new HpsPayPlanServicesConfig
+        {
+            SecretApiKey = "skapi_cert_MTyMAQBiHVEAewvIzXVFcmUd2UcyBge_eCpaASUp0A"
+        };
 
-        private readonly HpsPayPlanService _payPlanService = new HpsPayPlanService(ServicesConfig);
+        private readonly HpsPayPlanService _payPlanService = new HpsPayPlanService(PayPlanServicesConfig);
         private readonly HpsBatchService _batchService = new HpsBatchService(ServicesConfig);
         private readonly HpsFluentCreditService _creditService = new HpsFluentCreditService(ServicesConfig);
         private readonly HpsFluentCheckService _checkService = new HpsFluentCheckService(ServicesConfig);

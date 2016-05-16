@@ -64,7 +64,7 @@ namespace SecureSubmit.Tests {
                 Country = "USA",
                 PhoneDay = "5551112222"
             };
-            HpsPayPlanService payPlanService = new HpsPayPlanService(TestServicesConfig.ValidTokenServiceConfig());
+            HpsPayPlanService payPlanService = new HpsPayPlanService(TestServicesConfig.ValidPayplanServiceConfig());
             var response = payPlanService.AddCustomer(customer);
             var customerKey = response.CustomerKey;
 

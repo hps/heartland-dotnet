@@ -11,10 +11,6 @@
         string SiteTrace { get; }
         string UserName { get; }
         string VersionNumber { get; }
-        string SoapServiceUri { get; }
-        string PayPlanBaseUri { get; }
-
-        // To be removed in upcoming releases.
         string ServiceUrl { get; }
     }
 }

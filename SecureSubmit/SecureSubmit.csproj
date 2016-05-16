@@ -69,6 +69,7 @@
     <Compile Include="Entities\Credit\HpsCpcData.cs" />
     <Compile Include="Entities\Credit\HpsTxnReferenceData.cs" />
     <Compile Include="Entities\Debit\HpsDebitAuthorization.cs" />
+    <Compile Include="Entities\Orca\HpsDeviceData.cs" />
     <Compile Include="Entities\Ebt\HpsEbtAuthorization.cs" />
     <Compile Include="Entities\Gift\HpsGiftCardResponse.cs" />
     <Compile Include="Entities\HpsDirectMarketData.cs" />
@@ -191,6 +192,7 @@
     <Compile Include="Services\HpsCreditService.cs" />
     <Compile Include="Services\HpsDebitService.cs" />
     <Compile Include="Services\HpsGiftCardService.cs" />
+    <Compile Include="Services\HpsOrcaService.cs" />
     <Compile Include="Services\HpsRestGatewayService.cs" />
     <Compile Include="Services\HpsSoapGatewayService.cs" />
     <Compile Include="Services\HpsServicesConfig.cs" />

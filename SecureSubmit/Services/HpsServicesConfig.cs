@@ -50,25 +50,79 @@ namespace SecureSubmit.Services
         /// <summary>Gets or sets the site trace.</summary>
         public string SiteTrace { get; set; }
 
-        /// <summary>Gets or sets the SOAP URI (leave null to use SDK default) .</summary>
-        public string SoapServiceUri
-        {
-            get { return HpsConfiguration.SoapServiceUri; }
-            set { HpsConfiguration.SoapServiceUri = value ?? HpsConfiguration.SoapServiceUri; }
+        ///// <summary>Gets or sets the SOAP URI (leave null to use SDK default) .</summary>
+        //public string SoapServiceUri
+        //{
+        //    get { return HpsConfiguration.SoapServiceUri; }
+        //    set { HpsConfiguration.SoapServiceUri = value ?? HpsConfiguration.SoapServiceUri; }
+        //}
+
+        ///// <summary>Gets or sets the PayPlan base URI (leave null to use SDK default) .</summary>
+        //public string PayPlanBaseUri
+        //{
+        //    get { return HpsConfiguration.PayPlanBaseUri; }
+        //    set { HpsConfiguration.PayPlanBaseUri = value ?? HpsConfiguration.PayPlanBaseUri; }
+        //}
+
+        public string ServiceUrl { get; set; }
+    }
+
+    public abstract class HpsRestServiceConfig : HpsServicesConfig
+    {
+        public string UatUrl { get; set; }
+        public string CertUrl { get; set; }
+        public string ProdUrl { get; set; }
+    }
+
+    public class HpsPayPlanServicesConfig : HpsRestServiceConfig {
+        public HpsPayPlanServicesConfig() {
+           
+            // Set urls
+            CertUrl = "https://cert.api2.heartlandportico.com/Portico.PayPlan.v2/";
+            ProdUrl = "https://api-cert.heartlandportico.com/payplan.v2/";
+            UatUrl = "https://api-uat.heartlandportico.com/payplan.v2/";
+            
         }
 
-        /// <summary>Gets or sets the PayPlan base URI (leave null to use SDK default) .</summary>
-        public string PayPlanBaseUri
-        {
-            get { return HpsConfiguration.PayPlanBaseUri; }
-            set { HpsConfiguration.PayPlanBaseUri = value ?? HpsConfiguration.PayPlanBaseUri; }
+        //public string ServiceUrl {
+        //    get {
+        //        var components = SecretApiKey.Split('_');
+        //        var env = components[1].ToLower();
+
+        //        if (env.Equals("prod"))
+        //        {
+        //            return ProdUrl;
+        //        }
+        //        else if (env.Equals("cert"))
+        //        {
+        //            return CertUrl;
+        //        }
+        //        else
+        //        {
+        //            return UatUrl;
+        //        }
+        //    }
+        //}
+    }
+
+    public class HpsOrcaServiceConfig : HpsRestServiceConfig {
+
+        public string ApplicationId { get; set; }
+        public string HardwareTypeName { get; set; }
+        public string SoftwareVersion { get; set; }
+        public string ConfigurationName { get; set; }
+        public string PeripheralName { get; set; }
+        public string PeripheralSoftware { get; set; }
+
+        public bool IsTest { get; set; }
+
+        public HpsOrcaServiceConfig() {
+            this.CertUrl = "https://huds.test.e-hps.com/config-server/v1/";
+            this.ProdUrl = "https://huds.prod.e-hps.com/config-server/v1/";
         }
 
-        [Obsolete("This will be removed in upcoming releases, please use SoapServiceUrI.")]
-        public string ServiceUrl
-        {
-            get { return SoapServiceUri; }
-            set { SoapServiceUri = value; }
-        }
+        //public string ServiceUrl {
+        //    get { return IsTest ? CertUrl : ProdUrl; }
+        //}
     }
 }

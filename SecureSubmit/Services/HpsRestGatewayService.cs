@@ -6,32 +6,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using SecureSubmit.Abstractions;
 using SecureSubmit.Infrastructure;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SecureSubmit.Services
 {
     public abstract class HpsRestGatewayService
-    {
-        private const string CertUrl = "https://cert.api2.heartlandportico.com/Portico.PayPlan.v2/";
-        private const string ProdUrl = "https://api-cert.heartlandportico.com/payplan.v2/";
-        private const string UatUrl = "https://api-uat.heartlandportico.com/payplan.v2/";
-
-        int _limit = -1;
-        int _offset = -1;
-
+    {   
         private readonly IHpsServicesConfig _servicesConfig;
-        private readonly string _url;
-
-        public void SetPagination(int limit, int offset)
-        {
-            _limit = limit;
-            _offset = offset;
-        }
-
-        private void ResetPagination()
-        {
-            _limit = -1;
-            _offset = -1;
-        }
 
         protected HpsRestGatewayService(IHpsServicesConfig config)
         {
@@ -39,45 +21,48 @@ namespace SecureSubmit.Services
 
             if (config == null) return;
             _servicesConfig = config;
-
-            var components = config.SecretApiKey.Split('_');
-            var env = components[1].ToLower();
-
-            if (env.Equals("prod"))
-            {
-                _url = ProdUrl;
-            }
-            else if (env.Equals("cert"))
-            {
-                _url = CertUrl;
-            }
-            else
-            {
-                _url = UatUrl;
-            }
         }
 
-        protected string DoRequest(string verb, string endpoint, object data = null)
+        /// <summary>
+        /// For Restful service endpoints using JSON
+        /// </summary>
+        /// <param name="verb"></param>
+        /// <param name="endpoint"></param>
+        /// <param name="data"></param>
+        /// <param name="additionalHeaders"></param>
+        /// <param name="queryStringParameters"></param>
+        /// <returns></returns>
+        protected string DoRequest(string verb, string endpoint, object data = null, Dictionary<string, string> additionalHeaders = null, Dictionary<string, string> queryStringParameters = null)
         {
+            string url = _servicesConfig.ServiceUrl + endpoint;
             try
             {
+                var method = verb.ToUpper();
                 var queryString = "";
-                if (_limit != -1 && _offset != -1)
+
+                //Query string
+                if (queryStringParameters != null)
                 {
-                    queryString += "?limit=" + _limit;
-                    queryString += "&offset=" + _offset;
+                    //Load query string parameters
+                    queryString = String.Format("?{0}",
+                        String.Join("&", queryStringParameters.Select(kvp => String.Format("{0}={1}", Uri.EscapeDataString(kvp.Key), Uri.EscapeDataString(kvp.Value)))));
                 }
 
-                var uri = _url + endpoint + queryString;
-                var keyBytes = Encoding.UTF8.GetBytes(_servicesConfig.SecretApiKey);
-                var encoded = Convert.ToBase64String(keyBytes);
-                var auth = String.Format("Basic {0}", encoded);
+                var uri = String.Format("{0}{1}", url, queryString);
 
                 var request = (HttpWebRequest)WebRequest.Create(uri);
-                request.ContentType = "application/json";
-                request.Headers.Add("Authorization", auth);
+                request.ContentType = "application/json";                
 
-                var method = verb.ToUpper();
+                //Headers
+                if (additionalHeaders != null)
+                {
+                    foreach (var item in additionalHeaders)
+                    {
+                        request.Headers.Add(item.Key, item.Value);
+                    }
+                }               
+               
+                //Payload
                 if (method != "GET")
                 {
                     request.Method = method;
@@ -102,8 +87,6 @@ namespace SecureSubmit.Services
 
                 var response = (HttpWebResponse)request.GetResponse();
                 var responseStream = response.GetResponseStream();
-
-                ResetPagination();
 
                 return responseStream != null ? new StreamReader(responseStream).ReadToEnd() : "";
             }
