@@ -9,7 +9,7 @@ namespace SecureSubmit.Fluent
     public class CreditVerifyBuilder : HpsBuilderAbstract<HpsFluentCreditService, HpsAccountVerify>
     {
         private HpsCreditCard card;
-        private string token;
+        private HpsTokenData token;
         private HpsTrackData trackData;
         private HpsCardHolder cardHolder;
         private bool requestMultiUseToken = false;
@@ -24,6 +24,11 @@ namespace SecureSubmit.Fluent
             return this;
         }
         public CreditVerifyBuilder WithToken(string token)
+        {
+            this.token = new HpsTokenData { TokenValue = token };
+            return this;
+        }
+        public CreditVerifyBuilder WithToken(HpsTokenData token)
         {
             this.token = token;
             return this;

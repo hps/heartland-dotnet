@@ -10,7 +10,7 @@ namespace SecureSubmit.Fluent {
         private decimal? amount;
         private string currency;
         private HpsCreditCard card;
-        private string token;
+        private HpsTokenData token;
         private HpsTrackData trackData;
         private HpsCardHolder cardHolder;
         private bool requestMultiUseToken = false;
@@ -40,6 +40,10 @@ namespace SecureSubmit.Fluent {
             return this;
         }
         public CreditChargeBuilder WithToken(string token) {
+            this.token = new HpsTokenData { TokenValue = token };
+            return this;
+        }
+        public CreditChargeBuilder WithToken(HpsTokenData token) {
             this.token = token;
             return this;
         }

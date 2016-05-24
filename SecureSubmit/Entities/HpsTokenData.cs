@@ -20,5 +20,11 @@ namespace SecureSubmit.Entities
 
         /// <summary>Gets or sets the token value.</summary>
         public string TokenValue { get; set; }
+
+        public int? ExpYear { get; set; }
+
+        public int? ExpMonth { get; set; }
+
+        public string CVV { get; set; }
     }
 }

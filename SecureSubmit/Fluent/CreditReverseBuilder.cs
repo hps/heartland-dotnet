@@ -12,7 +12,7 @@ namespace SecureSubmit.Fluent
     decimal? authAmount;
     string currency;
     HpsCreditCard card;
-    string token;
+    HpsTokenData token;
     int? transactionId;
     HpsTransactionDetails details;
 
@@ -28,8 +28,12 @@ namespace SecureSubmit.Fluent
         this.card = value;
         return this;
     }
-    public CreditReverseBuilder WithToken(string value) {
-        this.token = value;
+    public CreditReverseBuilder WithToken(string token) {
+        this.token = new HpsTokenData { TokenValue = token };
+        return this;
+    }
+    public CreditReverseBuilder WithToken(HpsTokenData token) {
+        this.token = token;
         return this;
     }
     public CreditReverseBuilder WithTransactionId(int? value) {

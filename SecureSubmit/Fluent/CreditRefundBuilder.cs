@@ -10,7 +10,7 @@ namespace SecureSubmit.Fluent {
         decimal? amount;
         string currency;
         HpsCreditCard card;
-        string token;
+        HpsTokenData token;
         int? transactionId;
         HpsCardHolder cardHolder;
         HpsTransactionDetails details;
@@ -29,8 +29,12 @@ namespace SecureSubmit.Fluent {
             this.card = value;
             return this;
         }
-        public CreditRefundBuilder WithToken(string value) {
-            this.token = value;
+        public CreditRefundBuilder WithToken(string token) {
+            this.token = new HpsTokenData { TokenValue = token };
+            return this;
+        }
+        public CreditRefundBuilder WithToken(HpsTokenData token) {
+            this.token = token;
             return this;
         }
         public CreditRefundBuilder WithTransactionId(int? value) {

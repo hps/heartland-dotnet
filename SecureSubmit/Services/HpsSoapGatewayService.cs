@@ -201,12 +201,33 @@ namespace SecureSubmit.Services {
             return null;
         }
 
-        internal CardDataTypeTokenData HydrateTokenData(string token, bool cardPresent = false, bool readerPresent = false) {
-            return new CardDataTypeTokenData {
-                TokenValue = token,
+        internal CardDataTypeTokenData HydrateTokenData(string token, bool cardPresent = false, bool readerPresent = false)
+        {
+            return HydrateTokenData(
+                new HpsTokenData { TokenValue = token },
+                cardPresent,
+                readerPresent
+            );
+        }
+
+        internal CardDataTypeTokenData HydrateTokenData(HpsTokenData token, bool cardPresent = false, bool readerPresent = false)
+        {
+            var cardDataTypeTokenData = new CardDataTypeTokenData {
+                TokenValue = token.TokenValue,
                 CardPresent = cardPresent ? booleanType.Y : booleanType.N,
-                ReaderPresent = readerPresent ? booleanType.Y : booleanType.N
+                ReaderPresent = readerPresent ? booleanType.Y : booleanType.N,
+                ExpMonth = token.ExpMonth.HasValue ? token.ExpMonth.Value : default(int),
+                ExpMonthSpecified = token.ExpMonth.HasValue,
+                ExpYear = token.ExpYear.HasValue ? token.ExpYear.Value : default(int),
+                ExpYearSpecified = token.ExpYear.HasValue
             };
+
+            if (!string.IsNullOrEmpty(token.CVV))
+            {
+                cardDataTypeTokenData.CVV2 = token.CVV;
+            }
+
+            return cardDataTypeTokenData;
         }
 
         internal AutoSubstantiationType HydrateAutoSubstantiation(HpsAutoSubstantiation autoSubstantiation) {

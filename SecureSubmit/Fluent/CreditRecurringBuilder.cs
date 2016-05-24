@@ -10,7 +10,7 @@ namespace SecureSubmit.Fluent {
         string scheduleId;
         decimal? amount;
         HpsCreditCard card;
-        string token;
+        HpsTokenData token;
         string paymentMethodKey;
         bool oneTime = false;
         HpsCardHolder cardHolder;
@@ -33,8 +33,12 @@ namespace SecureSubmit.Fluent {
             this.card = value;
             return this;
         }
-        public CreditRecurringBuilder WithToken(string value) {
-            this.token = value;
+        public CreditRecurringBuilder WithToken(string token) {
+            this.token = new HpsTokenData { TokenValue = token };
+            return this;
+        }
+        public CreditRecurringBuilder WithToken(HpsTokenData token) {
+            this.token = token;
             return this;
         }
         public CreditRecurringBuilder WithPaymentMethodKey(string value) {

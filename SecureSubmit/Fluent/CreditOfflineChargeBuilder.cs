@@ -9,7 +9,7 @@ namespace SecureSubmit.Fluent {
     public class CreditOfflineChargeBuilder : HpsBuilderAbstract<HpsFluentCreditService, HpsTransaction> {
         decimal? amount;
         HpsCreditCard card;
-        string token;
+        HpsTokenData token;
         HpsTrackData trackData;
         HpsCardHolder cardHolder;
         bool requestMultiUseToken = false;
@@ -34,6 +34,10 @@ namespace SecureSubmit.Fluent {
             return this;
         }
         public CreditOfflineChargeBuilder WithToken(string token) {
+            this.token = new HpsTokenData { TokenValue = token };
+            return this;
+        }
+        public CreditOfflineChargeBuilder WithToken(HpsTokenData token) {
             this.token = token;
             return this;
         }

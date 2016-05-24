@@ -227,11 +227,48 @@ namespace SecureSubmit.Services
         /// <param name="details">The transaction details.</param>
         /// <param name="gratuity">The gratuity amount.</param>
         /// <param name="directMarketData">The direct market data.</param>
+        /// <param name="tokenExpMonth">The updated expiration month.</param>
+        /// <param name="tokenExpYear">The update expiration year.</param>
         /// <returns>The <see cref="HpsCharge"/>.</returns>
         public HpsCharge Charge(decimal amount, string currency, string token, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
             HpsTransactionDetails details = null, decimal gratuity = 0, HpsDirectMarketData directMarketData = null,
             int? tokenExpMonth = null, int? tokenExpYear = null)
+        {
+            return Charge(
+                amount,
+                currency,
+                new HpsTokenData { TokenValue = token, ExpMonth = tokenExpMonth, ExpYear = tokenExpYear },
+                cardHolder,
+                requestMultiUseToken,
+                descriptor,
+                allowPartialAuth,
+                details,
+                gratuity,
+                directMarketData
+            );
+        }
+
+        /// <summary>
+        /// The <b>credit sale</b> transaction authorizes a sale purchased with a credit card. The
+        /// authorization in place in the current open batch (should auto-close for e-commerce
+        /// transactions). If a batch is not open, this transaction will create an open batch.
+        /// </summary>
+        /// <param name="amount">The amount (in dollars).</param>
+        /// <param name="currency">The currency (3-letter ISO code for currency).</param>
+        /// <param name="token">The secure token</param>
+        /// <param name="cardHolder">The card holder information (used for AVS).</param>
+        /// <param name="requestMultiUseToken">Request a multi-use token</param>
+        /// <param name="descriptor">Transaction description that is concatenated to a configurable
+        /// merchant DBA name. The resulting string is sent to the card issuer for the Merchant Name.</param>
+        /// <param name="allowPartialAuth">Indicated whether partial authorization is supported.</param>
+        /// <param name="details">The transaction details.</param>
+        /// <param name="gratuity">The gratuity amount.</param>
+        /// <param name="directMarketData">The direct market data.</param>
+        /// <returns>The <see cref="HpsCharge"/>.</returns>
+        public HpsCharge Charge(decimal amount, string currency, HpsTokenData token, HpsCardHolder cardHolder = null,
+            bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
+            HpsTransactionDetails details = null, decimal gratuity = 0, HpsDirectMarketData directMarketData = null)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -254,14 +291,7 @@ namespace SecureSubmit.Services
                         CardData = new CardDataType
                         {
                             TokenRequest = requestMultiUseToken ? booleanType.Y : booleanType.N,
-                            Item = new CardDataTypeTokenData
-                            {
-                                TokenValue = token,
-                                ExpMonth = tokenExpMonth.HasValue ? tokenExpMonth.Value : default(int),
-                                ExpMonthSpecified = tokenExpMonth.HasValue,
-                                ExpYear = tokenExpYear.HasValue ? tokenExpYear.Value : default(int),
-                                ExpYearSpecified = tokenExpYear.HasValue
-                            }
+                            Item = HydrateTokenData(token)
                         },
                         AdditionalTxnFields = HydrateAdditionalTxnFields(details),
                         TxnDescriptor = descriptor,
@@ -356,10 +386,34 @@ namespace SecureSubmit.Services
         /// <param name="cardHolder">The card holder information (used for AVS).</param>
         /// <param name="requestMultiUseToken">Request a multi-use token.</param>
         /// <param name="clientTransactionId">Optional client transaction ID.</param>
+        /// <param name="tokenExpMonth">The updated expiration month.</param>
+        /// <param name="tokenExpYear">The update expiration year.</param>
         /// <returns>The <see cref="HpsCharge"/>.</returns>
         public HpsAccountVerify Verify(string token, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, long? clientTransactionId = null,
             int? tokenExpMonth = null, int? tokenExpYear = null)
+        {
+            return Verify(
+                new HpsTokenData { TokenValue = token, ExpMonth = tokenExpMonth, ExpYear = tokenExpYear },
+                cardHolder,
+                requestMultiUseToken,
+                clientTransactionId
+            );
+        }
+
+        /// <summary>
+        /// A <b>credit account verify</b> transaction is used to verify that the account is in good standing
+        /// with the issuer. This is a zero dollar transaction with no associated authorization. Since VISA and
+        /// other issuers have started assessing penalties for one dollar authorizations, this provides a way for
+        /// merchants to accomplish the same task while avoiding these penalties.
+        /// </summary>
+        /// <param name="token">The secure token</param>
+        /// <param name="cardHolder">The card holder information (used for AVS).</param>
+        /// <param name="requestMultiUseToken">Request a multi-use token.</param>
+        /// <param name="clientTransactionId">Optional client transaction ID.</param>
+        /// <returns>The <see cref="HpsCharge"/>.</returns>
+        public HpsAccountVerify Verify(HpsTokenData token, HpsCardHolder cardHolder = null,
+            bool requestMultiUseToken = false, long? clientTransactionId = null)
         {
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
@@ -372,14 +426,7 @@ namespace SecureSubmit.Services
                         CardData = new CardDataType
                         {
                             TokenRequest = requestMultiUseToken ? booleanType.Y : booleanType.N,
-                            Item = new CardDataTypeTokenData
-                            {
-                                TokenValue = token,
-                                ExpMonth = tokenExpMonth.HasValue ? tokenExpMonth.Value : default(int),
-                                ExpMonthSpecified = tokenExpMonth.HasValue,
-                                ExpYear = tokenExpYear.HasValue ? tokenExpYear.Value : default(int),
-                                ExpYearSpecified = tokenExpYear.HasValue
-                            }
+                            Item = HydrateTokenData(token)
                         }
                     }
                 },
@@ -425,7 +472,6 @@ namespace SecureSubmit.Services
             return SubmitVerify(transaction, clientTransactionId);
         }
 
-  
         /// <summary>
         /// A <b>credit authorization</b> transaction authorizes a credit card transaction. The authorization is NOT placed
         /// in the batch. The <b>credit authorization</b> transaction can be committed by using the capture method.
@@ -492,10 +538,44 @@ namespace SecureSubmit.Services
         /// <param name="allowPartialAuth">Indicated whether partial authorization is supported.</param>
         /// <param name="details">The transaction details.</param>
         /// <param name="gratuity">The gratuity.</param>
+        /// <param name="tokenExpMonth">The updated expiration month.</param>
+        /// <param name="tokenExpYear">The update expiration year.</param>
         /// <returns>The <see cref="HpsAuthorization"/>.</returns>
         public HpsAuthorization Authorize(decimal amount, string currency, string token, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
             HpsTransactionDetails details = null, decimal gratuity = 0, int? tokenExpMonth = null, int? tokenExpYear = null)
+        {
+            return Authorize(
+                amount,
+                currency,
+                new HpsTokenData { TokenValue = token, ExpMonth = tokenExpMonth, ExpYear = tokenExpYear },
+                cardHolder,
+                requestMultiUseToken,
+                descriptor,
+                allowPartialAuth,
+                details,
+                gratuity
+            );
+        }
+
+        /// <summary>
+        /// A <b>credit authorization</b> transaction authorizes a credit card transaction. The authorization is NOT placed
+        /// in the batch. The <b>credit authorization</b> transaction can be committed by using the capture method.
+        /// </summary>
+        /// <param name="amount">Amount to verify.</param>
+        /// <param name="currency">The currency (3-letter ISO code for currency).</param>
+        /// <param name="token">The secure token</param>
+        /// <param name="cardHolder">The card holder information (used for AVS).</param>
+        /// <param name="requestMultiUseToken">Request a multi-use token</param>
+        /// <param name="descriptor">Transaction description that is concatenated to a configurable
+        /// merchant DBA name. The resulting string is sent to the card issuer for the Merchant Name.</param>
+        /// <param name="allowPartialAuth">Indicated whether partial authorization is supported.</param>
+        /// <param name="details">The transaction details.</param>
+        /// <param name="gratuity">The gratuity.</param>
+        /// <returns>The <see cref="HpsAuthorization"/>.</returns>
+        public HpsAuthorization Authorize(decimal amount, string currency, HpsTokenData token, HpsCardHolder cardHolder = null,
+            bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
+            HpsTransactionDetails details = null, decimal gratuity = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -518,14 +598,7 @@ namespace SecureSubmit.Services
                         CardData = new CardDataType
                         {
                             TokenRequest = requestMultiUseToken ? booleanType.Y : booleanType.N,
-                            Item = new CardDataTypeTokenData
-                            {
-                                TokenValue = token,
-                                ExpMonth = tokenExpMonth.HasValue ? tokenExpMonth.Value : default(int),
-                                ExpMonthSpecified = tokenExpMonth.HasValue,
-                                ExpYear = tokenExpYear.HasValue ? tokenExpYear.Value : default(int),
-                                ExpYearSpecified = tokenExpYear.HasValue
-                            }
+                            Item = HydrateTokenData(token)
                         },
                         AdditionalTxnFields = HydrateAdditionalTxnFields(details),
                         TxnDescriptor = descriptor
@@ -911,7 +984,7 @@ namespace SecureSubmit.Services
 
             return SubmitRefund(transaction, (details == null) ? null : details.ClientTransactionId);
         }
- 
+
         /// <summary>A <b>credit void</b> transaction is used to inactivate a transaction.
         /// The transaction must be an <b>Authorize</b>, <b>Charge</b> or <b>Return</b>.
         /// The transaction must be active in order to be voided. <b>Authorize</b>

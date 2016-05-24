@@ -10,7 +10,7 @@ namespace SecureSubmit.Fluent
     HpsCreditCard card;
     HpsCardHolder cardHolder;
     HpsTrackData trackData;
-    string token;
+    HpsTokenData token;
 
     public CreditBalanceInquiryBuilder WithCard(HpsCreditCard card) {
         this.card = card;
@@ -25,6 +25,10 @@ namespace SecureSubmit.Fluent
         return this;
     }
     public CreditBalanceInquiryBuilder WithToken(string token) {
+        this.token = new HpsTokenData { TokenValue = token };
+        return this;
+    }
+    public CreditBalanceInquiryBuilder WithToken(HpsTokenData token) {
         this.token = token;
         return this;
     }
