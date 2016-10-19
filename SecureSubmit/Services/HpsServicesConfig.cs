@@ -63,8 +63,31 @@ namespace SecureSubmit.Services
         //    get { return HpsConfiguration.PayPlanBaseUri; }
         //    set { HpsConfiguration.PayPlanBaseUri = value ?? HpsConfiguration.PayPlanBaseUri; }
         //}
+        private string _serviceUrl;
+        public string ServiceUrl {
+            get
+            {
+                // If the URI was explicitly set, use that
+                if (!string.IsNullOrEmpty(_serviceUrl)) return _serviceUrl;
 
-        public string ServiceUrl { get; set; }
+                // if there is a secret key check for cert/uat
+                if (!string.IsNullOrEmpty(SecretApiKey))
+                {
+                    // If we have a secret key, return either the production URI...
+                    if (SecretApiKey.Contains("_uat_"))
+                        return "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                    else if (SecretApiKey.Contains("_cert_"))
+                        return "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                }
+
+                // all else fails return the default
+                return "https://api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+            }
+            set
+            {
+                _serviceUrl = value;
+            }
+        }
     }
 
     public abstract class HpsRestServiceConfig : HpsServicesConfig

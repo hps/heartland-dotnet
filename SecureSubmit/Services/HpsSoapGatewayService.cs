@@ -76,7 +76,7 @@ namespace SecureSubmit.Services {
                 req.Ver10.Header.ClientTxnIdSpecified = true;
             }
 
-            using (var client = new PosGatewayService { Url = HpsConfiguration.SoapServiceUri }) {
+            using (var client = new PosGatewayService { Url = ServicesConfig.ServiceUrl }) {
                 return client.DoTransaction(req);
             }
         }
