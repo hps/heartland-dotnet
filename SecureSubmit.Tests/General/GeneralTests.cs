@@ -19,6 +19,24 @@ namespace SecureSubmit.Tests {
         };
 
         [TestMethod]
+        public void SecretKeyWithExtraSpaces()
+        {
+            var card = new HpsCreditCard
+            {
+                Number = "4111111111111111",
+                ExpMonth = 12,
+                ExpYear = 2025,
+                Cvv = "012"
+            };
+
+            ServicesConfig.SecretApiKey += "  ";
+            var creditService = new HpsCreditService(ServicesConfig);
+            var response = creditService.Charge(15.15m, "usd", card);
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+        }
+
+        [TestMethod]
         public void CvvWithLeadingZeros() {
             var card = new HpsCreditCard {
                 Number = "4111111111111111",

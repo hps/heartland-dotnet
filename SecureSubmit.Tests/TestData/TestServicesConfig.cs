@@ -34,20 +34,13 @@ namespace SecureSubmit.Tests.TestData
             };
         }
 
-        public static HpsOrcaServiceConfig ValidOrcaServiceConfig()
+        public static HpsActivationServiceConfig ValidHpsActivationServiceConfig()
         {
-            return new HpsOrcaServiceConfig
+            return new HpsActivationServiceConfig
             {
-                DeviceId = 5315938,
-                LicenseId = 101433,
-                Password = "$Test1234",
-                SiteId = 101436,
-                SiteTrace = "trace0001",
                 UserName = "777700857994",
-                VersionNumber = "1234",
+                Password = "$Test1234",
                 IsTest = true,
-                ApplicationId = "Mobuyle Retail",
-                HardwareTypeName = "Heartland Mobuyle"
             };
         }
 
@@ -55,13 +48,14 @@ namespace SecureSubmit.Tests.TestData
         {
             return new HpsPayPlanServicesConfig
             {
-                DeviceId = 1525384,
-                LicenseId = 21081,
-                Password = "$Test1234",
-                SiteId = 21084,
-                SiteTrace = "trace0001",
-                UserName = "777700005974A",
-                VersionNumber = "1234"
+                SecretApiKey = "skapi_cert_MTyMAQBiHVEAewvIzXVFcmUd2UcyBge_eCpaASUp0A"
+                //DeviceId = 1525384,
+                //LicenseId = 21081,
+                //Password = "$Test1234",
+                //SiteId = 21084,
+                //SiteTrace = "trace0001",
+                //UserName = "777700005974A",
+                //VersionNumber = "1234"
             };
         }
 
@@ -86,7 +80,7 @@ namespace SecureSubmit.Tests.TestData
                 {
                     CredentialToken = "pkapi_cert_P6dRqs1LzfWJ6HgGVZ",
                     SecretApiKey = "skapi_cert_MYl2AQAowiQAbLp5JesGKh7QFkcizOP2jcX9BrEMqQ",
-                    ServiceUrl = PayPlanBaseUri
+                    ServiceUrl = CertServiceUri
                 };
         }
 

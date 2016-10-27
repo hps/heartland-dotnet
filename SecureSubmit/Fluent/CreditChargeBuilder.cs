@@ -1,8 +1,10 @@
-﻿using Hps.Exchange.PosGateway.Client;
+﻿using System.Collections.Generic;
+using Hps.Exchange.PosGateway.Client;
 using SecureSubmit.Abstractions;
 using SecureSubmit.Entities;
 using SecureSubmit.Entities.Credit;
 using SecureSubmit.Fluent.Services;
+using SecureSubmit.Infrastructure;
 using SecureSubmit.Infrastructure.Validation;
 
 namespace SecureSubmit.Fluent {
@@ -26,6 +28,7 @@ namespace SecureSubmit.Fluent {
         private HpsAutoSubstantiation autoSubstantiation;
         private HpsTxnReferenceData originalTxnReferenceData;
         private HpsEmvDataType emvData;
+        private HpsGiftCard rewards;
 
         public CreditChargeBuilder WithAmount(decimal? amount) {
             this.amount = amount;
@@ -108,6 +111,17 @@ namespace SecureSubmit.Fluent {
             this.autoSubstantiation = autoSubstantiation;
             return this;
         }
+        public CreditChargeBuilder WithRewards(HpsGiftCard card) {
+            this.rewards = card;
+            return this;
+        }
+        public CreditChargeBuilder WithRewards(string cardNumber) {
+            this.rewards = new HpsGiftCard {
+                Value = cardNumber,
+                ValueType = ItemChoiceType.CardNbr
+            };
+            return this;
+        }
 
         public CreditChargeBuilder(HpsFluentCreditService service)
             : base(service) {
@@ -178,7 +192,16 @@ namespace SecureSubmit.Fluent {
 
             var clientTransactionId = service.GetClientTransactionId(details);
             var response = service.SubmitTransaction(transaction, clientTransactionId);
-            return new HpsCharge().FromResponse(response);
+            var charge = new HpsCharge().FromResponse(response);
+            if (rewards != null && charge.ResponseCode == "00") {
+                var giftClient = new HpsFluentGiftCardService(service.ServicesConfig);
+                try {
+                    charge.RewardsResponse = giftClient.Reward(amount).WithCard(rewards).Execute();
+                }
+                catch (HpsException) { /* NOM NOM */ }
+            }
+
+            return charge;
         }
 
         protected override void SetupValidations() {

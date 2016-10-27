@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstractions\IHpsTransaction.cs" />
+    <Compile Include="Entities\Attachment\HpsAttachment.cs" />
     <Compile Include="Entities\Check\HpsCheck.cs" />
     <Compile Include="Entities\Credit\HpsAdditionalAmount.cs" />
     <Compile Include="Entities\Credit\HpsAdditionalTransactionFields.cs" />
@@ -69,7 +70,6 @@
     <Compile Include="Entities\Credit\HpsCpcData.cs" />
     <Compile Include="Entities\Credit\HpsTxnReferenceData.cs" />
     <Compile Include="Entities\Debit\HpsDebitAuthorization.cs" />
-    <Compile Include="Entities\Orca\HpsDeviceData.cs" />
     <Compile Include="Entities\Ebt\HpsEbtAuthorization.cs" />
     <Compile Include="Entities\Gift\HpsGiftCardResponse.cs" />
     <Compile Include="Entities\HpsDirectMarketData.cs" />
@@ -122,12 +122,14 @@
     <Compile Include="Infrastructure\HpsAuthenticationException.cs" />
     <Compile Include="Infrastructure\Enums.cs" />
     <Compile Include="Infrastructure\HpsConfiguration.cs" />
+    <Compile Include="Infrastructure\HpsConfigurationException.cs" />
     <Compile Include="Infrastructure\HpsCreditException.cs" />
     <Compile Include="Infrastructure\HpsCreditExceptionDetails.cs" />
     <Compile Include="Infrastructure\HpsException.cs" />
     <Compile Include="Infrastructure\HpsGatewayException.cs" />
     <Compile Include="Infrastructure\HpsGatewayExceptionDetails.cs" />
     <Compile Include="Infrastructure\HpsInvalidRequestException.cs" />
+    <Compile Include="Infrastructure\HpsMessageException.cs" />
     <Compile Include="Infrastructure\PosGatewayClient.cs" />
     <Compile Include="Infrastructure\Validation\HpsIssuerResponseValidation.cs" />
     <Compile Include="Infrastructure\Validation\HpsGatewayResponseValidation.cs" />
@@ -186,13 +188,13 @@
     <Compile Include="Fluent\Services\HpsFluentDebitService.cs" />
     <Compile Include="Fluent\Services\HpsFluentEbtService.cs" />
     <Compile Include="Fluent\Services\HpsFluentGiftCardService.cs" />
+    <Compile Include="Services\HpsAttachmentService.cs" />
     <Compile Include="Services\HpsBatchService.cs" />
     <Compile Include="Services\HpsCheckService.cs" />
     <Compile Include="Entities\HpsRecurringData.cs" />
     <Compile Include="Services\HpsCreditService.cs" />
     <Compile Include="Services\HpsDebitService.cs" />
     <Compile Include="Services\HpsGiftCardService.cs" />
-    <Compile Include="Services\HpsOrcaService.cs" />
     <Compile Include="Services\HpsRestGatewayService.cs" />
     <Compile Include="Services\HpsSoapGatewayService.cs" />
     <Compile Include="Services\HpsServicesConfig.cs" />
@@ -226,7 +228,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

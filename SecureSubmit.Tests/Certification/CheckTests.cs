@@ -28,7 +28,7 @@ namespace SecureSubmit.Tests.General
         #region ACH Debit - Consumer
 
         [TestMethod]
-        public void Test001ConsumerPersonalChecking()
+        public void checks_001ConsumerPersonalChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.PPD;
@@ -45,7 +45,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test002ConsumerBusinessChecking()
+        public void checks_002ConsumerBusinessChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.PPD;
@@ -60,7 +60,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test003ConsumerPersonalSavings()
+        public void checks_003ConsumerPersonalSavings()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.PPD;
@@ -75,7 +75,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test004ConsumerBusinessSavings()
+        public void checks_004ConsumerBusinessSavings()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.PPD;
@@ -90,7 +90,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test005CorporatePersonalChecking()
+        public void checks_005CorporatePersonalChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.CCD;
@@ -111,7 +111,7 @@ namespace SecureSubmit.Tests.General
         #region ACH Debit - Corporate
 
         [TestMethod]
-        public void Test006CorporateBuisnessChecking()
+        public void checks_006CorporateBuisnessChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.CCD;
@@ -127,7 +127,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test007CorporatePersonalSavings()
+        public void checks_007CorporatePersonalSavings()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.CCD;
@@ -143,7 +143,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test008CorporateBuisnessSavings()
+        public void checks_008CorporateBuisnessSavings()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.CCD;
@@ -163,7 +163,7 @@ namespace SecureSubmit.Tests.General
         #region eGold Checking Tests
 
         [TestMethod]
-        public void Test009EgoldPersonalChecking()
+        public void checks_009EgoldPersonalChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.POP;
@@ -178,7 +178,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test010EgoldBuisnessChecking()
+        public void checks_010EgoldBuisnessChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.POP;
@@ -194,7 +194,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test011EgoldPersonalSavings()
+        public void checks_011EgoldPersonalSavings()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.POP;
@@ -209,7 +209,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test012EgoldBusinessSavings()
+        public void checks_012EgoldBusinessSavings()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.POP;
@@ -228,7 +228,7 @@ namespace SecureSubmit.Tests.General
         #region eSilver 
 
         [TestMethod]
-        public void Test013EsilverPersonalChecking()
+        public void checks_013EsilverPersonalChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.POP;
@@ -243,7 +243,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test014EsilverBuisnessChecking()
+        public void checks_014EsilverBuisnessChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.POP;
@@ -259,7 +259,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test015EsilverPersonalSavings()
+        public void checks_015EsilverPersonalSavings()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.POP;
@@ -274,7 +274,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test016EsilverBuisnessSavings()
+        public void checks_016EsilverBuisnessSavings()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.POP;
@@ -292,8 +292,8 @@ namespace SecureSubmit.Tests.General
 
         #region Bronze
 
-        [TestMethod]
-        public void Test017EbronzePersonalChecking()
+        [TestMethod, Ignore]
+        public void checks_017EbronzePersonalChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.EBRONZE;
@@ -308,8 +308,8 @@ namespace SecureSubmit.Tests.General
             Assert.AreEqual("0", response.ResponseCode);
         }
 
-        [TestMethod]
-        public void Test018EbronzePersonalChecking()
+        [TestMethod, Ignore]
+        public void checks_018EbronzePersonalChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.EBRONZE;
@@ -324,8 +324,8 @@ namespace SecureSubmit.Tests.General
             Assert.AreEqual("0", response.ResponseCode);
         }
 
-        [TestMethod]
-        public void Test019EbronzePersonalChecking()
+        [TestMethod, Ignore]
+        public void checks_019EbronzePersonalChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.EBRONZE;
@@ -340,8 +340,8 @@ namespace SecureSubmit.Tests.General
             Assert.AreEqual("0", response.ResponseCode);
         }
 
-        [TestMethod]
-        public void Test020EbronzeBusinessSavings()
+        [TestMethod, Ignore]
+        public void checks_020EbronzeBusinessSavings()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.EBRONZE;
@@ -361,7 +361,7 @@ namespace SecureSubmit.Tests.General
         #region Checks-by-Web
 
         [TestMethod]
-        public void Test021WebPersonalChecking()
+        public void checks_021WebPersonalChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.WEB;
@@ -376,7 +376,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test022WebBuisnessChecking()
+        public void checks_022WebBuisnessChecking()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.WEB;
@@ -391,7 +391,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test023WebPersonalSavings()
+        public void checks_023WebPersonalSavings()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.WEB;
@@ -407,7 +407,7 @@ namespace SecureSubmit.Tests.General
         }
 
         [TestMethod]
-        public void Test024WebBusinessSavings()
+        public void checks_024WebBusinessSavings()
         {
             var check = TestCheck.Certification;
             check.SecCode = HpsSECCode.WEB;
@@ -425,51 +425,51 @@ namespace SecureSubmit.Tests.General
 
         #region Check Void
 
-        [TestMethod]
-        public void Test025PpdCheckVoid()
+        [TestMethod, Ignore]
+        public void checks_025PpdCheckVoid()
         {
             var response = _checkService.Void()
-                .withClientTransactionId(test01TransactionId)
+                .withTransactionId(test01TransactionId)
                 .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
-        [TestMethod]
-        public void Test026CcdCheckVoid()
+        [TestMethod, Ignore]
+        public void checks_026CcdCheckVoid()
         {
             var response = _checkService.Void()
-                .withClientTransactionId(test05TransactionId)
+                .withTransactionId(test05TransactionId)
                 .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
-        [TestMethod]
-        public void Test027PopCheckVoid()
+        [TestMethod, Ignore]
+        public void checks_027PopCheckVoid()
         {
             var response = _checkService.Void()
-                .withClientTransactionId(test10TransactionId)
+                .withTransactionId(test10TransactionId)
                 .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
-        [TestMethod]
-        public void Test028PopCheckVoid()
+        [TestMethod, Ignore]
+        public void checks_028PopCheckVoid()
         {
             var response = _checkService.Void()
-                .withClientTransactionId(test14TransactionId)
+                .withTransactionId(test14TransactionId)
                 .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);
         }
 
-        [TestMethod]
-        public void Test029WebCheckVoid()
+        [TestMethod, Ignore]
+        public void checks_029WebCheckVoid()
         {
             var response = _checkService.Void()
-                .withClientTransactionId(test23TransactionId)
+                .withTransactionId(test23TransactionId)
                 .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("0", response.ResponseCode);

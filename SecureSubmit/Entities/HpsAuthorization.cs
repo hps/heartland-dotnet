@@ -45,6 +45,8 @@ namespace SecureSubmit.Entities
         /// <summary>Gets or sets the token data.</summary>
         public HpsTokenData TokenData { get; set; }
 
+        public HpsGiftCardResponse RewardsResponse { get; set; }
+
         internal new HpsAuthorization FromResponse(PosResponseVer10 response) {
             base.FromResponse(response);
 

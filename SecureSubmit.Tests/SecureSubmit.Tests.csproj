@@ -50,7 +50,9 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
@@ -63,8 +65,9 @@
     <Compile Include="Certification\CheckTests.cs" />
     <Compile Include="General\EMVTests.cs" />
     <Compile Include="General\GeneralTests.cs" />
-    <Compile Include="OrcaServiceTests.cs" />
+    <Compile Include="General\RewardsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\HpsAttachmentServiceTests.cs" />
     <Compile Include="TestData\TestCardHolder.cs" />
     <Compile Include="TestData\TestCheck.cs" />
     <Compile Include="TestData\TestCreditCard.cs" />
@@ -81,16 +84,12 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Certification\eCommerce-eCheck.OrderedTest">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Certification\MOTO.orderedtest">
+    <None Include="Certification\check.orderedtest" />
+    <None Include="Certification\ecomm.orderedtest" />
+    <None Include="Certification\recurring.orderedtest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Certification\Recurring.OrderedTest">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Certification\Retail.orderedtest" />
+    <None Include="Certification\retail.orderedtest" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
@@ -112,7 +111,7 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

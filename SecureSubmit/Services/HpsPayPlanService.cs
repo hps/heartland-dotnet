@@ -22,22 +22,6 @@ namespace SecureSubmit.Services
             var encoded = Convert.ToBase64String(keyBytes);
             var auth = String.Format("Basic {0}", encoded);
             _authHeader.Add("Authorization", auth);
-
-            var components = _config.SecretApiKey.Split('_');
-            var env = components[1].ToLower();
-
-            if (env.Equals("prod"))
-            {
-                _config.ServiceUrl = _config.ProdUrl;
-            }
-            else if (env.Equals("cert"))
-            {
-                _config.ServiceUrl = _config.CertUrl;
-            }
-            else
-            {
-                _config.ServiceUrl = _config.UatUrl;
-            }
         }
 
         /* CUSTOMER METHODS */

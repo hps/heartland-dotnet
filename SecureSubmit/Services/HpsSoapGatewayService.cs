@@ -17,36 +17,7 @@ namespace SecureSubmit.Services {
             this.enableLogging = enableLogging;
         }
 
-        protected IHpsServicesConfig ServicesConfig { get; set; }
-
-        internal static PosResponse DoTransaction(IHpsServicesConfig config, PosRequestVer10Transaction transaction,
-            long? clientTransactionId = null) {
-            var req = new PosRequest {
-                Ver10 = new PosRequestVer10 {
-                    Header = new PosRequestVer10Header {
-                        SecretAPIKey = config.SecretApiKey,
-                        LicenseId = config.LicenseId,
-                        SiteId = config.SiteId,
-                        DeviceId = config.DeviceId,
-                        VersionNbr = config.VersionNumber,
-                        UserName = config.UserName,
-                        Password = config.Password,
-                        DeveloperID = config.DeveloperId,
-                        SiteTrace = config.SiteTrace
-                    },
-                    Transaction = transaction
-                }
-            };
-
-            if (clientTransactionId.HasValue) {
-                req.Ver10.Header.ClientTxnId = clientTransactionId.Value;
-                req.Ver10.Header.ClientTxnIdSpecified = true;
-            }
-
-            using (var client = new PosGatewayService { Url = HpsConfiguration.SoapServiceUri }) {
-                return client.DoTransaction(req);
-            }
-        }
+        internal IHpsServicesConfig ServicesConfig { get; set; }
 
         internal PosResponse DoTransaction(PosRequestVer10Transaction transaction, long? clientTransactionId = null) {
             // Check for a valid config.
@@ -57,15 +28,15 @@ namespace SecureSubmit.Services {
             var req = new PosRequest {
                 Ver10 = new PosRequestVer10 {
                     Header = new PosRequestVer10Header {
-                        SecretAPIKey = (ServicesConfig == null) ? HpsConfiguration.SecretApiKey : ServicesConfig.SecretApiKey,
-                        LicenseId = (ServicesConfig == null) ? HpsConfiguration.LicenseId : ServicesConfig.LicenseId,
-                        SiteId = (ServicesConfig == null) ? HpsConfiguration.SiteId : ServicesConfig.SiteId,
-                        DeviceId = (ServicesConfig == null) ? HpsConfiguration.DeviceId : ServicesConfig.DeviceId,
-                        VersionNbr = (ServicesConfig == null) ? HpsConfiguration.VersionNumber : ServicesConfig.VersionNumber,
-                        UserName = (ServicesConfig == null) ? HpsConfiguration.UserName : ServicesConfig.UserName,
-                        Password = (ServicesConfig == null) ? HpsConfiguration.Password : ServicesConfig.Password,
-                        DeveloperID = (ServicesConfig == null) ? HpsConfiguration.DeveloperId : ServicesConfig.DeveloperId,
-                        SiteTrace = (ServicesConfig == null) ? HpsConfiguration.SiteTrace : ServicesConfig.SiteTrace
+                        SecretAPIKey = ServicesConfig.SecretApiKey,
+                        LicenseId = ServicesConfig.LicenseId,
+                        SiteId = ServicesConfig.SiteId,
+                        DeviceId = ServicesConfig.DeviceId,
+                        VersionNbr = ServicesConfig.VersionNumber,
+                        UserName = ServicesConfig.UserName,
+                        Password = ServicesConfig.Password,
+                        DeveloperID = ServicesConfig.DeveloperId,
+                        SiteTrace = ServicesConfig.SiteTrace
                     },
                     Transaction = transaction
                 }
@@ -76,22 +47,21 @@ namespace SecureSubmit.Services {
                 req.Ver10.Header.ClientTxnIdSpecified = true;
             }
 
-            using (var client = new PosGatewayService { Url = HpsConfiguration.SoapServiceUri }) {
+            using (var client = new PosGatewayService { Url = ServicesConfig.ServiceUrl }) {
                 return client.DoTransaction(req);
             }
         }
 
         private bool IsConfigInvalid() {
-            return ServicesConfig == null
-                   && (HpsConfiguration.SecretApiKey == null
-                       || HpsConfiguration.LicenseId == -1 || HpsConfiguration.DeviceId == -1
-                       || HpsConfiguration.Password == null || HpsConfiguration.SoapServiceUri == null
-                       || HpsConfiguration.SiteId == -1 || HpsConfiguration.UserName == null);
+            return ServicesConfig == null 
+                && ServicesConfig.SecretApiKey == null 
+                && (ServicesConfig.LicenseId == default(int) 
+                    || ServicesConfig.SiteId == default(int) 
+                    || ServicesConfig.DeviceId == default(int)
+                    || ServicesConfig.UserName == null
+                    || ServicesConfig.Password == null);
         }
 
-        /// <summary>Hydrate a new HPS transaction response header.</summary>
-        /// <param name="header">The response header from the HPS gateway.</param>
-        /// <returns>The <see cref="HpsTransactionHeader"/>.</returns>
         internal HpsTransactionHeader HydrateTransactionHeader(PosResponseVer10Header header) {
             var hpsTransactionHeader = new HpsTransactionHeader {
                 GatewayRspMsg = header.GatewayRspMsg,
@@ -133,9 +103,9 @@ namespace SecureSubmit.Services {
                 ExpYear = card.ExpYear,
                 CVV2 = card.Cvv,
                 CVV2StatusSpecified = false,
-                CardPresent = booleanType.N,
+                CardPresent = cardPresent ? booleanType.Y : booleanType.N,
                 CardPresentSpecified = true,
-                ReaderPresent = booleanType.N,
+                ReaderPresent = readerPresent ? booleanType.Y : booleanType.N,
                 ReaderPresentSpecified = true,
             };
         }
@@ -215,7 +185,9 @@ namespace SecureSubmit.Services {
             var cardDataTypeTokenData = new CardDataTypeTokenData {
                 TokenValue = token.TokenValue,
                 CardPresent = cardPresent ? booleanType.Y : booleanType.N,
+                CardPresentSpecified = true,
                 ReaderPresent = readerPresent ? booleanType.Y : booleanType.N,
+                ReaderPresentSpecified = true,
                 ExpMonth = token.ExpMonth.HasValue ? token.ExpMonth.Value : default(int),
                 ExpMonthSpecified = token.ExpMonth.HasValue,
                 ExpYear = token.ExpYear.HasValue ? token.ExpYear.Value : default(int),

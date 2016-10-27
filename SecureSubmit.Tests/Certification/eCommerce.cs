@@ -19,7 +19,7 @@ namespace SecureSubmit.Tests.Certification
         private readonly HpsBatchService _batchService = new HpsBatchService(ServicesConfig);
         private readonly HpsFluentCreditService _creditService = new HpsFluentCreditService(ServicesConfig);
         private readonly HpsFluentGiftCardService _giftService = new HpsFluentGiftCardService(ServicesConfig);
-        private const bool UseTokens = true;
+        private const bool UseTokens = false;
 
         private static string visaToken;
         private static string masterCardToken;
@@ -164,6 +164,7 @@ namespace SecureSubmit.Tests.Certification
                 .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithRequestMultiUseToken(true)
+                .WithAllowDuplicates(true)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -187,6 +188,7 @@ namespace SecureSubmit.Tests.Certification
                 .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithRequestMultiUseToken(true)
+                .WithAllowDuplicates(true)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -210,6 +212,7 @@ namespace SecureSubmit.Tests.Certification
                 .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithRequestMultiUseToken(true)
+                .WithAllowDuplicates(true)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -233,6 +236,7 @@ namespace SecureSubmit.Tests.Certification
                 .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithRequestMultiUseToken(true)
+                .WithAllowDuplicates(true)
                 .Execute();
 
             Assert.IsNotNull(response);
@@ -259,12 +263,12 @@ namespace SecureSubmit.Tests.Certification
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             // ReSharper disable once UnreachableCode
             // ReSharper disable once CSharpWarnings::CS0162
-            var builder = UseTokens ? typeBuilder.WithToken(visaToken) :
-                typeBuilder.WithCard(card);
+            var builder = UseTokens ? typeBuilder.WithToken(visaToken) : typeBuilder.WithCard(card);
 
             var chargeResponse = builder
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
+                .WithAllowDuplicates(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -295,6 +299,7 @@ namespace SecureSubmit.Tests.Certification
             var chargeResponse = builder
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
+                .WithAllowDuplicates(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -324,6 +329,7 @@ namespace SecureSubmit.Tests.Certification
             var chargeResponse = builder
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
+                .WithAllowDuplicates(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -353,6 +359,7 @@ namespace SecureSubmit.Tests.Certification
             var chargeResponse = builder
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
+                .WithAllowDuplicates(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -375,6 +382,7 @@ namespace SecureSubmit.Tests.Certification
                 .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
+                .WithAllowDuplicates(true)
                 .Execute();
 
             Assert.IsNotNull(chargeResponse);
@@ -399,6 +407,7 @@ namespace SecureSubmit.Tests.Certification
                 .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
+                .WithAllowDuplicates(true)
                 .Execute();
 
             Assert.IsNotNull(authResponse);
@@ -427,6 +436,7 @@ namespace SecureSubmit.Tests.Certification
                 .WithCard(card)
                 .WithCardHolder(cardHolder)
                 .WithDirectMarketData(directMarketData)
+                .WithAllowDuplicates(true)
                 .Execute();
 
             Assert.IsNotNull(authResponse);
@@ -558,6 +568,7 @@ namespace SecureSubmit.Tests.Certification
             var chargeResponse = _creditService.Charge(112.34m)
                 .WithCard(card)
                 .WithCardHolder(cardHolder)
+                .WithAllowDuplicates(true)
                 .WithCpcReq(true)
                 .Execute();
 
@@ -985,7 +996,7 @@ namespace SecureSubmit.Tests.Certification
 
         // ONLINE VOID / REVERSAL
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ecomm_035_void_ecomm_10() {
             var voidResponse = _creditService.Void(test10TransactionId).Execute();
 
@@ -993,7 +1004,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", voidResponse.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ecomm_036_void_ecomm_20() {
             var voidResponse = _creditService.Void(test20TransactionId).Execute();
 
@@ -1005,7 +1016,7 @@ namespace SecureSubmit.Tests.Certification
 
         // BALANCE INQUIRY
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ecomm_037_balance_inquiry_gsb() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
@@ -1020,7 +1031,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ecomm_038_add_value_gsb() {
             var trackData = new HpsTrackData {
                 Value = "%B6277220572999800^   /                         ^49121010557010000016000000?F;6277220572999800=49121010557010000016?"
@@ -1036,7 +1047,7 @@ namespace SecureSubmit.Tests.Certification
 
         // SALE
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ecomm_039_charge_gsb() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
 
@@ -1053,7 +1064,7 @@ namespace SecureSubmit.Tests.Certification
             test39TransactionId = chargeResponse.TransactionId;
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ecomm_040_charge_gsb() {
             var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860", Zip = "75024" } };
             var card = new HpsCreditCard { Number = "6277220572999800", ExpYear = 2049, ExpMonth = 12 };
@@ -1070,7 +1081,7 @@ namespace SecureSubmit.Tests.Certification
 
         // ONLINE VOID / REVERSAL
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ecomm_041_void_gsb() {
             var voidResponse = _creditService.Void(test39TransactionId)
                 .Execute();
@@ -1211,7 +1222,7 @@ namespace SecureSubmit.Tests.Certification
 
         // VOID
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ecomm_054_void_gift() {
             var voidResponse = _giftService.VoidSale(test52TransactionId).Execute();
 
@@ -1221,7 +1232,7 @@ namespace SecureSubmit.Tests.Certification
 
         // REVERSAL
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void ecomm_055_reversal_gift() {
             var reverseResponse = _giftService.Reverse(4.0m).WithTransactionId(test53TransactionId).Execute();
 

@@ -123,5 +123,4 @@ namespace SecureSubmit.Fluent {
             return count == 1;
         }
     }
-
 }

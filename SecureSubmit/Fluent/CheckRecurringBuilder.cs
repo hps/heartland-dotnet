@@ -12,6 +12,7 @@ namespace SecureSubmit.Fluent {
         string paymentMethodKey;
         string scheduleKey;
         bool oneTime = false;
+        long? clientTransactionId;
 
         public CheckRecurringBuilder WithAmount(decimal? amount) {
             this.amount = amount;
@@ -30,6 +31,11 @@ namespace SecureSubmit.Fluent {
         }
         public CheckRecurringBuilder WithOneTime(bool oneTime) {
             this.oneTime = oneTime;
+            return this;
+        }
+        public CheckRecurringBuilder WithClientTransactionId(long? clientTransactionId)
+        {
+            this.clientTransactionId = clientTransactionId;
             return this;
         }
 
@@ -57,7 +63,7 @@ namespace SecureSubmit.Fluent {
                 ItemElementName = ItemChoiceType1.CheckSale
             };
 
-            return service.SubmitTransaction(transaction);
+            return service.SubmitTransaction(transaction, clientTransactionId);
         }
 
         protected override void SetupValidations() {

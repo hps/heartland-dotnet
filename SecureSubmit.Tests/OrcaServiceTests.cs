@@ -47,7 +47,7 @@ namespace SecureSubmit.Tests
             Assert.IsNotNull(response);
         }
         
-        [TestMethod]
+        [TestMethod, Ignore]
         public void Orca_Activate_Device_Request()
         {
             _config.UserName = "777700857994";

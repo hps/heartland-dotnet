@@ -7,18 +7,16 @@ using SecureSubmit.Fluent.Services;
 using SecureSubmit.Infrastructure;
 using SecureSubmit.Services;
 
-namespace SecureSubmit.Tests.Certification
-{
+namespace SecureSubmit.Tests.Certification {
     [TestClass]
-    public class Retail
-    {
+    public class Retail {
         HpsBatchService batchService;
         HpsFluentCreditService creditService;
         HpsFluentDebitService debitService;
         HpsFluentEbtService ebtService;
         HpsFluentGiftCardService giftService;
 
-        bool useTokens = true;
+        bool useTokens = false;
 
         private static String visaToken;
         private static String mastercardToken;
@@ -37,10 +35,8 @@ namespace SecureSubmit.Tests.Certification
         private static int test105TransactionId;
         private static int test106TransactionId;
 
-        public Retail()
-        {
-            HpsServicesConfig config = new HpsServicesConfig
-            {
+        public Retail() {
+            HpsServicesConfig config = new HpsServicesConfig {
                 SecretApiKey = "skapi_cert_MaePAQBr-1QAqjfckFC8FTbRTT120bVQUlfVOjgCBw"
             };
 
@@ -202,6 +198,7 @@ namespace SecureSubmit.Tests.Certification
             HpsCharge response = creditService.Charge(15.03m)
                     .WithTrackData(trackData)
                     .WithRequestMultiUseToken(true)
+                    .WithAllowDuplicates(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -218,6 +215,7 @@ namespace SecureSubmit.Tests.Certification
             HpsCharge response = creditService.Charge(15.04m)
                     .WithTrackData(trackData)
                     .WithRequestMultiUseToken(true)
+                    .WithAllowDuplicates(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -1365,7 +1363,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_058_ReturnJcbTransactionId() {
             HpsRefund response = creditService.Refund(15.05m)
                     .WithTransactionId(test014TransactionId)
@@ -1376,7 +1374,7 @@ namespace SecureSubmit.Tests.Certification
 
         // ONLINE VOID / REVERSAL (Required)
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_059_ReversalVisa() {
             HpsReversal response = creditService.Reverse(15.01m)
                     .WithTransactionId(test010TransactionId)
@@ -1385,7 +1383,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_060_ReversalMasterCard() {
             HpsReversal response = creditService.Reverse(16.02m)
                     .WithTransactionId(test017TransactionId)
@@ -1394,7 +1392,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_061_ReversalMasterCard() {
             HpsReversal response = creditService.Reverse(17.02m)
                     .WithTransactionId(test023TransactionId)
@@ -1403,7 +1401,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_062_ReversalDiscover() {
             HpsReversal response = creditService.Reverse(100.00m)
                     .WithTransactionId(test042TransactionId)
@@ -1412,7 +1410,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_063_ReversalVisaPartial() {
             HpsReversal response = creditService.Reverse(15.06m)
                     .WithTransactionId(test015TransactionId)
@@ -1422,7 +1420,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_064_ReversalDiscoverPartial() {
             HpsReversal response = creditService.Reverse(16.07m)
                     .WithTransactionId(test021TransactionId)
@@ -1555,7 +1553,7 @@ namespace SecureSubmit.Tests.Certification
 
         // REVERSAL
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_071_DebitReversalMasterCard() {
             HpsTransaction response = debitService.Reverse(14.02m)
                     .WithTransactionId(test066TransactionId)
@@ -1564,7 +1562,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_072_DebitReversalVisa() {
             HpsTransaction response = debitService.Reverse(33.00m)
                     .WithTransactionId(test069TransactionId)
@@ -1578,7 +1576,7 @@ namespace SecureSubmit.Tests.Certification
             Balance Inquiry
          */
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_073_BalanceInquiryGsbSwipe() {
             HpsTrackData trackData = new HpsTrackData {
                 Value = "%B6277220572999800^   /                         ^49121010557010000016000000?F;6277220572999800=49121010557010000016?",
@@ -1592,7 +1590,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_074_BalanceInquiryGsbManual() {
             HpsCreditCard card = new HpsCreditCard {
                 Number = "6277220572999800",
@@ -1609,7 +1607,7 @@ namespace SecureSubmit.Tests.Certification
 
         // Add Value (LOAD)
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_075_AddValueGsbSwipe() {
             HpsTrackData trackData = new HpsTrackData {
                 Value = "%B6277220572999800^   /                         ^49121010557010000016000000?F;6277220572999800=49121010557010000016?",
@@ -1623,7 +1621,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_076_AddValueGsbManual() {
             HpsCreditCard card = new HpsCreditCard {
                 Number = "6277220572999800",
@@ -1641,7 +1639,7 @@ namespace SecureSubmit.Tests.Certification
 
         // SALE
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_077_ChargeGsbSwipeReversal() {
             HpsTrackData trackData = new HpsTrackData {
                 Value = "%B6277220572999800^   /                         ^49121010557010000016000000?F;6277220572999800=49121010557010000016?",
@@ -1661,7 +1659,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", reversalResponse.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_078_ChargeGsbSwipe() {
             HpsTrackData trackData = new HpsTrackData {
                 Value = "%B6277220572999800^   /                         ^49121010557010000016000000?F;6277220572999800=49121010557010000016?",
@@ -1675,7 +1673,7 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_079_ChargeGsbSwipePartialReversal() {
             HpsTrackData trackData = new HpsTrackData {
                 Value = "%B6277220572999800^   /                         ^49121010557010000016000000?F;6277220572999800=49121010557010000016?",
@@ -2180,7 +2178,7 @@ namespace SecureSubmit.Tests.Certification
 
         // VOID
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_107_VoidGift() {
             HpsGiftCardResponse response = giftService.VoidSale(test105TransactionId).Execute();
             Assert.IsNotNull(response);
@@ -2189,7 +2187,7 @@ namespace SecureSubmit.Tests.Certification
 
         // REVERSAL
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void retail_108_ReversalGift() {
             HpsGiftCardResponse response = giftService.Reverse(4.00m)
                     .WithTransactionId(test106TransactionId)
