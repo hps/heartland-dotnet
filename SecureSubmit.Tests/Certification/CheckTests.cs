@@ -17,11 +17,11 @@ namespace SecureSubmit.Tests.General
         };
         private static readonly HpsFluentCheckService _checkService = new HpsFluentCheckService(ServicesConfig);
 
-        private static int test01TransactionId;
-        private static int test05TransactionId;
-        private static int test10TransactionId;
-        private static int test14TransactionId;
-        private static int test23TransactionId;
+        private static long test01TransactionId;
+        private static long test05TransactionId;
+        private static long test10TransactionId;
+        private static long test14TransactionId;
+        private static long test23TransactionId;
 
         #endregion
 

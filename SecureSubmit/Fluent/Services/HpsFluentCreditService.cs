@@ -24,7 +24,7 @@ namespace SecureSubmit.Fluent.Services
             return new CreditAdditionalAuthBuilder(this).WithAmount(amount);
         }
 
-        public CreditCaptureBuilder Capture(int? transactionId = null) {
+        public CreditCaptureBuilder Capture(long? transactionId = null) {
             return new CreditCaptureBuilder(this).WithTransactionId(transactionId);
         }
 
@@ -32,15 +32,15 @@ namespace SecureSubmit.Fluent.Services
             return new CreditChargeBuilder(this).WithAmount(amount).WithCurrency("USD");
         }
 
-        public CreditCpcEditBuilder CpcEdit(int? transactionId = null) {
+        public CreditCpcEditBuilder CpcEdit(long? transactionId = null) {
             return new CreditCpcEditBuilder(this).WithTransactionId(transactionId);
         }
 
-        public CreditEditBuilder Edit(int? transactionId = null) {
+        public CreditEditBuilder Edit(long? transactionId = null) {
             return new CreditEditBuilder(this).WithTransactionId(transactionId);
         }
 
-        public CreditGetBuilder Get(int? transactionId = null) {
+        public CreditGetBuilder Get(long? transactionId = null) {
             return new CreditGetBuilder(this).WithTransactionId(transactionId);
         }
 
@@ -80,7 +80,7 @@ namespace SecureSubmit.Fluent.Services
             return new CreditVerifyBuilder(this);
         }
 
-        public CreditVoidBuilder Void(int? transactionId = null) {
+        public CreditVoidBuilder Void(long? transactionId = null) {
             return new CreditVoidBuilder(this).WithTransactionId(transactionId);
         }
 
@@ -104,7 +104,7 @@ namespace SecureSubmit.Fluent.Services
 
         private void ProcessIssuerResponse(PosResponseVer10 response, ItemChoiceType1 expectedType, decimal? amount)
         {
-            int transactionId = response.Header.GatewayTxnId;
+            long transactionId = response.Header.GatewayTxnId;
 
             if (!(response.Transaction.Item is AuthRspStatusType))
                 return;

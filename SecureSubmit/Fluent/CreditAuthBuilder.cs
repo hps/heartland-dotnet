@@ -28,6 +28,7 @@ namespace SecureSubmit.Fluent
         private HpsAutoSubstantiation autoSubstantiation;
         private HpsTxnReferenceData originalTxnReferenceData;
         private HpsEmvDataType emvData;
+        private HpsSecureEcommerce secureEcommerce;
 
         public CreditAuthBuilder WithAmount(decimal? amount)
         {
@@ -129,6 +130,11 @@ namespace SecureSubmit.Fluent
             this.directMarketData = directMarketData;
             return this;
         }
+        public CreditAuthBuilder WithSecureEcommerce(HpsSecureEcommerce secureEcommerce)
+        {
+            this.secureEcommerce = secureEcommerce;
+            return this;
+        }
 
         public CreditAuthBuilder(HpsFluentCreditService service) : base(service) {}
 
@@ -187,6 +193,9 @@ namespace SecureSubmit.Fluent
 
             if (emvData != null)
                 block1.EMVData = service.HydrateEmvData(emvData);
+
+            if (secureEcommerce != null)
+                block1.SecureECommerce = service.HydrateSecureEcommerce(secureEcommerce);
 
             var transaction = new PosRequestVer10Transaction {
                 Item = new PosCreditAuthReqType {

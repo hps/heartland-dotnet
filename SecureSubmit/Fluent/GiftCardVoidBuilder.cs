@@ -7,9 +7,9 @@ using SecureSubmit.Infrastructure.Validation;
 
 namespace SecureSubmit.Fluent {
     public class GiftCardVoidBuilder : HpsBuilderAbstract<HpsFluentGiftCardService, HpsGiftCardResponse> {
-        int? transactionId;
+        long? transactionId;
 
-        public GiftCardVoidBuilder WithTransactionId(int? value) {
+        public GiftCardVoidBuilder WithTransactionId(long? value) {
             this.transactionId = value;
             return this;
         }

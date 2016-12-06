@@ -1,5 +1,5 @@
 ﻿
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="HpsServicesConfig.cs" company="Heartland Payment Systems">
 //   Copyright (c) Heartland Payment Systems. All rights reserved.
 // </copyright>
@@ -8,18 +8,31 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SecureSubmit.Services {
+namespace SecureSubmit.Services
+{
     using Abstractions;
     using Infrastructure;
     using System;
 
     /// <summary>The HPS services config (best to use AppSettings).</summary>
-    public class HpsServicesConfig : IHpsServicesConfig {
+    public class HpsServicesConfig : IHpsServicesConfig
+    {
+        private string secretApiKey;
         /// <summary>Gets or sets the credential token.</summary>
         public string CredentialToken { get; set; }
 
         /// <summary>Gets or sets the secret api key.</summary>
-        public string SecretApiKey { get; set; }
+        public string SecretApiKey
+        {
+            get
+            {
+                return secretApiKey;
+            }
+            set
+            {
+                secretApiKey = value.Trim();
+            }
+        }
 
         /// <summary>Gets or sets the license id.</summary>
         public int LicenseId { get; set; }
@@ -46,13 +59,16 @@ namespace SecureSubmit.Services {
         public string SiteTrace { get; set; }
 
         private string _serviceUrl;
-        public virtual string ServiceUrl {
-            get {
+        public virtual string ServiceUrl
+        {
+            get
+            {
                 // If the URI was explicitly set, use that
                 if (!string.IsNullOrEmpty(_serviceUrl)) return _serviceUrl;
 
                 // if there is a secret key check for cert/uat
-                if (!string.IsNullOrEmpty(SecretApiKey)) {
+                if (!string.IsNullOrEmpty(SecretApiKey))
+                {
                     // If we have a secret key, return either the production URI...
                     if (SecretApiKey.Contains("_uat_"))
                         return "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
@@ -63,20 +79,24 @@ namespace SecureSubmit.Services {
                 // all else fails return the default
                 return "https://api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
             }
-            set {
+            set
+            {
                 _serviceUrl = value;
             }
         }
     }
 
-    public abstract class HpsRestServiceConfig : HpsServicesConfig {
+    public abstract class HpsRestServiceConfig : HpsServicesConfig
+    {
         public string UatUrl { get; set; }
         public string CertUrl { get; set; }
         public string ProdUrl { get; set; }
     }
 
-    public class HpsPayPlanServicesConfig : HpsRestServiceConfig {
-        public HpsPayPlanServicesConfig() {
+    public class HpsPayPlanServicesConfig : HpsRestServiceConfig
+    {
+        public HpsPayPlanServicesConfig()
+        {
 
             // Set urls
             CertUrl = "https://cert.api2.heartlandportico.com/Portico.PayPlan.v2/";
@@ -85,18 +105,23 @@ namespace SecureSubmit.Services {
 
         }
 
-        public override string ServiceUrl {
-            get {
+        public override string ServiceUrl
+        {
+            get
+            {
                 var components = SecretApiKey.Split('_');
                 var env = components[1].ToLower();
 
-                if (env.Equals("prod")) {
+                if (env.Equals("prod"))
+                {
                     return ProdUrl;
                 }
-                else if (env.Equals("cert")) {
+                else if (env.Equals("cert"))
+                {
                     return CertUrl;
                 }
-                else {
+                else
+                {
                     return UatUrl;
                 }
             }

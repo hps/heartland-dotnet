@@ -443,7 +443,7 @@ namespace SecureSubmit.Services
         /// </summary>
         /// <param name="transactionId">Transaction identifier assigned by Portico Gateway of the Sale transaction to void.</param>
         /// <returns>The <see cref="HpsGiftCardReward"/>.</returns>
-        public HpsGiftCardResponse VoidTransaction(int transactionId)
+        public HpsGiftCardResponse VoidTransaction(long transactionId)
         {
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
@@ -523,7 +523,7 @@ namespace SecureSubmit.Services
         /// <param name="amount">Amount of the transaction to be reversed.</param>
         /// <param name="currency">Identifies the currency of a financial transaction ("usd" or "points")</param>
         /// <returns>The <see cref="HpsGiftCardReward"/>.</returns>
-        public HpsGiftCardResponse Reverse(int transactionId, decimal amount, string currency = "usd")
+        public HpsGiftCardResponse Reverse(long transactionId, decimal amount, string currency = "usd")
         {
             HpsInputValidation.CheckAmount(amount);
 

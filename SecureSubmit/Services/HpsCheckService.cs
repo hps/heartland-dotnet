@@ -148,7 +148,7 @@ namespace SecureSubmit.Services
         /// <param name="transactionId">The transaction ID of charge to void.</param>
         /// <param name="clientTransactionId">The client transaction ID of charge to void.</param>
         /// <returns>The <see cref="HpsGiftCardActivate"/>.</returns>
-        public HpsCheckResponse Void(int? transactionId = null, long? clientTransactionId = null)
+        public HpsCheckResponse Void(long? transactionId = null, long? clientTransactionId = null)
         {
             if ((!transactionId.HasValue && !clientTransactionId.HasValue) || (transactionId.HasValue && clientTransactionId.HasValue))
             {

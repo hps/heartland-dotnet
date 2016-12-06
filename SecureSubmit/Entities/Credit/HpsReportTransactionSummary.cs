@@ -25,7 +25,7 @@ using Hps.Exchange.PosGateway.Client;
         public decimal SettlementAmount { get; set; }
 
         /// <summary>Gets or sets the original transaction ID. If the transaction performed an action on a previous transaction, this field records the transaction that was acted upon.</summary>
-        public int OriginalTransactionId { get; set; }
+        public long OriginalTransactionId { get; set; }
 
         /// <summary>Gets or sets the card number (masked).</summary>
         public string MaskedCardNumber { get; set; }

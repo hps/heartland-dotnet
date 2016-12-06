@@ -11,7 +11,7 @@ namespace SecureSubmit.Fluent
     decimal? authorizedAmount;
     HpsTransactionDetails details;
     HpsTrackData trackData;
-    int? transactionId;
+    long? transactionId;
 
     public DebitReverseBuilder WithAmount(decimal? value) {
         this.amount = value;
@@ -29,7 +29,7 @@ namespace SecureSubmit.Fluent
         this.trackData = value;
         return this;
     }
-    public DebitReverseBuilder WithTransactionId(int? value) {
+    public DebitReverseBuilder WithTransactionId(long? value) {
         this.transactionId = value;
         return this;
     }

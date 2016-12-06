@@ -6,10 +6,10 @@ using SecureSubmit.Infrastructure.Validation;
 
 namespace SecureSubmit.Fluent {
     public class CreditVoidBuilder : HpsBuilderAbstract<HpsFluentCreditService, HpsTransaction> {
-        int? transactionId;
+        long? transactionId;
         long? clientTransactionId;
 
-        public CreditVoidBuilder WithTransactionId(int? transactionId) {
+        public CreditVoidBuilder WithTransactionId(long? transactionId) {
             this.transactionId = transactionId;
             return this;
         }

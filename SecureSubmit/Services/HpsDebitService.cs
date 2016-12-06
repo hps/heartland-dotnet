@@ -77,7 +77,7 @@ namespace SecureSubmit.Services
         /// <param name="details">Group containing additional transaction fields to be included in detail reporting.</param>
         /// <param name="clientTransactionId">Client transaction ID.</param>
         /// <returns>The Return (Authorization) results.</returns>
-        public HpsAuthorization Return(int transactionId, decimal amount, string trackData, string pinBlock,
+        public HpsAuthorization Return(long transactionId, decimal amount, string trackData, string pinBlock,
             bool allowDuplicates = false, HpsCardHolder cardHolder = null, HpsEncryptionData encryptionData = null,
             HpsTransactionDetails details = null, long? clientTransactionId = null)
         {
@@ -123,7 +123,7 @@ namespace SecureSubmit.Services
         /// <param name="details">Group containing additional transaction fields to be included in detail reporting.</param>
         /// <param name="clientTransactionId">The client transaction ID.</param>
         /// <returns>The reversal result.</returns>
-        public HpsTransaction Reverse(int transactionId, decimal amount, string trackData, decimal? authorizedAmount = null,
+        public HpsTransaction Reverse(long transactionId, decimal amount, string trackData, decimal? authorizedAmount = null,
             HpsEncryptionData encryptionData = null, HpsTransactionDetails details = null, long? clientTransactionId = null)
         {
             HpsInputValidation.CheckAmount(amount);

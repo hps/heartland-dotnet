@@ -26,11 +26,11 @@ namespace SecureSubmit.Tests.Certification
         private static string discoverToken;
         private static string amexToken;
 
-        private static int test10TransactionId;
-        private static int test20TransactionId;
-        private static int test39TransactionId;
-        private static int test52TransactionId;
-        private static int test53TransactionId;
+        private static long test10TransactionId;
+        private static long test20TransactionId;
+        private static long test39TransactionId;
+        private static long test52TransactionId;
+        private static long test53TransactionId;
 
         [TestMethod]
         public void moto_000_CloseBatch()

@@ -15,7 +15,7 @@ namespace SecureSubmit.Entities
     public interface IHpsReportTransaction
     {
         /// <summary>Gets or sets the original transaction ID. If the transaction performed an action on a previous transaction, this field records the transaction that was acted upon.</summary>
-        int OriginalTransactionId { get; set; }
+        long OriginalTransactionId { get; set; }
 
         /// <summary>Gets or sets the card number (masked).</summary>
         string MaskedCardNumber { get; set; }

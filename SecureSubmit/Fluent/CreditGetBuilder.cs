@@ -5,9 +5,9 @@ using SecureSubmit.Fluent.Services;
 
 namespace SecureSubmit.Fluent {
     public class CreditGetBuilder : HpsBuilderAbstract<HpsFluentCreditService, HpsReportTransactionDetails> {
-        int? transactionId;
+        long? transactionId;
 
-        public CreditGetBuilder WithTransactionId(int? transactionId) {
+        public CreditGetBuilder WithTransactionId(long? transactionId) {
             this.transactionId = transactionId;
             return this;
         }

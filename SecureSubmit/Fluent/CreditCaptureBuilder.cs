@@ -7,13 +7,13 @@ using SecureSubmit.Infrastructure.Validation;
 namespace SecureSubmit.Fluent
 {
     public class CreditCaptureBuilder : HpsBuilderAbstract<HpsFluentCreditService, HpsTransaction> {
-        int? transactionId;
+        long? transactionId;
         decimal? amount;
         decimal? gratuity;
         string clientTransactionId;
         HpsDirectMarketData directMarketData;
 
-        public CreditCaptureBuilder WithTransactionId(int? value) {
+        public CreditCaptureBuilder WithTransactionId(long? value) {
             this.transactionId = value;
             return this;
         }

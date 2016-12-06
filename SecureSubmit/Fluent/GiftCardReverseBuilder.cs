@@ -11,7 +11,7 @@ namespace SecureSubmit.Fluent
     HpsGiftCard card;
     decimal? amount;
     string currency;
-    int? transactionId;
+    long? transactionId;
     long? clientTransactionId;
 
     public GiftCardReverseBuilder WithAmount(decimal? value) {
@@ -26,7 +26,7 @@ namespace SecureSubmit.Fluent
         this.currency = value;
         return this;
     }
-    public GiftCardReverseBuilder WithTransactionId(int? value) {
+    public GiftCardReverseBuilder WithTransactionId(long? value) {
         this.transactionId = value;
         return this;
     }

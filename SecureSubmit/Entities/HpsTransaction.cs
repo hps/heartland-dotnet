@@ -19,7 +19,7 @@ namespace SecureSubmit.Entities
         internal HpsTransactionHeader Header { get; set; }
 
         /// <summary>Gets or sets the gateway TXN ID.</summary>
-        public int TransactionId { get; set; }
+        public long TransactionId { get; set; }
 
         /// <summary>Gets or sets the client specified TXN ID.</summary>
         public long? ClientTransactionId { get; set; }

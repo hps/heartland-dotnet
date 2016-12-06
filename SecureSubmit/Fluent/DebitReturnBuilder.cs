@@ -13,7 +13,7 @@ namespace SecureSubmit.Fluent {
         string pinBlock;
         string token;
         HpsTrackData trackData;
-        int? transactionId;
+        long? transactionId;
 
         public DebitReturnBuilder WithAllowDuplicates(bool value) {
             this.allowDuplicates = value;
@@ -43,7 +43,7 @@ namespace SecureSubmit.Fluent {
             this.trackData = value;
             return this;
         }
-        public DebitReturnBuilder WithTransactionId(int? value) {
+        public DebitReturnBuilder WithTransactionId(long? value) {
             this.transactionId = value;
             return this;
         }

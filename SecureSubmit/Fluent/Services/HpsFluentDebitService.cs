@@ -44,7 +44,7 @@ namespace SecureSubmit.Fluent.Services {
         }
 
         private void ProcessIssuerResponse(PosResponseVer10 response, ItemChoiceType1 expectedType, decimal? amount) {
-            int transactionId = response.Header.GatewayTxnId;
+            long transactionId = response.Header.GatewayTxnId;
 
             if (!(response.Transaction.Item is AuthRspStatusType))
                 return;

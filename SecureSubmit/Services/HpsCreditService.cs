@@ -22,7 +22,7 @@ namespace SecureSubmit.Services
         /// <summary>Gets an HPS transaction given a Transaction ID.</summary>
         /// <param name="transactionId">The Transaction ID for the transaction.</param>
         /// <returns>The HPS report transaction.</returns>
-        public HpsReportTransactionDetails Get(int transactionId)
+        public HpsReportTransactionDetails Get(long transactionId)
         {
             if (transactionId <= 0)
             {
@@ -654,7 +654,7 @@ namespace SecureSubmit.Services
         /// <param name="clientTransactionId">The optional client transaction ID.</param>
         /// <param name="directMarketData">The direct market data.</param>
         /// <returns>The details of the charge captured.</returns>
-        public HpsReportTransactionDetails Capture(int transactionId, decimal? amount = null, decimal? gratuity = null,
+        public HpsReportTransactionDetails Capture(long transactionId, decimal? amount = null, decimal? gratuity = null,
             long? clientTransactionId = null, HpsDirectMarketData directMarketData = null)
         {
             /* Build the transaction request. */
@@ -788,7 +788,7 @@ namespace SecureSubmit.Services
         /// <param name="cardHolder">The card holder information (used for AVS).</param>
         /// <param name="details">The transaction details.</param>
         /// <returns>The <see cref="HpsRefund"/>.</returns>
-        public HpsRefund Refund(decimal amount, string currency, int transactionId, HpsCardHolder cardHolder = null,
+        public HpsRefund Refund(decimal amount, string currency, long transactionId, HpsCardHolder cardHolder = null,
             HpsTransactionDetails details = null)
         {
             HpsInputValidation.CheckAmount(amount);
@@ -824,7 +824,7 @@ namespace SecureSubmit.Services
         /// <param name="details">The transaction details.</param>
         /// <param name="authorizedAmount">Settlement amount or new authorized amount after reversal occures.</param>
         /// <returns>The <see cref="HpsReversal"/>.</returns>
-        public HpsReversal Reverse(int transactionId, decimal amount, string currency, HpsTransactionDetails details = null,
+        public HpsReversal Reverse(long transactionId, decimal amount, string currency, HpsTransactionDetails details = null,
             decimal? authorizedAmount = null)
         {
             HpsInputValidation.CheckAmount(amount);
@@ -997,7 +997,7 @@ namespace SecureSubmit.Services
         /// <param name="transactionId">The transaction ID of charge to void.</param>
         /// <param name="clientTransactionId">The optional client transaction ID.</param>
         /// <returns>The <see cref="HpsTransaction"/>.</returns>
-        public HpsTransaction Void(int transactionId, long? clientTransactionId = null)
+        public HpsTransaction Void(long transactionId, long? clientTransactionId = null)
         {
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
@@ -1041,7 +1041,7 @@ namespace SecureSubmit.Services
         /// not affect the authorized amount.</param>
         /// <param name="clientTransactionId">The optional client transaction ID.</param>
         /// <returns>The <see cref="HpsTransaction"/>.</returns>
-        public HpsTransaction Edit(int transactionId, decimal? amount = null, decimal? gratuity = null, long? clientTransactionId = null)
+        public HpsTransaction Edit(long transactionId, decimal? amount = null, decimal? gratuity = null, long? clientTransactionId = null)
         {
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
@@ -1407,7 +1407,7 @@ namespace SecureSubmit.Services
         /// <param name="transactionId">The Gateway transaction ID.</param>
         /// <param name="amount">The amount of the charge, authorization, etc.</param>
         /// <param name="currency">Currency used.</param>
-        private void ProcessChargeIssuerResponse(string responseCode, string responseText, int transactionId, decimal amount, string currency)
+        private void ProcessChargeIssuerResponse(string responseCode, string responseText, long transactionId, decimal amount, string currency)
         {
             if (responseCode == "91")
             {

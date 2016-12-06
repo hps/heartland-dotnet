@@ -308,5 +308,25 @@ namespace SecureSubmit.Services {
                 CpcIndicator = authRsp.CPCInd
             };
         }
+
+        internal SecureECommerceType HydrateSecureEcommerce(HpsSecureEcommerce data)
+        {
+            var secureEcommerce = new SecureECommerceType
+            {
+                ECommerceIndicator = data.EciFlag,
+                PaymentData = new SecureECommerceTypePaymentData
+                {
+                    encoding = EncodingType.base64,
+                    Value = data.Data
+                },
+                XID = new SecureECommerceTypeXID
+                {
+                    encoding = EncodingType.base64,
+                    Value = data.Xid
+                },
+                TypeOfPaymentData = TypeOfPaymentDataType.Item3DSecure
+            };
+            return secureEcommerce;
+        }
     }
 }

@@ -29,6 +29,7 @@ namespace SecureSubmit.Fluent {
         private HpsTxnReferenceData originalTxnReferenceData;
         private HpsEmvDataType emvData;
         private HpsGiftCard rewards;
+        private HpsSecureEcommerce secureEcommerce;
 
         public CreditChargeBuilder WithAmount(decimal? amount) {
             this.amount = amount;
@@ -122,6 +123,11 @@ namespace SecureSubmit.Fluent {
             };
             return this;
         }
+        public CreditChargeBuilder WithSecureEcommerce(HpsSecureEcommerce secureEcommerce)
+        {
+            this.secureEcommerce = secureEcommerce;
+            return this;
+        }
 
         public CreditChargeBuilder(HpsFluentCreditService service)
             : base(service) {
@@ -182,6 +188,9 @@ namespace SecureSubmit.Fluent {
 
             if (emvData != null)
                 block1.EMVData = service.HydrateEmvData(emvData);
+
+            if (secureEcommerce != null)
+                block1.SecureECommerce = service.HydrateSecureEcommerce(secureEcommerce);
 
             var transaction = new PosRequestVer10Transaction {
                 Item = new PosCreditSaleReqType{

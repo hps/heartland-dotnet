@@ -8,10 +8,10 @@ using SecureSubmit.Infrastructure.Validation;
 
 namespace SecureSubmit.Fluent {
     public class CheckVoidBuilder : HpsBuilderAbstract<HpsFluentCheckService, HpsCheckResponse> {
-        int? transactionId;
+        long? transactionId;
         long? clientTransactionId;
 
-        public CheckVoidBuilder withTransactionId(int? transactionId) {
+        public CheckVoidBuilder withTransactionId(long? transactionId) {
             this.transactionId = transactionId;
             return this;
         }

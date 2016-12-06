@@ -23,17 +23,17 @@ namespace SecureSubmit.Tests.Certification {
         private static String discoverToken;
         private static String amexToken;
 
-        private static int test010TransactionId;
-        private static int test014TransactionId;
-        private static int test015TransactionId;
-        private static int test017TransactionId;
-        private static int test021TransactionId;
-        private static int test023TransactionId;
-        private static int test042TransactionId;
-        private static int test066TransactionId;
-        private static int test069TransactionId;
-        private static int test105TransactionId;
-        private static int test106TransactionId;
+        private static long test010TransactionId;
+        private static long test014TransactionId;
+        private static long test015TransactionId;
+        private static long test017TransactionId;
+        private static long test021TransactionId;
+        private static long test023TransactionId;
+        private static long test042TransactionId;
+        private static long test066TransactionId;
+        private static long test069TransactionId;
+        private static long test105TransactionId;
+        private static long test106TransactionId;
 
         public Retail() {
             HpsServicesConfig config = new HpsServicesConfig {

@@ -49,13 +49,13 @@ namespace SecureSubmit.Infrastructure.Validation
             };
         }
 
-        public static void CheckResponse(int transactionId, string responseCode, string responseText)
+        public static void CheckResponse(long transactionId, string responseCode, string responseText)
         {
             var e = GetException(transactionId, responseCode, responseText);
             if(e != null) { throw e; }
         }
 
-        public static HpsCreditException GetException(int transactionId, string responseCode, string responseText)
+        public static HpsCreditException GetException(long transactionId, string responseCode, string responseText)
         {
             if (responseCode == "85" || responseCode == "10" || responseCode == "00" || responseCode == "0") return null;
 

@@ -18,7 +18,7 @@ namespace SecureSubmit.Services
         {
         }
        
-        public HpsAttachment GetAttachment(int transactionId, attachmentTypeType? attachmentType = null, bool returnAttachmentTypesOnly = false, int? attachmentDataId = null)
+        public HpsAttachment GetAttachment(long transactionId, attachmentTypeType? attachmentType = null, bool returnAttachmentTypesOnly = false, int? attachmentDataId = null)
         {
             /* Build the transaction request. */
             var attType = getAttachmentTypeType(attachmentType);

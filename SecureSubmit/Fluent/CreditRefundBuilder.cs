@@ -11,7 +11,7 @@ namespace SecureSubmit.Fluent {
         string currency;
         HpsCreditCard card;
         HpsTokenData token;
-        int? transactionId;
+        long? transactionId;
         HpsCardHolder cardHolder;
         HpsTransactionDetails details;
         bool allowDuplicates = false;
@@ -37,7 +37,7 @@ namespace SecureSubmit.Fluent {
             this.token = token;
             return this;
         }
-        public CreditRefundBuilder WithTransactionId(int? value) {
+        public CreditRefundBuilder WithTransactionId(long? value) {
             this.transactionId = value;
             return this;
         }

@@ -20,7 +20,7 @@ namespace SecureSubmit.Infrastructure
         /// <param name="details">The check exception details.</param>
         /// <param name="code">The error code.</param>
         /// <param name="message">The message.</param>
-        public HpsCheckException(int transactionId, List<HpsCheckResponseDetails> details, int code, string message)
+        public HpsCheckException(long transactionId, List<HpsCheckResponseDetails> details, int code, string message)
             : base(message)
         {
             TransactionId = transactionId;
@@ -29,7 +29,7 @@ namespace SecureSubmit.Infrastructure
         }
 
         /// <summary>Gets or sets the transaction ID.</summary>
-        public int TransactionId { get; set; }
+        public long TransactionId { get; set; }
 
         /// <summary>Gets or sets the transaction response code.</summary>
         public int Code { get; set; }

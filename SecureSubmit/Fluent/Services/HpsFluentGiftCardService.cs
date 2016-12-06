@@ -54,7 +54,7 @@ namespace SecureSubmit.Fluent.Services {
             return new GiftCardSaleBuilder(this).WithAmount(amount).WithCurrency(currencyType.USD);
         }
 
-        public GiftCardVoidBuilder VoidSale(int? transactionId = null) {
+        public GiftCardVoidBuilder VoidSale(long? transactionId = null) {
             return new GiftCardVoidBuilder(this).WithTransactionId(transactionId);
         }
 

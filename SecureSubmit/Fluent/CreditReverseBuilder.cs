@@ -13,7 +13,7 @@ namespace SecureSubmit.Fluent
     string currency;
     HpsCreditCard card;
     HpsTokenData token;
-    int? transactionId;
+        long? transactionId;
     HpsTransactionDetails details;
 
     public CreditReverseBuilder WithAmount(decimal? value) {
@@ -36,7 +36,7 @@ namespace SecureSubmit.Fluent
         this.token = token;
         return this;
     }
-    public CreditReverseBuilder WithTransactionId(int? value) {
+    public CreditReverseBuilder WithTransactionId(long? value) {
         this.transactionId = value;
         return this;
     }
