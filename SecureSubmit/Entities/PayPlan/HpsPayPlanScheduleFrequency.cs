@@ -12,6 +12,11 @@
             get { return "Bi-Weekly"; }
         }
 
+        public static string BiMonthly
+        {
+            get { return "Bi-Monthly"; }
+        }
+
         public static string SemiMonthly
         {
             get { return "Semi-Monthly"; }

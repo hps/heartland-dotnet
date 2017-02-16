@@ -124,28 +124,32 @@ namespace SecureSubmit.Services
             var reportResponse = (PosReportActivityRspType)rsp.Transaction.Item;
             var serviceName = filterBy.HasValue ? HpsTransaction.TransactionTypeToServiceName(filterBy.Value) : string.Empty;
             var transactionList = new List<HpsReportTransactionSummary>();
-            foreach (var charge in reportResponse.Details)
+
+            if (reportResponse.Details != null)
             {
-                if (!filterBy.HasValue || charge.ServiceName == serviceName)
+                foreach (var charge in reportResponse.Details)
                 {
-                    transactionList.Add(new HpsReportTransactionSummary
+                    if (!filterBy.HasValue || charge.ServiceName == serviceName)
                     {
-                        TransactionId = charge.GatewayTxnId,
-                        OriginalTransactionId = charge.OriginalGatewayTxnId,
-                        MaskedCardNumber = charge.MaskedCardNbr,
-                        ResponseCode = charge.IssuerRspCode,
-                        ResponseText = charge.IssuerRspText,
-                        Amount = charge.Amt,
-                        SettlementAmount = charge.SettlementAmt,
-                        TransactionUtcDate = charge.TxnUtcDT,
-                        TransactionType = filterBy.HasValue ? filterBy : HpsTransaction.ServiceNameToTransactionType(charge.ServiceName),
-                        Exceptions = (charge.GatewayRspCode != 0 || charge.IssuerRspCode != "00") ? new HpsChargeExceptions
+                        transactionList.Add(new HpsReportTransactionSummary
                         {
-                            GatewayException = HpsGatewayResponseValidation.GetException(charge.GatewayRspCode, charge.GatewayRspMsg),
-                            IssuerException = HpsIssuerResponseValidation.GetException(charge.GatewayTxnId, charge.IssuerRspCode, charge.IssuerRspText)
-                        }
-                        : null
-                    });
+                            TransactionId = charge.GatewayTxnId,
+                            OriginalTransactionId = charge.OriginalGatewayTxnId,
+                            MaskedCardNumber = charge.MaskedCardNbr,
+                            ResponseCode = charge.IssuerRspCode,
+                            ResponseText = charge.IssuerRspText,
+                            Amount = charge.Amt,
+                            SettlementAmount = charge.SettlementAmt,
+                            TransactionUtcDate = charge.TxnUtcDT,
+                            TransactionType = filterBy.HasValue ? filterBy : HpsTransaction.ServiceNameToTransactionType(charge.ServiceName),
+                            Exceptions = (charge.GatewayRspCode != 0 || charge.IssuerRspCode != "00") ? new HpsChargeExceptions
+                            {
+                                GatewayException = HpsGatewayResponseValidation.GetException(charge.GatewayRspCode, charge.GatewayRspMsg),
+                                IssuerException = HpsIssuerResponseValidation.GetException(charge.GatewayTxnId, charge.IssuerRspCode, charge.IssuerRspText)
+                            }
+                            : null
+                        });
+                    }
                 }
             }
 

@@ -31,6 +31,7 @@ namespace SecureSubmit.Tests.Certification {
         private static long test023TransactionId;
         private static long test042TransactionId;
         private static long test066TransactionId;
+        private static long test067aTransactionId;
         private static long test069TransactionId;
         private static long test105TransactionId;
         private static long test106TransactionId;
@@ -67,6 +68,7 @@ namespace SecureSubmit.Tests.Certification {
             CARD VERIFY
             ACCOUNT VERIFICATION
          */
+
         [TestMethod]
         public void retail_001_CardVerifyVisa() {
             HpsTrackData trackData = new HpsTrackData {
@@ -132,6 +134,7 @@ namespace SecureSubmit.Tests.Certification {
             HpsAccountVerify response = creditService.Verify()
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
+                    .WithReaderPresent(true)
                     .WithRequestMultiUseToken(useTokens)
                     .Execute();
             Assert.IsNotNull(response);
@@ -166,6 +169,7 @@ namespace SecureSubmit.Tests.Certification {
             HpsCharge response = creditService.Charge(15.01m)
                     .WithTrackData(trackData)
                     .WithRequestMultiUseToken(true)
+                    .WithAllowDuplicates(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -182,6 +186,7 @@ namespace SecureSubmit.Tests.Certification {
             HpsCharge response = creditService.Charge(15.02m)
                     .WithTrackData(trackData)
                     .WithRequestMultiUseToken(true)
+                    .WithAllowDuplicates(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -303,6 +308,38 @@ namespace SecureSubmit.Tests.Certification {
             test014TransactionId = response.TransactionId;
         }
 
+        #region Retail mastercard
+        [TestMethod]
+        public void retail_014a_ChargeRetailMastercard24() {
+            HpsTrackData trackData = new HpsTrackData {
+                Value = "%B2223000010005780^TEST CARD/EMV BIN-2^19121010000000009210?;2223000010005780=19121010000000009210?",
+                Method = HpsTrackDataMethod.Swipe
+            };
+
+            HpsCharge response = creditService.Charge(15.34m)
+                    .WithTrackData(trackData)
+                    .WithAllowDuplicates(true)
+                    .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+        }
+
+        [TestMethod]
+        public void retail_014b_ChargeRetailMastercard25() {
+            HpsTrackData trackData = new HpsTrackData {
+                Value = "%B2223000010005798^TEST CARD/EMV BIN-2^19121010000000003840?;2223000010005798=19121010000000003840?",
+                Method = HpsTrackDataMethod.Swipe
+            };
+
+            HpsCharge response = creditService.Charge(15.34m)
+                    .WithTrackData(trackData)
+                    .WithAllowDuplicates(true)
+                    .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+        }
+        #endregion
+
         [TestMethod]
         public void retail_015_ChargeVisaSwipe() {
             HpsTrackData trackData = new HpsTrackData {
@@ -341,6 +378,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -366,6 +404,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -391,6 +430,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -416,6 +456,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -440,6 +481,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -465,6 +507,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -495,7 +538,8 @@ namespace SecureSubmit.Tests.Certification {
                 builder = creditService.Charge(17.01m).WithToken(visaToken);
             else builder = creditService.Charge(17.01m).WithCard(card);
 
-            HpsCharge response = builder.WithCardHolder(cardHolder).Execute();
+            HpsCharge response = builder.WithCardHolder(cardHolder)
+                    .WithReaderPresent(true).Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
         }
@@ -522,7 +566,8 @@ namespace SecureSubmit.Tests.Certification {
                 builder = creditService.Charge(17.02m).WithToken(mastercardToken);
             else builder = creditService.Charge(17.02m).WithCard(card);
 
-            HpsCharge response = builder.WithCardHolder(cardHolder).Execute();
+            HpsCharge response = builder.WithCardHolder(cardHolder)
+                    .WithReaderPresent(true).Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
             test023TransactionId = response.TransactionId;
@@ -549,7 +594,8 @@ namespace SecureSubmit.Tests.Certification {
                 builder = creditService.Charge(17.03m).WithToken(discoverToken);
             else builder = creditService.Charge(17.03m).WithCard(card);
 
-            HpsCharge response = builder.WithCardHolder(cardHolder).Execute();
+            HpsCharge response = builder.WithCardHolder(cardHolder)
+                    .WithReaderPresent(true).Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
         }
@@ -576,7 +622,8 @@ namespace SecureSubmit.Tests.Certification {
                 builder = creditService.Charge(17.04m).WithToken(amexToken);
             else builder = creditService.Charge(17.04m).WithCard(card);
 
-            HpsCharge response = builder.WithCardHolder(cardHolder).Execute();
+            HpsCharge response = builder.WithCardHolder(cardHolder)
+                    .WithReaderPresent(true).Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
         }
@@ -599,6 +646,7 @@ namespace SecureSubmit.Tests.Certification {
             HpsCharge response = creditService.Charge(17.05m)
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -726,6 +774,21 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("00", captureResponse.ResponseCode);
         }
 
+        [TestMethod]
+        public void retail_033a_AuthorizeDiscoverSwipe() {
+            HpsTrackData trackData = new HpsTrackData {
+                Value = "%B6011000990156527^DIS TEST CARD^25121011000062111401?;6011000990156527=25121011000062111401?",
+                Method = HpsTrackDataMethod.Swipe
+            };
+
+            HpsAuthorization response = creditService.Authorize(15.10m)
+                    .WithTrackData(trackData)
+                    .WithAllowDuplicates(true)
+                    .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+        }
+
         // AUTHORIZATION - Manually Entered, Card Present
 
         [TestMethod]
@@ -749,6 +812,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -780,6 +844,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -813,6 +878,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -821,6 +887,31 @@ namespace SecureSubmit.Tests.Certification {
             HpsTransaction captureResponse = creditService.Capture(response.TransactionId).Execute();
             Assert.IsNotNull(captureResponse);
             Assert.AreEqual("00", captureResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void retail_036a_AuthorizeDiscoverManualCardPresent() {
+            var cardHolder = new HpsCardHolder {
+                Address = new HpsAddress {
+                    Zip = "750241234"
+                }
+            };
+
+            HpsCreditCard card = new HpsCreditCard {
+                Number = "6011000990156527",
+                ExpMonth = 12,
+                ExpYear = 2025,
+                Cvv = "123"
+            };
+
+            HpsAuthorization response = creditService.Authorize(16.10m)
+                    .WithCard(card)
+                    .WithCardHolder(cardHolder)
+                    .WithCardPresent(true)
+                    .WithReaderPresent(true)
+                    .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
         }
 
         // AUTHORIZATION - Manually Entered, Card Not Present
@@ -845,6 +936,7 @@ namespace SecureSubmit.Tests.Certification {
             HpsAuthorization response = creditService.Authorize(17.08m)
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -875,6 +967,7 @@ namespace SecureSubmit.Tests.Certification {
             HpsAuthorization response = creditService.Authorize(17.09m)
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -883,6 +976,30 @@ namespace SecureSubmit.Tests.Certification {
             HpsTransaction captureResponse = creditService.Capture(response.TransactionId).Execute();
             Assert.IsNotNull(captureResponse);
             Assert.AreEqual("00", captureResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void retail_038a_AuthorizeDiscoverManual() {
+            var cardHolder = new HpsCardHolder {
+                Address = new HpsAddress {
+                    Zip = "750241234"
+                }
+            };
+
+            HpsCreditCard card = new HpsCreditCard {
+                Number = "6011000990156527",
+                ExpMonth = 12,
+                ExpYear = 2025,
+                Cvv = "123"
+            };
+
+            HpsAuthorization response = creditService.Authorize(17.10m)
+                .WithCard(card)
+                .WithCardHolder(cardHolder)
+                    .WithReaderPresent(true)
+                .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
         }
 
         // PARTIALLY APPROVED SALE (Required)
@@ -920,7 +1037,7 @@ namespace SecureSubmit.Tests.Certification {
         }
 
         [TestMethod]
-        public void retail_041_ChargeMasterCardManualPartialApproval() {
+        public void retail_041_ChargeDiscoverManualPartialApproval() {
             HpsCardHolder cardHolder = new HpsCardHolder {
                 Address = new HpsAddress {
                     Zip = "75024"
@@ -928,7 +1045,7 @@ namespace SecureSubmit.Tests.Certification {
             };
 
             HpsCreditCard card = new HpsCreditCard {
-                Number = "5473500000000014",
+                Number = "6011000990156527",
                 ExpMonth = 12,
                 ExpYear = 2025,
                 Cvv = "123"
@@ -938,6 +1055,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithAllowPartialAuth(true)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("10", response.ResponseCode);
@@ -945,9 +1063,9 @@ namespace SecureSubmit.Tests.Certification {
         }
 
         [TestMethod]
-        public void retail_042_ChargeDiscoverSwipePartialApproval() {
+        public void retail_042_ChargeMasterCardSwipePartialApproval() {
             HpsTrackData trackData = new HpsTrackData {
-                Value = "%B6011000990156527^DIS TEST CARD^25121011000062111401?;6011000990156527=25121011000062111401?",
+                Value = "%B5473500000000014^MC TEST CARD^251210199998888777766665555444433332?;5473500000000014=25121019999888877776?",
                 Method = HpsTrackDataMethod.Swipe
             };
 
@@ -973,7 +1091,7 @@ namespace SecureSubmit.Tests.Certification {
                 Method = HpsTrackDataMethod.Swipe
             };
 
-            HpsCharge response = creditService.Charge(15.11m)
+            HpsCharge response = creditService.Charge(15.12m)
                     .WithTrackData(trackData)
                     .Execute();
             Assert.IsNotNull(response);
@@ -981,7 +1099,7 @@ namespace SecureSubmit.Tests.Certification {
 
             HpsTransaction editResponse = creditService.Edit()
                 .WithTransactionId(response.TransactionId)
-                .WithAmount(18.11m)
+                .WithAmount(18.12m)
                 .WithGratuity(3.00m)
                 .Execute();
             Assert.IsNotNull(editResponse);
@@ -1003,17 +1121,18 @@ namespace SecureSubmit.Tests.Certification {
                 Cvv = "123"
             };
 
-            HpsCharge response = creditService.Charge(15.12m)
+            HpsCharge response = creditService.Charge(15.13m)
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
 
             HpsTransaction editResponse = creditService.Edit()
                 .WithTransactionId(response.TransactionId)
-                .WithAmount(18.12m)
+                .WithAmount(18.13m)
                 .WithGratuity(3.00m)
                 .Execute();
             Assert.IsNotNull(editResponse);
@@ -1037,10 +1156,11 @@ namespace SecureSubmit.Tests.Certification {
                 Cvv = "123"
             };
 
-            HpsCharge response = creditService.Charge(18.63m)
+            HpsCharge response = creditService.Charge(18.61m)
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .WithGratuity(3.50m)
                     .Execute();
             Assert.IsNotNull(response);
@@ -1054,7 +1174,7 @@ namespace SecureSubmit.Tests.Certification {
                 Method = HpsTrackDataMethod.Swipe
             };
 
-            HpsCharge response = creditService.Charge(18.64m)
+            HpsCharge response = creditService.Charge(18.62m)
                     .WithTrackData(trackData)
                     .WithGratuity(3.50m)
                     .Execute();
@@ -1087,7 +1207,28 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("00", response.ResponseCode);
             Assert.AreEqual("B", response.CpcIndicator);
 
-            HpsCpcData cpcData = new HpsCpcData("9876543210", taxTypeType.NOTUSED);
+            HpsCpcData cpcData = new HpsCpcData(taxTypeType.SALESTAX, 1m);
+            HpsTransaction cpcResponse = creditService.CpcEdit(response.TransactionId).WithCpcData(cpcData).Execute();
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void retail_047a_LevelIIVisaSwipeResonseB() {
+            HpsTrackData trackData = new HpsTrackData {
+                Value = "%B4012002000060016^VI TEST CREDIT^251210118039000000000396?;4012002000060016=25121011803939600000?",
+                Method = HpsTrackDataMethod.Swipe
+            };
+
+            HpsCharge response = creditService.Charge(112.35m)
+                    .WithTrackData(trackData)
+                    .WithCpcReq(true)
+                    .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+            Assert.AreEqual("B", response.CpcIndicator);
+
+            HpsCpcData cpcData = new HpsCpcData() { TaxType = taxTypeType.NOTUSED };
             HpsTransaction cpcResponse = creditService.CpcEdit(response.TransactionId).WithCpcData(cpcData).Execute();
             Assert.IsNotNull(cpcResponse);
             Assert.AreEqual("00", cpcResponse.ResponseCode);
@@ -1133,6 +1274,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .WithCpcReq(true)
                     .Execute();
             Assert.IsNotNull(response);
@@ -1185,6 +1327,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .WithCpcReq(true)
                     .Execute();
             Assert.IsNotNull(response);
@@ -1192,6 +1335,38 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("S", response.CpcIndicator);
 
             HpsCpcData cpcData = new HpsCpcData("9876543210", taxTypeType.SALESTAX, 1.00m);
+            HpsTransaction cpcResponse = creditService.CpcEdit(response.TransactionId).WithCpcData(cpcData).Execute();
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void retail_051a_LevelIIMasterCardManualResponseS() {
+            HpsCardHolder cardHolder = new HpsCardHolder {
+                Address = new HpsAddress {
+                    Zip = "75024"
+                },
+            };
+
+            HpsCreditCard card = new HpsCreditCard {
+                Number = "5473500000000014",
+                ExpMonth = 12,
+                ExpYear = 2025,
+                Cvv = "123"
+            };
+
+            HpsCharge response = creditService.Charge(111.08m)
+                    .WithCard(card)
+                    .WithCardHolder(cardHolder)
+                    .WithCardPresent(true)
+                    .WithReaderPresent(true)
+                    .WithCpcReq(true)
+                    .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+            Assert.AreEqual("S", response.CpcIndicator);
+
+            HpsCpcData cpcData = new HpsCpcData("9876543210", taxTypeType.SALESTAX, 1m);
             HpsTransaction cpcResponse = creditService.CpcEdit(response.TransactionId).WithCpcData(cpcData).Execute();
             Assert.IsNotNull(cpcResponse);
             Assert.AreEqual("00", cpcResponse.ResponseCode);
@@ -1216,6 +1391,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .WithCpcReq(true)
                     .Execute();
             Assert.IsNotNull(response);
@@ -1268,6 +1444,7 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .WithCpcReq(true)
                     .Execute();
             Assert.IsNotNull(response);
@@ -1299,6 +1476,39 @@ namespace SecureSubmit.Tests.Certification {
                     .WithCard(card)
                     .WithCardHolder(cardHolder)
                     .WithCardPresent(true)
+                    .WithReaderPresent(true)
+                    .WithCpcReq(true)
+                    .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+            Assert.AreEqual("0", response.CpcIndicator);
+
+            HpsCpcData cpcData = new HpsCpcData("9876543210", taxTypeType.NOTUSED);
+            HpsTransaction cpcResponse = creditService.CpcEdit(response.TransactionId).WithCpcData(cpcData).Execute();
+            Assert.IsNotNull(cpcResponse);
+            Assert.AreEqual("00", cpcResponse.ResponseCode);
+        }
+
+        [TestMethod]
+        public void retail_055a_LevelIIAmexManualNoResponse() {
+            HpsCardHolder cardHolder = new HpsCardHolder {
+                Address = new HpsAddress {
+                    Zip = "75024"
+                },
+            };
+
+            HpsCreditCard card = new HpsCreditCard {
+                Number = "372700699251018",
+                ExpMonth = 12,
+                ExpYear = 2025,
+                Cvv = "1234"
+            };
+
+            HpsCharge response = creditService.Charge(111.13m)
+                    .WithCard(card)
+                    .WithCardHolder(cardHolder)
+                    .WithCardPresent(true)
+                    .WithReaderPresent(true)
                     .WithCpcReq(true)
                     .Execute();
             Assert.IsNotNull(response);
@@ -1322,9 +1532,10 @@ namespace SecureSubmit.Tests.Certification {
                 Cvv = "123"
             };
 
-            HpsTransaction response = creditService.OfflineCharge(15.11m)
+            HpsTransaction response = creditService.OfflineCharge(15.12m)
                     .WithCard(card)
                     .WithOfflineAuthCode("654321")
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -1341,6 +1552,7 @@ namespace SecureSubmit.Tests.Certification {
             HpsTransaction response = creditService.OfflineAuth(15.11m)
                     .WithCard(card)
                     .WithOfflineAuthCode("654321")
+                    .WithReaderPresent(true)
                     .Execute();
             Assert.IsNotNull(response);
             Assert.AreEqual("00", response.ResponseCode);
@@ -1363,7 +1575,21 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
+        public void retail_057a_ReturnMasterCardSwipe() {
+            HpsTrackData trackData = new HpsTrackData {
+                Value = "%B5473500000000014^MC TEST CARD^251210199998888777766665555444433332?;5473500000000014=25121019999888877776?",
+                Method = HpsTrackDataMethod.Swipe
+            };
+
+            HpsRefund response = creditService.Refund(15.15m)
+                    .WithTrackData(trackData)
+                    .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+        }
+
+        [TestMethod]
         public void retail_058_ReturnJcbTransactionId() {
             HpsRefund response = creditService.Refund(15.05m)
                     .WithTransactionId(test014TransactionId)
@@ -1374,7 +1600,7 @@ namespace SecureSubmit.Tests.Certification {
 
         // ONLINE VOID / REVERSAL (Required)
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void retail_059_ReversalVisa() {
             HpsReversal response = creditService.Reverse(15.01m)
                     .WithTransactionId(test010TransactionId)
@@ -1383,7 +1609,7 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void retail_060_ReversalMasterCard() {
             HpsReversal response = creditService.Reverse(16.02m)
                     .WithTransactionId(test017TransactionId)
@@ -1392,7 +1618,7 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void retail_061_ReversalMasterCard() {
             HpsReversal response = creditService.Reverse(17.02m)
                     .WithTransactionId(test023TransactionId)
@@ -1401,8 +1627,8 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod, Ignore]
-        public void retail_062_ReversalDiscover() {
+        [TestMethod]
+        public void retail_062_ReversalMasterCard() {
             HpsReversal response = creditService.Reverse(100.00m)
                     .WithTransactionId(test042TransactionId)
                     .Execute();
@@ -1410,7 +1636,7 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void retail_063_ReversalVisaPartial() {
             HpsReversal response = creditService.Reverse(15.06m)
                     .WithTransactionId(test015TransactionId)
@@ -1420,7 +1646,7 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void retail_064_ReversalDiscoverPartial() {
             HpsReversal response = creditService.Reverse(16.07m)
                     .WithTransactionId(test021TransactionId)
@@ -1488,6 +1714,25 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("00", response.ResponseCode);
         }
 
+        [TestMethod]
+        public void retail_067a_DebitSaleMasterCard() {
+            HpsTrackData trackData = new HpsTrackData {
+                Value = "&lt;E1052711%B5473501000000014^MC TEST CARD^251200000000000000000000000000000000?|GVEY/MKaKXuqqjKRRueIdCHPPoj1gMccgNOtHC41ymz7bIvyJJVdD3LW8BbwvwoenI+|+++++++C4cI2zjMp|11;5473501000000014=25120000000000000000?|8XqYkQGMdGeiIsgM0pzdCbEGUDP|+++++++C4cI2zjMp|00|||/wECAQECAoFGAgEH2wYcShV78RZwb3NAc2VjdXJlZXhjaGFuZ2UubmV0PX50qfj4dt0lu9oFBESQQNkpoxEVpCW3ZKmoIV3T93zphPS3XKP4+DiVlM8VIOOmAuRrpzxNi0TN/DWXWSjUC8m/PI2dACGdl/hVJ/imfqIs68wYDnp8j0ZfgvM26MlnDbTVRrSx68Nzj2QAgpBCHcaBb/FZm9T7pfMr2Mlh2YcAt6gGG1i2bJgiEJn8IiSDX5M2ybzqRT86PCbKle/XCTwFFe1X|&gt;",
+                Method = HpsTrackDataMethod.Swipe,
+                EncryptionData = new HpsEncryptionData {
+                    Version = "01"
+                }
+            };
+
+            HpsDebitAuthorization response = debitService.Charge(14.04m)
+                    .WithTrackData(trackData)
+                    .WithPinBlock("F505AD81659AA42A3D123412324000AB")
+                    .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+            test067aTransactionId = response.TransactionId;
+        }
+
         // PARTIALLY APPROVED PURCHASE
 
         [TestMethod]
@@ -1551,9 +1796,33 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("00", response.ResponseCode);
         }
 
+        [TestMethod]
+        public void retail_070a_DebitReturnVisaSwipe() {
+            HpsTrackData trackData = new HpsTrackData {
+                Value = "&lt;E1050711%B4012001000000016^VI TEST CREDIT^251200000000000000000000?|LO04K0WFOmdkDz0um+GwUkILL8ZZOP6Zc4rCpZ9+kg2T3JBT4AEOilWTI|+++++++Dbbn04ekG|11;4012001000000016=25120000000000000000?|1u2F/aEhbdoPixyAPGyIDv3gBfF|+++++++Dbbn04ekG|00|||/wECAQECAoFGAgEH2wYcShV78RZwb3NAc2VjdXJlZXhjaGFuZ2UubmV0PX50qfj4dt0lu9oFBESQQNkpoxEVpCW3ZKmoIV3T93zphPS3XKP4+DiVlM8VIOOmAuRrpzxNi0TN/DWXWSjUC8m/PI2dACGdl/hVJ/imfqIs68wYDnp8j0ZfgvM26MlnDbTVRrSx68Nzj2QAgpBCHcaBb/FZm9T7pfMr2Mlh2YcAt6gGG1i2bJgiEJn8IiSDX5M2ybzqRT86PCbKle/XCTwFFe1X|&gt;",
+                Method = HpsTrackDataMethod.Swipe,
+                EncryptionData = new HpsEncryptionData {
+                    Version = "01"
+                }
+            };
+
+            HpsDebitAuthorization response = debitService.Refund(14.08m)
+                    .WithTrackData(trackData)
+                    .WithPinBlock("32539F50C245A6A93D123412324000AA")
+                    .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("00", response.ResponseCode);
+
+            var reversalResponse = debitService.Reverse(14.08m)
+                .WithTransactionId(response.TransactionId)
+                .Execute();
+            Assert.IsNotNull(reversalResponse);
+            Assert.AreEqual("00", reversalResponse.ResponseCode);
+        }
+
         // REVERSAL
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void retail_071_DebitReversalMasterCard() {
             HpsTransaction response = debitService.Reverse(14.02m)
                     .WithTransactionId(test066TransactionId)
@@ -1562,7 +1831,7 @@ namespace SecureSubmit.Tests.Certification {
             Assert.AreEqual("00", response.ResponseCode);
         }
 
-        [TestMethod, Ignore]
+        [TestMethod]
         public void retail_072_DebitReversalVisa() {
             HpsTransaction response = debitService.Reverse(33.00m)
                     .WithTransactionId(test069TransactionId)

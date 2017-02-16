@@ -10,6 +10,7 @@ namespace SecureSubmit.Fluent {
         decimal? amount;
         string currency;
         HpsCreditCard card;
+        HpsTrackData trackData;
         HpsTokenData token;
         long? transactionId;
         HpsCardHolder cardHolder;
@@ -27,6 +28,10 @@ namespace SecureSubmit.Fluent {
         }
         public CreditRefundBuilder WithCard(HpsCreditCard value) {
             this.card = value;
+            return this;
+        }
+        public CreditRefundBuilder WithTrackData(HpsTrackData value) {
+            this.trackData = value;
             return this;
         }
         public CreditRefundBuilder WithToken(string token) {
@@ -88,6 +93,11 @@ namespace SecureSubmit.Fluent {
                 block1.GatewayTxnId = transactionId.Value;
                 block1.GatewayTxnIdSpecified = true;
             }
+            else if (trackData != null) {
+                block1.CardData = new CardDataType {
+                    Item = service.HydrateCardTrackData(trackData)
+                };
+            }
 
             if (details != null)
                 block1.AdditionalTxnFields = service.HydrateAdditionalTxnFields(details);
@@ -119,6 +129,7 @@ namespace SecureSubmit.Fluent {
             if (card != null) count++;
             if (transactionId != null) count++;
             if (token != null) count++;
+            if (trackData != null) count++;
 
             return count == 1;
         }

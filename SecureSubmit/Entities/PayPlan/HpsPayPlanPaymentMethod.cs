@@ -41,6 +41,7 @@ namespace SecureSubmit.Entities
         public string HasSchedules { get; set; }
         public string HasActiveSchedules { get; set; }
         public string PaymentToken { get; set; }
+        public string CVV { get; set; }
 
         private IEnumerable<string> GetEditableFields()
         {

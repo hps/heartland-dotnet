@@ -53,6 +53,9 @@ namespace SecureSubmit.Entities
         public string CancellationDate { get; set; }
         public string ScheduleStarted { get; set; }
 
+        public string Description { get; set; }
+        public string InvoiceNumber { get; set; }
+
         public HpsPayPlanSchedule()
         {
             this.EmailReceipt = "Never";
@@ -70,14 +73,14 @@ namespace SecureSubmit.Entities
                 "TaxAmount",
                 "NumberOfPaymentsRemaining",
                 "EndDate",
-                "CancellationDate",
                 "ReprocessingCount",
                 "EmailReceipt",
                 "EmailAdvanceNotice",
                 "ProcessingDateInfo",
             };
 
-            if (!isStarted) {
+            if (!isStarted)
+            {
                 rvalue.AddRange(new[] {
                     "ScheduleIdentifier",
                     "StartDate",
@@ -85,7 +88,13 @@ namespace SecureSubmit.Entities
                     "Duration",
                 });
             }
-            else rvalue.Add("NextProcessingDate");
+            else
+            {
+                rvalue.AddRange(new[] {
+                    "NextProcessingDate",
+                    "CancellationDate",
+                });
+            }
             return rvalue;
         }
 

@@ -203,7 +203,11 @@ namespace SecureSubmit.Services
             var data = method.GetEditableFieldsWithValues();
             data.Add("customerKey", method.CustomerKey);
             if (!string.IsNullOrEmpty(method.AccountNumber))
+            {
                 data.Add("accountNumber", method.AccountNumber);
+                if (!string.IsNullOrEmpty(method.CVV))
+                    data.Add("cardVerificationValue", method.CVV);
+            }
             else if (!string.IsNullOrEmpty(method.PaymentToken))
                 data.Add("paymentToken", method.PaymentToken);
 
@@ -230,7 +234,12 @@ namespace SecureSubmit.Services
 
             var data = schedule.GetEditableFieldsWithValues();
             data.Add("customerKey", schedule.CustomerKey);
-            data.Add("numberOfPayments", schedule.NumberOfPayments);
+            data.Add("description", schedule.Description);
+            data.Add("invoiceNbr", schedule.InvoiceNumber);
+            if (schedule.NumberOfPayments != null)
+            {
+                data.Add("numberOfPayments", schedule.NumberOfPayments);
+            }
 
             var response = DoRequest("POST", "schedules", data, _authHeader, _pagination);
             ResetPagination();
