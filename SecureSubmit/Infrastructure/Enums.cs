@@ -14,6 +14,10 @@ namespace SecureSubmit.Infrastructure
         MissingCurrency,
         InvalidCurrency,
         InvalidDate,
+        InvalidCardHolderDetail,
+        InvalidEmail,
+        InvalidPhonenumber,
+        InvalidZipcode,
 
         /* Gateway Codes */
         UnknownGatewayError,
@@ -83,4 +87,14 @@ namespace SecureSubmit.Infrastructure
         public const string TEL = "TEL";
         public const string EBRONZE = "EBRONZE";
     }
+
+    public enum AddressFields
+    {
+        FirstName,
+        LastName,
+        Address,
+        City,
+        State
+    }
+
 }

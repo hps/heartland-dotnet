@@ -82,6 +82,7 @@
     <Compile Include="TestData\TestGiftCard.cs" />
     <Compile Include="TestData\TestServicesConfig.cs" />
     <Compile Include="TokenServiceTests.cs" />
+    <Compile Include="Validation\HpsInputValidationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SecureSubmit\SecureSubmit.csproj">

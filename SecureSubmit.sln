@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureSubmit", "SecureSubmit\SecureSubmit.csproj", "{DC0E2220-E4DF-4EE1-933E-00FF84C5ABEA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureSubmit.Tests", "SecureSubmit.Tests\SecureSubmit.Tests.csproj", "{BEAAC090-BF3F-493B-8009-FBABD3EAA1AF}"

@@ -10,7 +10,7 @@
     <title>Simple Payment Form Demo</title>
 
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script src="assets/secure.submit-1.0.2.js"></script>
+    <script type="text/javascript" src="https://api2.heartlandportico.com/SecureSubmit.v1/token/2.1/securesubmit.js"></script>
 
     <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -119,57 +119,125 @@
 		<input type="text" name="Zip" />
 	</div>
 </div>
+<div class="form-group">
+    <div class="col-sm-10">
+        <div class="iframeholder" id="iframesCardTokenDetails"></div>
+    </div>
+</div>
 
 <h2>Card Information</h2>
-<div class="form-group">
+    <div class="form-group">
 	<label for="card_number" class="col-sm-2 control-label">Card Number</label>
 	<div class="col-sm-10">
-		<input type="text" id="card_number" />
+		<div class="iframeholder" id="iframesCardNumber"></div>
 	</div>
 </div>
 <div class="form-group">
-	<label for="card_cvc" class="col-sm-2 control-label">CVC</label>
+	<label for="card_cvc" class="col-sm-2 control-label">CVV</label>
 	<div class="col-sm-10">
-		<input type="text" id="card_cvc" />
+		<div class="iframeholder" id="iframesCardCvv"></div>
 	</div>
 </div>
 <div class="form-group">
 	<label for="exp_month" class="col-sm-2 control-label">Expiration Date</label>
 	<div class="col-sm-10">
-		<select id="exp_month">
-			<option>01</option>
-            		<option>02</option>
-            		<option>03</option>
-            		<option>04</option>
-            		<option>05</option>
-            		<option>06</option>
-            		<option>07</option>
-            		<option>08</option>
-            		<option>09</option>
-            		<option>10</option>
-            		<option>11</option>
-            		<option>12</option>
-		</select>
-		/
-		<select id="exp_year"></select>
-	</div>
+        <div class="iframeholder" id="iframesCardExpiration"></div>
+		</div>
 </div>
-
-<br />
-<input type="submit" value="Submit Payment" id="PaymentButton" /><br>
+<div class="form-group">
+	<div class="col-sm-10">
+        <div class="iframeholder" id="iframestoken"></div>
+		</div>
+</div>
+<br>
+<div id="iframesSubmit"></div>
 </form>
 </div>
-	<script>
-	    jQuery("#payment_form").SecureSubmit({
-	        public_key: "pkapi_cert_P6dRqs1LzfWJ6HgGVZ",
-	        error: function (response) {
-	            alert(response.message);
-	        }
-	    });
-	</script>
-<script type="text/javascript">
-    var myselect = document.getElementById("exp_year"), year = new Date().getFullYear();
-    var gen = function (max) { do { myselect.add(new Option(year++), null); } while (max-- > 0); }(10);
-</script>
+    <script type="text/javascript">
+        (function (document, Heartland) {
+            // Create a new `HPS` object with the necessary configuration
+            var hps = new Heartland.HPS({
+                publicKey: 'pkapi_cert_P6dRqs1LzfWJ6HgGVZ', // This is your public API Key
+                type: 'iframe',
+                // Configure the iframe fields to tell the library where
+                // the iframe should be inserted into the DOM and some
+                // basic options
+                fields: {
+                    cardNumber: {
+                        target: 'iframesCardNumber',
+                        placeholder: '•••• •••• •••• ••••'
+                    },
+                    cardExpiration: {
+                        target: 'iframesCardExpiration',
+                        placeholder: 'MM / YYYY'
+                    },
+                    cardCvv: {
+                        target: 'iframesCardCvv',
+                        placeholder: 'CVV'
+                    },
+                    submit: {
+                        target: 'iframesSubmit'
+                    }
+                },
+                // OPTIONAL Collection of CSS to inject into the iframes.
+                // These properties can match the site's styles
+                // to create a seamless experience.
+                style: {
+                    'input': {
+                        'background': '#fff',
+                        'border': '1px solid',
+                        'border-color': '#bbb3b9 #c7c1c6 #c7c1c6',
+                        'box-sizing': 'border-box',
+                        'font-family': 'serif',
+                        'font-size': '16px',
+                        'line-height': '1',
+                        'margin': '0 .5em 0 0',
+                        'max-width': '100%',
+                        'outline': '0',
+                        'padding': '0.5278em',
+                        'vertical-align': 'baseline',
+                        'width': '100%'
+                    }
+                },
+                // Callback when a token is received from the service
+                onTokenSuccess: function (resp) {
+                    //alert('Here is a single-use token: ' + resp.token_value);
+                    // create field and append to form
+                    $("<input>").attr({
+                        type: "hidden",
+                        id: "token_value",
+                        name: "token_value",
+                        value: resp.token_value
+                    }).appendTo("#iframestoken");
+                    // unbind event handler
+                    $("#payment_form").unbind('submit');
+                    // submit the form
+                    $("#payment_form").submit();
+                },
+                // Callback when an error is received from the service
+                onTokenError: function (resp) {
+                    alert('There was an error: ' + resp.error.message);
+                },
+                // Callback when an event is fired within an iFrame
+                onEvent: function (ev) {
+                    console.log(ev);
+                }
+            });
+            // Attach a handler to interrupt the form submission
+            Heartland.Events.addHandler(document.getElementById('iframesSubmit'), 'submit', function (e) {
+                // Prevent the form from continuing to the `action` address
+                e.preventDefault();
+                // Tell the iframes to tokenize the data
+                hps.Messages.post(
+                  {
+                      accumulateData: true,
+                      action: 'tokenize',
+                      message: 'pkapi_cert_jKc1FtuyAydZhZfbB3'
+                  },
+                  'cardNumber'
+                );
+            });
+        }(document, Heartland));
+    </script>
 </body>
 </html>
