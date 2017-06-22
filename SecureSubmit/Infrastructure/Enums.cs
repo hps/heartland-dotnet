@@ -46,8 +46,9 @@ namespace SecureSubmit.Infrastructure
 
         /* Gift Issuer Codes */
         CardAlreadyActivated,
-
-        MissingCheckName
+        MissingCheckName,
+        UnknownGiftError,
+        PartialApproval
     }
 
     public enum HpsTransactionType
@@ -97,4 +98,9 @@ namespace SecureSubmit.Infrastructure
         State
     }
 
+    public enum HpsCardType
+    {
+        Credit,
+        Gift
+    }
 }

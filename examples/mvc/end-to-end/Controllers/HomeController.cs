@@ -5,7 +5,7 @@ using System.Web.Mvc;
 using SecureSubmit.Entities;
 using SecureSubmit.Infrastructure;
 using SecureSubmit.Services;
-using SecureSubmit.Services.Credit;
+//using SecureSubmit.Services.Credit;
 
 namespace end_to_end.Controllers
 {
@@ -28,15 +28,16 @@ namespace end_to_end.Controllers
 
             var chargeService = new HpsCreditService(config);
 
-            var numbers = new Regex("^[0-9]+$");
-
-            var address = new HpsAddress
+            
+            try
+            {
+                var address = new HpsAddress
             {
                 Address = details.Address,
                 City = details.City,
                 State = details.State,
                 Country = "United States",
-                Zip = numbers.Match(details.Zip ?? string.Empty).ToString()
+                Zip = details.Zip ?? string.Empty
             };
 
             var validCardHolder = new HpsCardHolder
@@ -44,7 +45,7 @@ namespace end_to_end.Controllers
                 FirstName = details.FirstName,
                 LastName = details.LastName,
                 Address = address,
-                Phone = numbers.Match(details.PhoneNumber ?? string.Empty).ToString()
+                Phone = details.PhoneNumber ?? string.Empty
             };
 
             var suToken = new HpsTokenData
@@ -52,8 +53,7 @@ namespace end_to_end.Controllers
                 TokenValue = details.Token_value
             };
 
-            try
-            {
+           
                 var authResponse = chargeService.Charge(15.15m, "usd", suToken.TokenValue, validCardHolder);                
 
                 SendEmail();
@@ -65,8 +65,12 @@ namespace end_to_end.Controllers
             }
             catch (HpsInvalidRequestException e)
             {
+                if(e.Code.ToString()=="InvalidAmount")
+                {
                 // handle error for amount less than zero dollars
                 return View("Error", model: "amount less than zero dollars: " + e.Message);
+                }
+                return View("Error", model: "Invalid Input: " + e.Message);
             }
             catch (HpsAuthenticationException e)
             {
@@ -138,6 +142,6 @@ namespace end_to_end.Controllers
     public class SuccessModel
     {
         public string FirstName { get; set; }
-        public int TransactionId { get; set; }
+        public long TransactionId { get; set; }
     }
 }

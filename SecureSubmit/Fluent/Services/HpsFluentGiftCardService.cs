@@ -76,7 +76,7 @@ namespace SecureSubmit.Fluent.Services {
                     rspText = rspTextField.GetValue(trans).ToString();
                 }
             }
-            HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId, rspCode, rspText);
+            HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId, rspCode, rspText, HpsCardType.Gift);
 
             return rsp;
         }

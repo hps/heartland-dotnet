@@ -7,6 +7,7 @@ namespace SecureSubmit.Infrastructure.Validation
     {
         private static readonly Dictionary<String, HpsExceptionCodes> IssuerCodeToCreditExceptionCode;
         private static readonly Dictionary<HpsExceptionCodes, String> CreditExceptionCodeToMessage;
+        private static readonly Dictionary<String, HpsExceptionCodes> IssuerCodeToGiftExceptionCode;
 
         static HpsIssuerResponseValidation()
         {
@@ -27,6 +28,24 @@ namespace SecureSubmit.Infrastructure.Validation
                 {"N7", HpsExceptionCodes.IncorrectCvc}
             };
 
+
+            IssuerCodeToGiftExceptionCode = new Dictionary<String, HpsExceptionCodes>
+            {
+                { "1", HpsExceptionCodes.UnknownGiftError},
+                {"2", HpsExceptionCodes.UnknownGiftError},
+                {"11",HpsExceptionCodes.UnknownGiftError},
+                {"13",HpsExceptionCodes.PartialApproval},
+                {"14",HpsExceptionCodes.InvalidPin},
+                {"3", HpsExceptionCodes.InvalidCardData},
+                {"8", HpsExceptionCodes.InvalidCardData},
+                {"4", HpsExceptionCodes.ExpiredCard},
+                {"5", HpsExceptionCodes.CardDeclined},
+                {"12",HpsExceptionCodes.CardDeclined},
+                {"6", HpsExceptionCodes.ProcessingError},
+                {"7", HpsExceptionCodes.ProcessingError},
+                {"9", HpsExceptionCodes.InvalidAmount},
+                {"10",HpsExceptionCodes.ProcessingError}
+            };
             foreach (var code in declinedCodes)
                 IssuerCodeToCreditExceptionCode.Add(code, HpsExceptionCodes.CardDeclined);
 
@@ -45,28 +64,46 @@ namespace SecureSubmit.Infrastructure.Validation
                 {HpsExceptionCodes.PinVerification, "Can't verify card pin number."},
                 {HpsExceptionCodes.IncorrectCvc, "The card's security code is incorrect."},
                 {HpsExceptionCodes.IssuerTimeout, "The card issuer timed-out."},
-                {HpsExceptionCodes.UnknownIssuerError, "An unknown issuer error has occurred."}
+                {HpsExceptionCodes.UnknownIssuerError, "An unknown issuer error has occurred."},
+                {HpsExceptionCodes.UnknownGiftError, "An unknown gift error has occurred."},
+                {HpsExceptionCodes.PartialApproval, "The amount was partially approved."},
+                {HpsExceptionCodes.InvalidCardData, "The card data is invalid."}
             };
         }
 
-        public static void CheckResponse(long transactionId, string responseCode, string responseText)
+        public static void CheckResponse(long transactionId, string responseCode, string responseText, HpsCardType type = HpsCardType.Credit)
         {
-            var e = GetException(transactionId, responseCode, responseText);
-            if(e != null) { throw e; }
+            var e = GetException(transactionId, responseCode, responseText, type);
+            if (e != null) { throw e; }
         }
 
-        public static HpsCreditException GetException(long transactionId, string responseCode, string responseText)
+        public static HpsCreditException GetException(long transactionId, string responseCode, string responseText, HpsCardType type = HpsCardType.Credit)
         {
-            if (responseCode == "85" || responseCode == "10" || responseCode == "00" || responseCode == "0") return null;
+            if (responseCode == "00" || responseCode == "0") return null;
 
             HpsExceptionCodes code;
             string message;
-            if (!IssuerCodeToCreditExceptionCode.TryGetValue(responseCode, out code))
-                return new HpsCreditException(transactionId, HpsExceptionCodes.UnknownIssuerError,
-                    CreditExceptionCodeToMessage[HpsExceptionCodes.UnknownIssuerError], responseCode, responseText);
-            
-            CreditExceptionCodeToMessage.TryGetValue(code, out message);
-            return new HpsCreditException(transactionId, code, message ?? "Unknown issuer error.", responseCode, responseText);
+            switch (type)
+            {
+                case HpsCardType.Credit:
+                    if (responseCode == "85" || responseCode == "10") return null;
+                    if (IssuerCodeToCreditExceptionCode.TryGetValue(responseCode, out code))
+                    {
+                        CreditExceptionCodeToMessage.TryGetValue(code, out message);
+                        return new HpsCreditException(transactionId, code, message ?? "Unknown issuer error.", responseCode, responseText);
+                    }
+                    break;
+                case HpsCardType.Gift:
+                    if (responseCode == "13") return null;
+                    if (IssuerCodeToGiftExceptionCode.TryGetValue(responseCode, out code))
+                    {
+                        CreditExceptionCodeToMessage.TryGetValue(code, out message);
+                        return new HpsCreditException(transactionId, code, message ?? "Unknown issuer error.", responseCode, responseText);
+                    }
+                    break;
+            }
+            return new HpsCreditException(transactionId, HpsExceptionCodes.UnknownIssuerError, CreditExceptionCodeToMessage[HpsExceptionCodes.UnknownIssuerError], responseCode, responseText);
+
         }
     }
 }

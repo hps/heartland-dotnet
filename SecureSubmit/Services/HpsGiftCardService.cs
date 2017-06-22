@@ -134,7 +134,7 @@ namespace SecureSubmit.Services
 
             var aliasRsp = (PosGiftCardAliasRspType)rsp.Transaction.Item;
             HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId,
-                aliasRsp.RspCode.ToString(CultureInfo.InvariantCulture), aliasRsp.RspText);
+                aliasRsp.RspCode.ToString(CultureInfo.InvariantCulture), aliasRsp.RspText, HpsCardType.Gift);
 
             /* Start to fill out a new transaction response (HpsGiftCardAddValue). */
             var response = new HpsGiftCardAlias
@@ -178,7 +178,7 @@ namespace SecureSubmit.Services
 
             var balanceRsp = (PosGiftCardBalanceRspType)rsp.Transaction.Item;
             HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId,
-                balanceRsp.RspCode.ToString(CultureInfo.InvariantCulture), balanceRsp.RspText);
+                balanceRsp.RspCode.ToString(CultureInfo.InvariantCulture), balanceRsp.RspText, HpsCardType.Gift);
 
             /* Start to fill out a new transaction response (HpsGiftCardAddValue). */
             var response = new HpsGiftCardResponse
@@ -224,7 +224,7 @@ namespace SecureSubmit.Services
 
             var deactivateRsp = (PosGiftCardDeactivateRspType)rsp.Transaction.Item;
             HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId,
-                deactivateRsp.RspCode.ToString(CultureInfo.InvariantCulture), deactivateRsp.RspText);
+                deactivateRsp.RspCode.ToString(CultureInfo.InvariantCulture), deactivateRsp.RspText, HpsCardType.Gift);
 
             /* Start to fill out a new transaction response (HpsGiftCardAddValue). */
             var response = new HpsGiftCardResponse
@@ -271,7 +271,7 @@ namespace SecureSubmit.Services
 
             var replaceRsp = (PosGiftCardReplaceRspType)rsp.Transaction.Item;
             HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId,
-                replaceRsp.RspCode.ToString(CultureInfo.InvariantCulture), replaceRsp.RspText);
+                replaceRsp.RspCode.ToString(CultureInfo.InvariantCulture), replaceRsp.RspText, HpsCardType.Gift);
 
             /* Start to fill out a new transaction response (HpsGiftCardAddValue). */
             var response = new HpsGiftCardResponse
@@ -346,7 +346,7 @@ namespace SecureSubmit.Services
 
             var rewardRsp = (PosGiftCardRewardRspType)rsp.Transaction.Item;
             HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId,
-                rewardRsp.RspCode.ToString(CultureInfo.InvariantCulture), rewardRsp.RspText);
+                rewardRsp.RspCode.ToString(CultureInfo.InvariantCulture), rewardRsp.RspText, HpsCardType.Gift);
 
             /* Start to fill out a new transaction response. */
             var response = new HpsGiftCardResponse
@@ -418,7 +418,7 @@ namespace SecureSubmit.Services
 
             var saleRsp = (PosGiftCardSaleRspType)rsp.Transaction.Item;
             HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId,
-                saleRsp.RspCode.ToString(CultureInfo.InvariantCulture), saleRsp.RspText);
+                saleRsp.RspCode.ToString(CultureInfo.InvariantCulture), saleRsp.RspText, HpsCardType.Gift);
 
             /* Start to fill out a new transaction response. */
             var response = new HpsGiftCardSale
@@ -464,7 +464,7 @@ namespace SecureSubmit.Services
 
             var voidRsp = (PosGiftCardVoidRspType)rsp.Transaction.Item;
             HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId,
-                voidRsp.RspCode.ToString(CultureInfo.InvariantCulture), voidRsp.RspText);
+                voidRsp.RspCode.ToString(CultureInfo.InvariantCulture), voidRsp.RspText, HpsCardType.Gift);
 
             /* Start to fill out a new transaction response. */
             var response = new HpsGiftCardResponse
@@ -553,7 +553,7 @@ namespace SecureSubmit.Services
 
             var addValueRsp = (PosGiftCardAddValueRspType)rsp.Transaction.Item;
             HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId,
-                addValueRsp.RspCode.ToString(CultureInfo.InvariantCulture), addValueRsp.RspText);
+                addValueRsp.RspCode.ToString(CultureInfo.InvariantCulture), addValueRsp.RspText, HpsCardType.Gift);
 
             /* Start to fill out a new transaction response (HpsGiftCardAddValue). */
             var addValue = new HpsGiftCardResponse
@@ -582,7 +582,7 @@ namespace SecureSubmit.Services
 
             var activationRsp = (PosGiftCardActivateRspType)rsp.Transaction.Item;
             HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId,
-                activationRsp.RspCode.ToString(CultureInfo.InvariantCulture), activationRsp.RspText);
+                activationRsp.RspCode.ToString(CultureInfo.InvariantCulture), activationRsp.RspText, HpsCardType.Gift);
 
             /* Start to fill out a new transaction response (HpsGiftCardTransactionResponse). */
             var activation = new HpsGiftCardResponse
@@ -611,7 +611,7 @@ namespace SecureSubmit.Services
 
             var reversalRsp = (PosGiftCardReversalRspType)rsp.Transaction.Item;
             HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId,
-                reversalRsp.RspCode.ToString(CultureInfo.InvariantCulture), reversalRsp.RspText);
+                reversalRsp.RspCode.ToString(CultureInfo.InvariantCulture), reversalRsp.RspText, HpsCardType.Gift);
 
             /* Start to fill out a new transaction response. */
             var reversal = new HpsGiftCardResponse
