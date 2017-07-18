@@ -29,6 +29,9 @@ namespace SecureSubmit.Entities {
         /// <summary>Gets or sets the settlement amount of the transaction.</summary>
         public decimal SettlementAmount { get; set; }
 
+        public decimal ConvenienceAmount { get; set; }
+
+        public decimal ShippingAmount { get; set; }
         /// <summary>Gets or sets the transaction type.</summary>
         public HpsTransactionType? TransactionType { get; set; }
 
@@ -57,7 +60,7 @@ namespace SecureSubmit.Entities {
         internal new HpsReportTransactionDetails FromResponse(PosResponseVer10 response) {
             var reportResponse = (PosReportTxnDetailRspType)response.Transaction.Item;
 
-            base.FromResponse(response);
+            //base.FromResponse(response);
 
             OriginalTransactionId = reportResponse.OriginalGatewayTxnId;
             TransactionType = ServiceNameToTransactionType(reportResponse.ServiceName);
@@ -78,6 +81,11 @@ namespace SecureSubmit.Entities {
             ResponseCode = data.RspCode;
             ResponseText = data.RspText;
             TransactionStatus = data.TxnStatus;
+
+            if (data.ConvenienceAmtInfoSpecified)
+                ConvenienceAmount = data.ConvenienceAmtInfo;            
+            if (data.ShippingAmtInfoSpecified)
+                ShippingAmount = data.ShippingAmtInfo;
             if (data.TokenizationMsg != null)
                 TokenData = new HpsTokenData {
                     TokenRspMsg = data.TokenizationMsg

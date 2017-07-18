@@ -25,6 +25,8 @@ namespace SecureSubmit.Fluent
         private bool cardPresent = false;
         private bool readerPresent = false;
         private decimal? gratuity;
+        private decimal? convenienceAmt;
+        private decimal? shippingAmt;
         private HpsAutoSubstantiation autoSubstantiation;
         private HpsTxnReferenceData originalTxnReferenceData;
         private HpsEmvDataType emvData;
@@ -115,6 +117,16 @@ namespace SecureSubmit.Fluent
             this.gratuity = gratuity;
             return this;
         }
+        public CreditAuthBuilder WithShippingAmt(decimal? shippingAmt)
+        {
+            this.shippingAmt = shippingAmt;
+            return this;
+        }
+        public CreditAuthBuilder WithConvenienceAmt(decimal? convenienceAmt)
+        {
+            this.convenienceAmt = convenienceAmt;
+            return this;
+        }
         public CreditAuthBuilder WithAutoSubstantiation(HpsAutoSubstantiation autoSubstantiation)
         {
             this.autoSubstantiation = autoSubstantiation;
@@ -153,6 +165,18 @@ namespace SecureSubmit.Fluent
             if (block1.GratuityAmtInfoSpecified)
                 block1.GratuityAmtInfo = gratuity.Value;
 
+            block1.ConvenienceAmtInfoSpecified = convenienceAmt.HasValue;
+            if (block1.ConvenienceAmtInfoSpecified)
+            {
+                block1.ConvenienceAmtInfo = convenienceAmt.Value;
+                HpsInputValidation.CheckAmount(block1.ConvenienceAmtInfo);
+            }
+            block1.ShippingAmtInfoSpecified = shippingAmt.HasValue;
+            if (block1.ShippingAmtInfoSpecified)
+            {
+                block1.ShippingAmtInfo = shippingAmt.Value;
+                HpsInputValidation.CheckAmount(block1.ShippingAmtInfo);
+            }
             if (cardHolder != null)
                 block1.CardHolderData = service.HydrateCardHolderData(cardHolder);
 

@@ -68,6 +68,7 @@ namespace SecureSubmit.Services
                 ResponseCode = reportResponse.Data.RspCode,
                 ResponseText = reportResponse.Data.RspText,
                 TransactionStatus = reportResponse.Data.TxnStatus,
+
                 TokenData = string.IsNullOrEmpty(reportResponse.Data.TokenizationMsg) ? null : new HpsTokenData
                 {
                     TokenRspMsg = reportResponse.Data.TokenizationMsg
@@ -80,7 +81,10 @@ namespace SecureSubmit.Services
                 : null,
                 CustomerId = reportResponse.Data.AdditionalTxnFields != null ? reportResponse.Data.AdditionalTxnFields.CustomerID : string.Empty,
                 InvoiceNumber = reportResponse.Data.AdditionalTxnFields != null ? reportResponse.Data.AdditionalTxnFields.InvoiceNbr : string.Empty,
-                Memo = reportResponse.Data.AdditionalTxnFields != null ? reportResponse.Data.AdditionalTxnFields.Description : string.Empty
+                Memo = reportResponse.Data.AdditionalTxnFields != null ? reportResponse.Data.AdditionalTxnFields.Description : string.Empty,
+                ConvenienceAmount = reportResponse.Data.ConvenienceAmtInfoSpecified ? reportResponse.Data.ConvenienceAmtInfo : 0m,
+                ShippingAmount = reportResponse.Data.ShippingAmtInfoSpecified ? reportResponse.Data.ShippingAmtInfo : 0m
+
             };
         }
 
@@ -177,11 +181,12 @@ namespace SecureSubmit.Services
         public HpsCharge Charge(decimal amount, string currency, HpsCreditCard card, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
             HpsTransactionDetails details = null, HpsEncryptionData encryptionData = null, decimal gratuity = 0,
-            HpsDirectMarketData directMarketData = null)
+            HpsDirectMarketData directMarketData = null, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
-
+            HpsInputValidation.CheckAmount(convenienceAmt);
+            HpsInputValidation.CheckAmount(shippingAmt);
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
             {
@@ -197,6 +202,10 @@ namespace SecureSubmit.Services
                         Amt = amount,
                         GratuityAmtInfo = gratuity,
                         GratuityAmtInfoSpecified = gratuity != 0,
+                        ConvenienceAmtInfo = convenienceAmt,
+                        ConvenienceAmtInfoSpecified = convenienceAmt != 0,
+                        ShippingAmtInfo = shippingAmt,
+                        ShippingAmtInfoSpecified = shippingAmt != 0,
                         CardData = new CardDataType
                         {
                             EncryptionData = HydrateEncryptionData(encryptionData),
@@ -237,7 +246,7 @@ namespace SecureSubmit.Services
         public HpsCharge Charge(decimal amount, string currency, string token, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
             HpsTransactionDetails details = null, decimal gratuity = 0, HpsDirectMarketData directMarketData = null,
-            int? tokenExpMonth = null, int? tokenExpYear = null)
+            int? tokenExpMonth = null, int? tokenExpYear = null, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             return Charge(
                 amount,
@@ -249,7 +258,9 @@ namespace SecureSubmit.Services
                 allowPartialAuth,
                 details,
                 gratuity,
-                directMarketData
+                directMarketData,
+                convenienceAmt,
+                shippingAmt
             );
         }
 
@@ -272,11 +283,12 @@ namespace SecureSubmit.Services
         /// <returns>The <see cref="HpsCharge"/>.</returns>
         public HpsCharge Charge(decimal amount, string currency, HpsTokenData token, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
-            HpsTransactionDetails details = null, decimal gratuity = 0, HpsDirectMarketData directMarketData = null)
+            HpsTransactionDetails details = null, decimal gratuity = 0, HpsDirectMarketData directMarketData = null, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
-
+            HpsInputValidation.CheckAmount(convenienceAmt);
+            HpsInputValidation.CheckAmount(shippingAmt);
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
             {
@@ -291,6 +303,10 @@ namespace SecureSubmit.Services
                         Amt = amount,
                         GratuityAmtInfo = gratuity,
                         GratuityAmtInfoSpecified = gratuity != 0,
+                        ConvenienceAmtInfo = convenienceAmt,
+                        ConvenienceAmtInfoSpecified = convenienceAmt != 0,
+                        ShippingAmtInfo = shippingAmt,
+                        ShippingAmtInfoSpecified = shippingAmt != 0,
                         CardHolderData = cardHolder == null ? null : HydrateCardHolderData(cardHolder),
                         CardData = new CardDataType
                         {
@@ -310,11 +326,12 @@ namespace SecureSubmit.Services
 
         public HpsCharge Charge(decimal amount, string currency, HpsTrackData trackData, HpsEncryptionData encryptionData = null,
             decimal gratuity = 0, bool allowPartialAuthorization = false, bool requestMultiUseToken = false,
-            HpsDirectMarketData directMarketData = null, HpsEmvDataType emvData = null, bool allowDuplicates = false)
+            HpsDirectMarketData directMarketData = null, HpsEmvDataType emvData = null, bool allowDuplicates = false, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
-
+            HpsInputValidation.CheckAmount(convenienceAmt);
+            HpsInputValidation.CheckAmount(shippingAmt);
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
             {
@@ -325,6 +342,10 @@ namespace SecureSubmit.Services
                         Amt = amount,
                         GratuityAmtInfo = gratuity,
                         GratuityAmtInfoSpecified = gratuity != 0,
+                        ConvenienceAmtInfo = convenienceAmt,
+                        ConvenienceAmtInfoSpecified = convenienceAmt != 0,
+                        ShippingAmtInfo = shippingAmt,
+                        ShippingAmtInfoSpecified = shippingAmt != 0,
                         AllowPartialAuth = allowPartialAuthorization ? booleanType.Y : booleanType.N,
                         AllowPartialAuthSpecified = true,
                         AllowDup = allowDuplicates ? booleanType.Y : booleanType.N,
@@ -493,11 +514,12 @@ namespace SecureSubmit.Services
         /// <returns>The <see cref="HpsAuthorization"/>.</returns>
         public HpsAuthorization Authorize(decimal amount, string currency, HpsCreditCard card, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
-            HpsTransactionDetails details = null, decimal gratuity = 0)
+            HpsTransactionDetails details = null, decimal gratuity = 0, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
-
+            HpsInputValidation.CheckAmount(convenienceAmt);
+            HpsInputValidation.CheckAmount(shippingAmt);
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
             {
@@ -518,6 +540,10 @@ namespace SecureSubmit.Services
                         Amt = amount,
                         GratuityAmtInfo = gratuity,
                         GratuityAmtInfoSpecified = gratuity != 0,
+                        ConvenienceAmtInfo = convenienceAmt,
+                        ConvenienceAmtInfoSpecified = convenienceAmt != 0,
+                        ShippingAmtInfo = shippingAmt,
+                        ShippingAmtInfoSpecified = shippingAmt != 0,
                         AdditionalTxnFields = HydrateAdditionalTxnFields(details),
                         TxnDescriptor = descriptor
                     }
@@ -547,7 +573,7 @@ namespace SecureSubmit.Services
         /// <returns>The <see cref="HpsAuthorization"/>.</returns>
         public HpsAuthorization Authorize(decimal amount, string currency, string token, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
-            HpsTransactionDetails details = null, decimal gratuity = 0, int? tokenExpMonth = null, int? tokenExpYear = null)
+            HpsTransactionDetails details = null, decimal gratuity = 0, int? tokenExpMonth = null, int? tokenExpYear = null, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             return Authorize(
                 amount,
@@ -558,7 +584,9 @@ namespace SecureSubmit.Services
                 descriptor,
                 allowPartialAuth,
                 details,
-                gratuity
+                gratuity,
+                convenienceAmt,
+                shippingAmt
             );
         }
 
@@ -579,11 +607,12 @@ namespace SecureSubmit.Services
         /// <returns>The <see cref="HpsAuthorization"/>.</returns>
         public HpsAuthorization Authorize(decimal amount, string currency, HpsTokenData token, HpsCardHolder cardHolder = null,
             bool requestMultiUseToken = false, string descriptor = null, bool allowPartialAuth = false,
-            HpsTransactionDetails details = null, decimal gratuity = 0)
+            HpsTransactionDetails details = null, decimal gratuity = 0, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
-
+            HpsInputValidation.CheckAmount(convenienceAmt);
+            HpsInputValidation.CheckAmount(shippingAmt);
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
             {
@@ -598,6 +627,10 @@ namespace SecureSubmit.Services
                         Amt = amount,
                         GratuityAmtInfo = gratuity,
                         GratuityAmtInfoSpecified = gratuity != 0,
+                        ConvenienceAmtInfo = convenienceAmt,
+                        ConvenienceAmtInfoSpecified = convenienceAmt != 0,
+                        ShippingAmtInfo = shippingAmt,
+                        ShippingAmtInfoSpecified = shippingAmt != 0,
                         CardHolderData = cardHolder == null ? null : HydrateCardHolderData(cardHolder),
                         CardData = new CardDataType
                         {
@@ -615,11 +648,12 @@ namespace SecureSubmit.Services
         }
 
         public HpsAuthorization Authorize(decimal amount, string currency, HpsTrackData trackData, HpsEncryptionData encryptionData = null,
-            decimal gratuity = 0, bool allowPartialAuthorization = false, bool requestMultiUseToken = false, HpsDirectMarketData directMarketData = null, HpsEmvDataType emvData = null)
+            decimal gratuity = 0, bool allowPartialAuthorization = false, bool requestMultiUseToken = false, HpsDirectMarketData directMarketData = null, HpsEmvDataType emvData = null, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
-
+            HpsInputValidation.CheckAmount(convenienceAmt);
+            HpsInputValidation.CheckAmount(shippingAmt);
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
             {
@@ -630,6 +664,10 @@ namespace SecureSubmit.Services
                         Amt = amount,
                         GratuityAmtInfo = gratuity,
                         GratuityAmtInfoSpecified = gratuity != 0,
+                        ConvenienceAmtInfo = convenienceAmt,
+                        ConvenienceAmtInfoSpecified = convenienceAmt != 0,
+                        ShippingAmtInfo = shippingAmt,
+                        ShippingAmtInfoSpecified = shippingAmt != 0,
                         AllowPartialAuth = allowPartialAuthorization ? booleanType.Y : booleanType.N,
                         AllowPartialAuthSpecified = true,
                         CardData = new CardDataType
@@ -1086,11 +1124,12 @@ namespace SecureSubmit.Services
 
         public HpsTransaction OfflineCharge(decimal amount, string currency, HpsCreditCard card, string offlineAuthCode, bool allowDuplicates = false,
             bool cpcRequest = false, HpsCardHolder cardHolder = null, bool requestMultiUseToken = false, HpsTransactionDetails details = null,
-            HpsEncryptionData encryptionData = null, decimal gratuity = 0, decimal surcharge = 0, long? clientTransactionId = null)
+            HpsEncryptionData encryptionData = null, decimal gratuity = 0, decimal surcharge = 0, long? clientTransactionId = null, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
-
+            HpsInputValidation.CheckAmount(convenienceAmt);
+            HpsInputValidation.CheckAmount(shippingAmt);
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
             {
@@ -1106,9 +1145,13 @@ namespace SecureSubmit.Services
                         CPCReqSpecified = true,
                         OfflineAuthCode = offlineAuthCode,
                         GratuityAmtInfo = gratuity,
-                        GratuityAmtInfoSpecified = gratuity != 0,
+                        GratuityAmtInfoSpecified = gratuity != 0,                       
                         SurchargeAmtInfo = surcharge,
                         SurchargeAmtInfoSpecified = surcharge != 0,
+                        ConvenienceAmtInfo = convenienceAmt,
+                        ConvenienceAmtInfoSpecified = convenienceAmt != 0,
+                        ShippingAmtInfo = shippingAmt,
+                        ShippingAmtInfoSpecified = shippingAmt != 0,
                         CardData = new CardDataType
                         {
                             EncryptionData = HydrateEncryptionData(encryptionData),
@@ -1135,11 +1178,12 @@ namespace SecureSubmit.Services
         }
 
         public HpsTransaction OfflineCharge(decimal amount, string currency, HpsTrackData trackData, HpsEncryptionData encryptionData = null,
-            decimal gratuity = 0, decimal surcharge = 0, long? clientTransactionId = null, EMVDataType emvData = null)
+            decimal gratuity = 0, decimal surcharge = 0, long? clientTransactionId = null, EMVDataType emvData = null, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
-
+            HpsInputValidation.CheckAmount(convenienceAmt);
+            HpsInputValidation.CheckAmount(shippingAmt);
             /* Build the transaction request. */
             var transaction = new PosRequestVer10Transaction
             {
@@ -1152,6 +1196,10 @@ namespace SecureSubmit.Services
                         GratuityAmtInfoSpecified = gratuity != 0,
                         SurchargeAmtInfo = surcharge,
                         SurchargeAmtInfoSpecified = surcharge != 0,
+                        ConvenienceAmtInfo = convenienceAmt,
+                        ConvenienceAmtInfoSpecified = convenienceAmt != 0,
+                        ShippingAmtInfo = shippingAmt,
+                        ShippingAmtInfoSpecified = shippingAmt != 0,
                         CardData = new CardDataType
                         {
                             Item = HydrateCardTrackData(trackData),

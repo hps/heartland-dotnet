@@ -21,6 +21,8 @@ namespace SecureSubmit.Fluent {
         bool cardPresent = false;
         bool readerPresent = false;
         decimal? gratuity;
+        decimal? convenienceAmt;
+        decimal? shippingAmt;
         HpsAutoSubstantiation autoSubstantiation;
         string offlineAuthCode;
         EMVDataType emvData;
@@ -85,6 +87,16 @@ namespace SecureSubmit.Fluent {
             this.gratuity = gratuity;
             return this;
         }
+        public CreditOfflineChargeBuilder WithShippingAmt(decimal? shippingAmt)
+        {
+            this.shippingAmt = shippingAmt;
+            return this;
+        }
+        public CreditOfflineChargeBuilder WithConvenienceAmt(decimal? convenienceAmt)
+        {
+            this.convenienceAmt = convenienceAmt;
+            return this;
+        }
         public CreditOfflineChargeBuilder WithAutoSubstantiation(HpsAutoSubstantiation autoSubstantiation) {
             this.autoSubstantiation = autoSubstantiation;
             return this;
@@ -114,6 +126,19 @@ namespace SecureSubmit.Fluent {
             block1.GratuityAmtInfoSpecified = gratuity.HasValue;
             if (block1.GratuityAmtInfoSpecified)
                 block1.GratuityAmtInfo = gratuity.Value;
+
+            block1.ConvenienceAmtInfoSpecified = convenienceAmt.HasValue;
+            if (block1.ConvenienceAmtInfoSpecified)
+            {
+                block1.ConvenienceAmtInfo = convenienceAmt.Value;
+                HpsInputValidation.CheckAmount(block1.ConvenienceAmtInfo);
+            }
+            block1.ShippingAmtInfoSpecified = shippingAmt.HasValue;
+            if (block1.ShippingAmtInfoSpecified)
+            {
+                block1.ShippingAmtInfo = shippingAmt.Value;
+                HpsInputValidation.CheckAmount(block1.ShippingAmtInfo);
+            }
 
             if (cardHolder != null)
                 block1.CardHolderData = service.HydrateCardHolderData(cardHolder);
