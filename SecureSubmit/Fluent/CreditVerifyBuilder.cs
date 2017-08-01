@@ -15,8 +15,8 @@ namespace SecureSubmit.Fluent
         private bool requestMultiUseToken = false;
         private bool cardPresent = false;
         private bool readerPresent = false;
-        private long? clientTransactionId;
-        private HpsEmvDataType emvData;
+        private long? clientTransactionId;        
+        private HpsTagDataType tagData;
 
         public CreditVerifyBuilder WithCard(HpsCreditCard card)
         {
@@ -38,9 +38,9 @@ namespace SecureSubmit.Fluent
             this.trackData = trackData;
             return this;
         }
-        public CreditVerifyBuilder WithEMVData(HpsEmvDataType emvData)
+        public CreditVerifyBuilder WithTagData(HpsTagDataType tagData)
         {
-            this.emvData = emvData;
+            this.tagData = tagData;
             return this;
         }
         public CreditVerifyBuilder WithCardHolder(HpsCardHolder cardHolder)
@@ -101,8 +101,8 @@ namespace SecureSubmit.Fluent
             cardData.TokenRequest = requestMultiUseToken ? booleanType.Y : booleanType.N;
             block1.CardData = cardData;
 
-            if (emvData != null)
-                block1.EMVData = service.HydrateEmvData(emvData);
+            if (tagData != null)
+                block1.TagData = service.HydrateTagData(tagData);
 
             var transaction = new PosRequestVer10Transaction
             {

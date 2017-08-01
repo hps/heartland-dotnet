@@ -127,12 +127,15 @@ namespace SecureSubmit.Services {
             } : null;
         }
 
-        internal EMVDataType HydrateEmvData(HpsEmvDataType emvData) {
-            return emvData != null ? new EMVDataType {
-                EMVTagData = emvData.TagData,
-                EMVChipCondition =  emvData.ChipCondition,
-                PINBlock = emvData.PinBlock,
-                EMVChipConditionSpecified = emvData.ChipConditionSpecified
+        internal TagDataType HydrateTagData(HpsTagDataType tagData)
+        {
+            return tagData != null ? new TagDataType
+            {
+                TagValues = new TagDataTypeTagValues
+                {
+                    Value = tagData.TagData,
+                    source = tagData.Source
+                }
             } : null;
         }
 

@@ -24,9 +24,8 @@ namespace SecureSubmit.Fluent {
         decimal? convenienceAmt;
         decimal? shippingAmt;
         HpsAutoSubstantiation autoSubstantiation;
-        string offlineAuthCode;
-        EMVDataType emvData;
-
+        string offlineAuthCode;        
+        HpsTagDataType tagData;
         public CreditOfflineChargeBuilder WithAmount(decimal? amount) {
             this.amount = amount;
             return this;
@@ -47,8 +46,9 @@ namespace SecureSubmit.Fluent {
             this.trackData = trackData;
             return this;
         }
-        public CreditOfflineChargeBuilder WithEMVData(EMVDataType emvData) {
-            this.emvData = emvData;
+        public CreditOfflineChargeBuilder WithTagData(HpsTagDataType tagData)
+        {
+            this.tagData = tagData;
             return this;
         }
         public CreditOfflineChargeBuilder WithCardHolder(HpsCardHolder cardHolder) {
@@ -170,10 +170,10 @@ namespace SecureSubmit.Fluent {
                 block1.AutoSubstantiation = service.HydrateAutoSubstantiation(autoSubstantiation);
             if (directMarketData != null)
                 block1.DirectMktData = service.HydrateDirectMktData(directMarketData);
-            block1.OfflineAuthCode = offlineAuthCode;
+            block1.OfflineAuthCode = offlineAuthCode;            
 
-            if (emvData != null)
-                block1.EMVTagData = emvData.EMVTagData;
+            if (tagData != null)
+                block1.TagData = service.HydrateTagData(tagData);
 
             var transaction = new PosRequestVer10Transaction {
                 Item = new PosCreditOfflineSaleReqType {
@@ -193,7 +193,7 @@ namespace SecureSubmit.Fluent {
         protected override void SetupValidations() {
             AddValidation(() => { return amount.HasValue; }, "Amount is required.");
             AddValidation(OnlyOnePaymentMethod, "Only one payment method is required.");
-            AddValidation(() => { return (offlineAuthCode != null) || ((offlineAuthCode == null) && (emvData.EMVTagData.Length > 0)); }, "Offline auth code is required.");
+            AddValidation(() => { return (offlineAuthCode != null) || ((offlineAuthCode == null) && tagData.TagData.Length > 0); }, "Offline auth code is required.");
         }
 
         private bool OnlyOnePaymentMethod() {

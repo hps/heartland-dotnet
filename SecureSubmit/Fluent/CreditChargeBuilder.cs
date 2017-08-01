@@ -28,8 +28,8 @@ namespace SecureSubmit.Fluent {
         private decimal? convenienceAmt;
         private decimal? shippingAmt;
         private HpsAutoSubstantiation autoSubstantiation;
-        private HpsTxnReferenceData originalTxnReferenceData;
-        private HpsEmvDataType emvData;
+        private HpsTxnReferenceData originalTxnReferenceData;        
+        private HpsTagDataType tagData;
         private HpsGiftCard rewards;
         private HpsSecureEcommerce secureEcommerce;
 
@@ -56,10 +56,10 @@ namespace SecureSubmit.Fluent {
         public CreditChargeBuilder WithTrackData(HpsTrackData trackData) {
             this.trackData = trackData;
             return this;
-        }
-        public CreditChargeBuilder WithEMVData(HpsEmvDataType emvData)
+        }       
+        public CreditChargeBuilder WithTagData(HpsTagDataType tagData)
         {
-            this.emvData = emvData;
+            this.tagData = tagData;
             return this;
         }
         public CreditChargeBuilder WithCardHolder(HpsCardHolder cardHolder) {
@@ -211,8 +211,8 @@ namespace SecureSubmit.Fluent {
                 block1.DirectMktData = service.HydrateDirectMktData(directMarketData);
             block1.CardData = cardData;
 
-            if (emvData != null)
-                block1.EMVData = service.HydrateEmvData(emvData);
+            if (tagData != null)
+                block1.TagData = service.HydrateTagData(tagData);
 
             if (secureEcommerce != null)
                 block1.SecureECommerce = service.HydrateSecureEcommerce(secureEcommerce);

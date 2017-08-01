@@ -326,7 +326,7 @@ namespace SecureSubmit.Services
 
         public HpsCharge Charge(decimal amount, string currency, HpsTrackData trackData, HpsEncryptionData encryptionData = null,
             decimal gratuity = 0, bool allowPartialAuthorization = false, bool requestMultiUseToken = false,
-            HpsDirectMarketData directMarketData = null, HpsEmvDataType emvData = null, bool allowDuplicates = false, decimal convenienceAmt = 0, decimal shippingAmt = 0)
+            HpsDirectMarketData directMarketData = null, HpsTagDataType tagData = null, bool allowDuplicates = false, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -356,8 +356,8 @@ namespace SecureSubmit.Services
                             Item = HydrateCardTrackData(trackData),
                             EncryptionData = HydrateEncryptionData(encryptionData)
                         },
-                        DirectMktData = HydrateDirectMktData(directMarketData),
-                        EMVData = HydrateEmvData(emvData)
+                        DirectMktData = HydrateDirectMktData(directMarketData),                        
+                        TagData = HydrateTagData(tagData)
                     }
                 },
                 ItemElementName = ItemChoiceType1.CreditSale
@@ -474,7 +474,7 @@ namespace SecureSubmit.Services
         /// <param name="emvData">Optional EMV card data</param>
         /// <returns>The <see cref="HpsAccountVerify"/>.</returns>
         public HpsAccountVerify Verify(HpsTrackData trackData, HpsEncryptionData encryptionData = null,
-            bool requestMultiUseToken = false, long? clientTransactionId = null, HpsEmvDataType emvData = null)
+            bool requestMultiUseToken = false, long? clientTransactionId = null, HpsTagDataType tagData = null)
         {
             var transaction = new PosRequestVer10Transaction
             {
@@ -487,8 +487,8 @@ namespace SecureSubmit.Services
                             TokenRequest = requestMultiUseToken ? booleanType.Y : booleanType.N,
                             Item = HydrateCardTrackData(trackData),
                             EncryptionData = HydrateEncryptionData(encryptionData)
-                        },
-                        EMVData = HydrateEmvData(emvData)
+                        },                        
+                        TagData = HydrateTagData(tagData)
                     }
                 },
                 ItemElementName = ItemChoiceType1.CreditAccountVerify
@@ -648,7 +648,7 @@ namespace SecureSubmit.Services
         }
 
         public HpsAuthorization Authorize(decimal amount, string currency, HpsTrackData trackData, HpsEncryptionData encryptionData = null,
-            decimal gratuity = 0, bool allowPartialAuthorization = false, bool requestMultiUseToken = false, HpsDirectMarketData directMarketData = null, HpsEmvDataType emvData = null, decimal convenienceAmt = 0, decimal shippingAmt = 0)
+            decimal gratuity = 0, bool allowPartialAuthorization = false, bool requestMultiUseToken = false, HpsDirectMarketData directMarketData = null, HpsTagDataType tagData = null, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -676,8 +676,8 @@ namespace SecureSubmit.Services
                             Item = HydrateCardTrackData(trackData),
                             EncryptionData = HydrateEncryptionData(encryptionData)
                         },
-                        DirectMktData = HydrateDirectMktData(directMarketData),
-                        EMVData = HydrateEmvData(emvData)
+                        DirectMktData = HydrateDirectMktData(directMarketData),                        
+                        TagData = HydrateTagData(tagData)
                     }
                 },
                 ItemElementName = ItemChoiceType1.CreditAuth
@@ -1178,7 +1178,7 @@ namespace SecureSubmit.Services
         }
 
         public HpsTransaction OfflineCharge(decimal amount, string currency, HpsTrackData trackData, HpsEncryptionData encryptionData = null,
-            decimal gratuity = 0, decimal surcharge = 0, long? clientTransactionId = null, EMVDataType emvData = null, decimal convenienceAmt = 0, decimal shippingAmt = 0)
+            decimal gratuity = 0, decimal surcharge = 0, long? clientTransactionId = null, HpsTagDataType tagData = null, decimal convenienceAmt = 0, decimal shippingAmt = 0)
         {
             HpsInputValidation.CheckAmount(amount);
             HpsInputValidation.CheckCurrency(currency);
@@ -1204,8 +1204,8 @@ namespace SecureSubmit.Services
                         {
                             Item = HydrateCardTrackData(trackData),
                             EncryptionData = HydrateEncryptionData(encryptionData)
-                        },
-                        EMVTagData = emvData != null ? emvData.EMVTagData : null
+                        },                        
+                        TagData = HydrateTagData(tagData)
                     }
                 },
                 ItemElementName = ItemChoiceType1.CreditOfflineSale
