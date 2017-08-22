@@ -1443,6 +1443,97 @@ namespace SecureSubmit.Tests.Certification
             Assert.AreEqual("0", response.ResponseCode);
         }
 
+        [TestMethod]
+        public void ecomm_075_authorization_client_transactionid()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
+
+            var card = new HpsCreditCard
+            {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2025,
+                Cvv = "123"
+            };
+            var details = new HpsTransactionDetails
+            {
+                ClientTransactionId = 1234567890,                
+            };
+
+            var authResponse = _creditService.Authorize(17.06m)
+                .WithCard(card)
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .WithAllowDuplicates(true)
+                .WithDetails(details)
+                .Execute();
+
+            Assert.IsNotNull(authResponse);
+            Assert.IsNotNull(authResponse.ClientTransactionId);
+            Assert.AreEqual(1234567890, authResponse.ClientTransactionId);
+        }
+
+        [TestMethod]
+        public void ecomm_076_authorization_reference_number()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
+
+            var card = new HpsCreditCard
+            {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2025,
+                Cvv = "123"
+            };
+            var details = new HpsTransactionDetails
+            {
+                ClientTransactionId = 1234567890,
+            };
+
+            var authResponse = _creditService.Authorize(17.06m)
+                .WithCard(card)
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .WithAllowDuplicates(true)
+                .WithDetails(details)
+                .Execute();
+
+            Assert.IsNotNull(authResponse);
+            Assert.IsNotNull(authResponse.ReferenceNumber);           
+        }
+
+        [TestMethod]
+        public void ecomm_077_authorization_response_text()
+        {
+            var cardHolder = new HpsCardHolder { Address = new HpsAddress { Address = "6860 Dallas Pkwy", Zip = "75024" } };
+            var directMarketData = new HpsDirectMarketData { InvoiceNumber = "123456" };
+
+            var card = new HpsCreditCard
+            {
+                Number = "4012002000060016",
+                ExpMonth = 12,
+                ExpYear = 2025,
+                Cvv = "123"
+            };
+            var details = new HpsTransactionDetails
+            {
+                ClientTransactionId = 1234567890,
+            };
+
+            var authResponse = _creditService.Authorize(17.06m)
+                .WithCard(card)
+                .WithCardHolder(cardHolder)
+                .WithDirectMarketData(directMarketData)
+                .WithAllowDuplicates(true)
+                .WithDetails(details)
+                .Execute();
+
+            Assert.IsNotNull(authResponse);
+            Assert.IsNotNull(authResponse.ResponseText);
+        }
+
         // RECEIPTS MESSAGING
 
         // ecomm_075_receipts_messaging: print and scan receipt for test 51
