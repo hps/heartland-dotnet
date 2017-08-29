@@ -56,7 +56,7 @@ namespace SecureSubmit.Infrastructure
     //        get
     //        {
     //            if (_siteId != -1) return _siteId;
-                
+
     //            int i;
     //            if (int.TryParse(ConfigurationManager.AppSettings["HpsSiteId"], out i))
     //            {
@@ -78,7 +78,7 @@ namespace SecureSubmit.Infrastructure
     //        get
     //        {
     //            if (_deviceId != -1) return _deviceId;
-                
+
     //            int i;
     //            if (int.TryParse(ConfigurationManager.AppSettings["HpsDeviceId"], out i))
     //            {
@@ -205,13 +205,13 @@ namespace SecureSubmit.Infrastructure
     //            {
     //                // If we have a secret key, return either the production URI...
     //                if (_secretApiKey.Contains("_uat_"))
-    //                    return "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+    //                    return "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx;
     //                else if (_secretApiKey.Contains("_cert_"))
-    //                    return "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+    //                    return "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx";
     //            }
 
     //            // all else fails return the default
-    //            return "https://api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+    //            return "https://api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx";
     //        }
     //        set
     //        {
@@ -225,7 +225,7 @@ namespace SecureSubmit.Infrastructure
     //        get
     //        {
     //            if (!string.IsNullOrEmpty(_payPlanBaseUri)) return _payPlanBaseUri;
-                
+
     //            _payPlanBaseUri = ConfigurationManager.AppSettings["HpsPayPlanBaseUri"];
     //            if (string.IsNullOrEmpty(_payPlanBaseUri))
     //            {

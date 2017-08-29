@@ -336,7 +336,7 @@ namespace SecureSubmit.Tests.Terminals.PAX {
                 LicenseId = 102308,
                 UserName = "777700872100",
                 Password = "$Test1234",
-                Url = "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl"
+                Url = "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx"
             });
 
             var response = _device.CreditAuth(1, 15.12m).Execute();
@@ -364,7 +364,7 @@ namespace SecureSubmit.Tests.Terminals.PAX {
                 LicenseId = 102308,
                 UserName = "777700872100",
                 Password = "$Test1234",
-                Url = "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl"
+                Url = "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx"
             });
 
             var response = _device.CreditSale(1, 15.12m)

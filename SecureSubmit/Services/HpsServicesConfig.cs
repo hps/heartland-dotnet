@@ -71,13 +71,13 @@ namespace SecureSubmit.Services
                 {
                     // If we have a secret key, return either the production URI...
                     if (SecretApiKey.Contains("_uat_"))
-                        return "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                        return "https://posgateway.uat.secureexchange.net/Hps.Exchange.PosGateway/PosGatewayService.asmx";
                     else if (SecretApiKey.Contains("_cert_"))
-                        return "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                        return "https://cert.api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx";
                 }
 
                 // all else fails return the default
-                return "https://api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx?wsdl";
+                return "https://api2.heartlandportico.com/Hps.Exchange.PosGateway/PosGatewayService.asmx";
             }
             set
             {
