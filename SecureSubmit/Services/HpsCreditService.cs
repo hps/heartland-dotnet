@@ -146,7 +146,7 @@ namespace SecureSubmit.Services
                             SettlementAmount = charge.SettlementAmt,
                             TransactionUtcDate = charge.TxnUtcDT,
                             TransactionType = filterBy.HasValue ? filterBy : HpsTransaction.ServiceNameToTransactionType(charge.ServiceName),
-                            Exceptions = (charge.GatewayRspCode != 0 || charge.IssuerRspCode != "00") ? new HpsChargeExceptions
+                            Exceptions = (charge.GatewayRspCode != 0 || (!string.IsNullOrEmpty(charge.IssuerRspCode) && charge.IssuerRspCode != "00")) ? new HpsChargeExceptions
                             {
                                 GatewayException = HpsGatewayResponseValidation.GetException(charge.GatewayRspCode, charge.GatewayRspMsg),
                                 IssuerException = HpsIssuerResponseValidation.GetException(charge.GatewayTxnId, charge.IssuerRspCode, charge.IssuerRspText)

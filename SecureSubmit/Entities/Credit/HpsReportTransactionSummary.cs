@@ -62,7 +62,7 @@ using Hps.Exchange.PosGateway.Client;
                 if (filterBy.HasValue)
                     trans.TransactionType = filterBy.Value;
 
-                if (charge.GatewayRspCode != 0 || charge.IssuerRspCode != "00") {
+                if (charge.GatewayRspCode != 0 || (!string.IsNullOrEmpty(charge.IssuerRspCode) && charge.IssuerRspCode != "00")) {
                     trans.Exceptions = new HpsChargeExceptions();
                     if (charge.GatewayRspCode != 0)
                         trans.Exceptions.GatewayException = HpsGatewayResponseValidation.GetException(charge.GatewayRspCode, charge.GatewayRspMsg);
