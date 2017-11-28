@@ -67,9 +67,18 @@ namespace SecureSubmit.Terminals.PAX {
             var response = _interface.Send(TerminalUtilities.BuildRequest(PAX_MSG_ID.A26_REBOOT));
             return new PaxDeviceResponse(response, PAX_MSG_ID.A27_RSP_REBOOT);
         }
+
+        // A30 - INPUT ACCOUNT
+        public InputAccountBuilder InputAccount() {
+            return new InputAccountBuilder(this);
+        }
         #endregion
 
         #region Transaction Commands
+        internal byte[] DoSend(string messageId, params object[] elements) {
+            return _interface.Send(TerminalUtilities.BuildRequest(messageId, elements));
+        }
+
         internal byte[] DoTransaction(string messageId, string txnType, params IRequestSubGroup[] subGroups) {
             var commands = new ArrayList(){ txnType, ControlCodes.FS };
             if (subGroups.Length > 0) {

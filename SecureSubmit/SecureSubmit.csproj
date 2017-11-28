@@ -224,6 +224,7 @@
     <Compile Include="Terminals\PAX\Fluent\GiftBalanceBuilder.cs" />
     <Compile Include="Terminals\PAX\Fluent\GiftSaleBuilder.cs" />
     <Compile Include="Terminals\PAX\Fluent\GiftVoidBuilder.cs" />
+    <Compile Include="Terminals\PAX\Fluent\InputAccountBuilder.cs" />
     <Compile Include="Terminals\PAX\Interfaces\PaxHttpInterface.cs" />
     <Compile Include="Terminals\PAX\Interfaces\PaxTcpInterface.cs" />
     <Compile Include="Terminals\PAX\PaxDevice.cs" />
@@ -237,6 +238,7 @@
     <Compile Include="Terminals\PAX\Responses\EbtResponse.cs" />
     <Compile Include="Terminals\PAX\Responses\GiftResponse.cs" />
     <Compile Include="Terminals\PAX\Responses\InitializeResponse.cs" />
+    <Compile Include="Terminals\PAX\Responses\InputAccountResponse.cs" />
     <Compile Include="Terminals\PAX\Responses\LoyaltyResponse.cs" />
     <Compile Include="Terminals\PAX\Responses\ResetResponse.cs" />
     <Compile Include="Terminals\PAX\SubGroups\AccountSubGroups.cs" />

@@ -25,14 +25,14 @@ namespace SecureSubmit.Terminals.PAX {
         }
 
         public byte[] Send(IDeviceMessage message) {
+            if (OnMessageSent != null)
+                OnMessageSent(message.ToString());
+
             try {
                 string payload = Convert.ToBase64String(message.GetSendBuffer());
-
+    
                 _client = HttpWebRequest.Create(string.Format("http://{0}:{1}?{2}", _settings.IpAddress, _settings.Port, payload));
                 var response = (HttpWebResponse)_client.GetResponse();
-                if (OnMessageSent != null)
-                    OnMessageSent(message.ToString());
-
                 var buffer = new List<byte>();
                 using (var sr = new StreamReader(response.GetResponseStream())) {
                     var rec_buffer = sr.ReadToEnd();

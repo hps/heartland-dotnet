@@ -69,5 +69,20 @@ namespace SecureSubmit.Tests.Terminals.PAX {
             Assert.IsNotNull(response);
             Assert.AreEqual("OK", response.DeviceResponseText);
         }
+
+        [TestMethod]
+        public void InputAccount() {
+            _device.OnMessageSent += (message) => {
+                Assert.IsNotNull(message);
+                Assert.IsTrue(message.StartsWith("[STX]A30[FS]1.35[FS]1[FS]1[FS]1[FS]1[FS]0[FS]200[FS]0[FS][FS]1[FS]32[FS]04[FS][ETX]"));
+            };
+
+            var response = _device.InputAccount()
+                .WithMinAccountLength(1)
+                .WithMaxAccountLength(32)
+                .Execute();
+            Assert.IsNotNull(response);
+            Assert.AreEqual("OK", response.DeviceResponseText);
+        }
     }
 }

@@ -257,7 +257,7 @@ namespace SecureSubmit.Terminals.PAX {
         public static string PASSPORT_NUMBER = "A";
     }
 
-    internal enum EntryMode {
+    public enum EntryMode {
         Manual = 0,
         Swipe,
         Contactless,
@@ -321,5 +321,12 @@ namespace SecureSubmit.Terminals.PAX {
         CONVERT = 31,
         TOKENIZE = 32,
         REVERSAL = 99,
+    }
+
+    public enum EncryptionType {
+        None = 0,
+        DUKPT = 1,
+        DES_TDES = 2,
+        VOLTAGE_E2EE = 3
     }
 }
