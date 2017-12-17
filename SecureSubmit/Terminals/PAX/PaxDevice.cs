@@ -134,6 +134,11 @@ namespace SecureSubmit.Terminals.PAX {
             return new CreditCaptureBuilder(this).WithReferenceNumber(referenceNumber).WithAmount(amount);
         }
 
+        public CreditAdjustBuilder CreditAdjust(int referenceNumber, decimal? gratuity = null)
+        {
+            return new CreditAdjustBuilder(this).WithReferenceNumber(referenceNumber).WithGratuity(gratuity);
+        }
+
         public CreditEditBuilder CreditEdit(decimal? amount = null) {
             if (!_settings.DeviceId.HasValue || !_settings.SiteId.HasValue || !_settings.LicenseId.HasValue || string.IsNullOrEmpty(_settings.UserName) || string.IsNullOrEmpty(_settings.Password))
                 throw new HpsConfigurationException("Device is not configured properly for Credit Edit. Please provide the device credentials in the ConnectionConfig.");
