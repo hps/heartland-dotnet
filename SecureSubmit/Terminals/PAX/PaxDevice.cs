@@ -34,7 +34,6 @@ namespace SecureSubmit.Terminals.PAX {
                     throw new NotImplementedException();
             }
 
-            _interface.Connect();
             _interface.OnMessageSent += (message) => {
                 if (this.OnMessageSent != null)
                     OnMessageSent(message);

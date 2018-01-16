@@ -13,9 +13,10 @@ namespace SecureSubmit.Tests.Terminals.PAX {
         [TestInitialize]
         public void Setup() {
             _device = new PaxDevice(new ConnectionConfig {
-                ConnectionMode = ConnectionModes.HTTP,
+                ConnectionMode = ConnectionModes.TCP_IP,
                 IpAddress = "10.12.220.172",
-                Port = "10009"
+                Port = "10009",
+                TimeOut = 10000
             });
         }
 
@@ -46,7 +47,7 @@ namespace SecureSubmit.Tests.Terminals.PAX {
             var card = new HpsCreditCard {
                 Number = "4005554444444460",
                 ExpMonth = 12,
-                ExpYear = 17,
+                ExpYear = 25,
                 Cvv = "123"
             };
 
