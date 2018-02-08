@@ -39,6 +39,9 @@ using Hps.Exchange.PosGateway.Client;
         /// <summary>Gets or sets a set of exceptions (if any) thrown as a result of the transaction.</summary>
         public HpsChargeExceptions Exceptions { get; set; }
 
+        /// <summary> Get or set the site trace for the transaction</summary>
+        public string SiteTrace { get; set; }
+
         internal HpsReportTransactionSummary[] FromResponse(PosResponseVer10 response, HpsTransactionType? filterBy = null) {
             var reportResponse = (PosReportActivityRspType)response.Transaction.Item;
             
@@ -59,6 +62,7 @@ using Hps.Exchange.PosGateway.Client;
                 trans.SettlementAmount = charge.SettlementAmt;
                 trans.TransactionUtcDate = charge.TxnDT;
                 trans.TransactionType = ServiceNameToTransactionType(charge.ServiceName);
+                trans.SiteTrace = charge.SiteTrace;
                 if (filterBy.HasValue)
                     trans.TransactionType = filterBy.Value;
 
