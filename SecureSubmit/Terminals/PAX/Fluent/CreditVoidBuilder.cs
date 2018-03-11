@@ -25,7 +25,10 @@ namespace SecureSubmit.Terminals.PAX {
             base.Execute();
 
             var extData = new ExtDataSubGroup();
-            extData[EXT_DATA.HOST_REFERENCE_NUMBER] = transactionId.Value.ToString();
+            if (transactionId.HasValue)
+            {
+                extData[EXT_DATA.HOST_REFERENCE_NUMBER] = transactionId.Value.ToString();
+            }
 
             return service.DoCredit(PAX_TXN_TYPE.VOID,
                 new AmountRequest(),
@@ -37,10 +40,6 @@ namespace SecureSubmit.Terminals.PAX {
                 new EcomSubGroup(),
                 extData
             );
-        }
-
-        protected override void SetupValidations() {
-            AddValidation(() => { return transactionId.HasValue; }, "TransactionId is required.");
         }
     }
 }

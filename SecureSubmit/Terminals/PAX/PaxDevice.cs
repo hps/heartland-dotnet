@@ -213,6 +213,11 @@ namespace SecureSubmit.Terminals.PAX {
             var response = _interface.Send(TerminalUtilities.BuildRequest(PAX_MSG_ID.B00_BATCH_CLOSE, DateTime.Now.ToString("YYYYMMDDhhmmss")));
             return new BatchCloseResponse(response);
         }
+        public BatchClearResponse BatchClear()
+        {
+            var response = _interface.Send(TerminalUtilities.BuildRequest(PAX_MSG_ID.B04_BATCH_CLEAR));
+            return new BatchClearResponse(response);
+        }
         #endregion
 
         #region Reporting Commands
