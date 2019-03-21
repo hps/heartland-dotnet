@@ -206,6 +206,10 @@ namespace SecureSubmit.Services
 
         private static List<HpsCheckResponseDetails> GetResponseDetails(IEnumerable<CheckRspInfoType> responseInfo)
         {
+            if (responseInfo == null) {
+                return null;
+            }
+
             var result = new List<HpsCheckResponseDetails>();
             foreach (var info in responseInfo)
             {
