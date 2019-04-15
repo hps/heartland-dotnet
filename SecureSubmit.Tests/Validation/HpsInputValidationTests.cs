@@ -549,7 +549,7 @@ namespace SecureSubmit.Tests.Validation
 
         #endregion
 
-        #region InvalidCardDeatails
+        #region InvalidCardDetails
 
         [TestMethod, ExpectedException(typeof(HpsInvalidRequestException))]
         public void FirstNameWithLimits()
