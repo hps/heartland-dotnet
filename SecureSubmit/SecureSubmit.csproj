@@ -214,6 +214,7 @@
     <Compile Include="Terminals\Extensions\NetworkStreamExtensions.cs" />
     <Compile Include="Terminals\Extensions\StringExtensions.cs" />
     <Compile Include="Terminals\PAX\Fluent\CreditAuthBuilder.cs" />
+    <Compile Include="Terminals\PAX\Fluent\CreditAdjustBuilder.cs" />
     <Compile Include="Terminals\PAX\Fluent\CreditCaptureBuilder.cs" />
     <Compile Include="Terminals\PAX\Fluent\CreditReturnBuilder.cs" />
     <Compile Include="Terminals\PAX\Fluent\CreditSaleBuilder.cs" />
