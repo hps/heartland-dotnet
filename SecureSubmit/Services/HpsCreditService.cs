@@ -1322,7 +1322,7 @@ namespace SecureSubmit.Services
             ProcessChargeGatewayResponse(rsp, ItemChoiceType2.CreditSale, amount, currency);
 
             var creditSaleRsp = (AuthRspStatusType)rsp.Transaction.Item;
-            ProcessChargeIssuerResponse(creditSaleRsp.RspCode, creditSaleRsp.RspText, rsp.Header.GatewayTxnId, amount, currency);
+            ProcessChargeIssuerResponse(creditSaleRsp.RspCode, creditSaleRsp.RspText, rsp.Header.GatewayTxnId, amount, currency, creditSaleRsp);
 
             /* Start to fill out a new transaction response (HpsCharge). */
             var charge = new HpsCharge
@@ -1370,7 +1370,13 @@ namespace SecureSubmit.Services
             HpsGatewayResponseValidation.CheckResponse(rsp, ItemChoiceType2.CreditAccountVerify);
 
             var creditVerifyRsp = (AuthRspStatusType)rsp.Transaction.Item;
-            HpsIssuerResponseValidation.CheckResponse(rsp.Header.GatewayTxnId, creditVerifyRsp.RspCode, creditVerifyRsp.RspText);
+            HpsIssuerResponseValidation.CheckResponse(
+                rsp.Header.GatewayTxnId,
+                creditVerifyRsp.RspCode,
+                creditVerifyRsp.RspText,
+                HpsCardType.Credit,
+                creditVerifyRsp
+            );
 
             var accountVerify = new HpsAccountVerify
             {
@@ -1417,7 +1423,7 @@ namespace SecureSubmit.Services
             ProcessChargeGatewayResponse(rsp, ItemChoiceType2.CreditAuth, amount, currency);
 
             var porticoAuthRsp = (AuthRspStatusType)rsp.Transaction.Item;
-            ProcessChargeIssuerResponse(porticoAuthRsp.RspCode, porticoAuthRsp.RspText, rsp.Header.GatewayTxnId, amount, currency);
+            ProcessChargeIssuerResponse(porticoAuthRsp.RspCode, porticoAuthRsp.RspText, rsp.Header.GatewayTxnId, amount, currency, porticoAuthRsp);
 
             /* Start to fill out a new transaction response (HpsAuth). */
             var auth = new HpsAuthorization
@@ -1459,7 +1465,8 @@ namespace SecureSubmit.Services
         /// <param name="transactionId">The Gateway transaction ID.</param>
         /// <param name="amount">The amount of the charge, authorization, etc.</param>
         /// <param name="currency">Currency used.</param>
-        private void ProcessChargeIssuerResponse(string responseCode, string responseText, long transactionId, decimal amount, string currency)
+        /// <param name="authRsp">Raw auth response from gateway</param>
+        private void ProcessChargeIssuerResponse(string responseCode, string responseText, long transactionId, decimal amount, string currency, AuthRspStatusType authRsp)
         {
             if (responseCode == "91")
             {
@@ -1483,7 +1490,13 @@ namespace SecureSubmit.Services
                 }
             }
 
-            HpsIssuerResponseValidation.CheckResponse(transactionId, responseCode, responseText);
+            HpsIssuerResponseValidation.CheckResponse(
+                transactionId,
+                responseCode,
+                responseText,
+                HpsCardType.Credit,
+                authRsp
+            );
         }
 
         private void ProcessChargeGatewayResponse(PosResponseVer10 rsp, ItemChoiceType2 expectedResponseType, decimal amount, string currency)

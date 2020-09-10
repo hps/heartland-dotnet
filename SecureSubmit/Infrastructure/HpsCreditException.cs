@@ -1,4 +1,5 @@
 ﻿using System;
+using Hps.Exchange.PosGateway.Client;
 
 namespace SecureSubmit.Infrastructure
 {
@@ -17,7 +18,7 @@ namespace SecureSubmit.Infrastructure
             Code = code;
         }
 
-        public HpsCreditException(long transactionId, HpsExceptionCodes code, string message, string issuerCode, string issuerMessage, Exception e = null)
+        public HpsCreditException(long transactionId, HpsExceptionCodes code, string message, string issuerCode, string issuerMessage, Exception e = null, AuthRspStatusType authRsp = null)
             : base(message, e)
         {
             TransactionId = transactionId;
@@ -25,7 +26,8 @@ namespace SecureSubmit.Infrastructure
             Details = new HpsCreditExceptionDetails
             {
                 IssuerResponseCode = issuerCode,
-                IssuerResponseText = issuerMessage
+                IssuerResponseText = issuerMessage,
+                EMVIssuerResp = authRsp.EMVIssuerResp
             };
         }
     }

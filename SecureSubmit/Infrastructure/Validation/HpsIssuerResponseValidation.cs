@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hps.Exchange.PosGateway.Client;
 
 namespace SecureSubmit.Infrastructure.Validation
 {
@@ -71,13 +72,13 @@ namespace SecureSubmit.Infrastructure.Validation
             };
         }
 
-        public static void CheckResponse(long transactionId, string responseCode, string responseText, HpsCardType type = HpsCardType.Credit)
+        public static void CheckResponse(long transactionId, string responseCode, string responseText, HpsCardType type = HpsCardType.Credit, AuthRspStatusType authRsp = null)
         {
-            var e = GetException(transactionId, responseCode, responseText, type);
+            var e = GetException(transactionId, responseCode, responseText, type, authRsp);
             if (e != null) { throw e; }
         }
 
-        public static HpsCreditException GetException(long transactionId, string responseCode, string responseText, HpsCardType type = HpsCardType.Credit)
+        public static HpsCreditException GetException(long transactionId, string responseCode, string responseText, HpsCardType type = HpsCardType.Credit, AuthRspStatusType authResp = null)
         {
             if (responseCode == "00" || responseCode == "0") return null;
 
@@ -90,7 +91,7 @@ namespace SecureSubmit.Infrastructure.Validation
                     if (IssuerCodeToCreditExceptionCode.TryGetValue(responseCode, out code))
                     {
                         CreditExceptionCodeToMessage.TryGetValue(code, out message);
-                        return new HpsCreditException(transactionId, code, message ?? "Unknown issuer error.", responseCode, responseText);
+                        return new HpsCreditException(transactionId, code, message ?? "Unknown issuer error.", responseCode, responseText, null, authResp);
                     }
                     break;
                 case HpsCardType.Gift:
