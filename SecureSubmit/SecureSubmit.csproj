@@ -214,6 +214,7 @@
     <Compile Include="Terminals\Extensions\NetworkStreamExtensions.cs" />
     <Compile Include="Terminals\Extensions\StringExtensions.cs" />
     <Compile Include="Terminals\PAX\Fluent\CreditAuthBuilder.cs" />
+    <Compile Include="Terminals\PAX\Fluent\CreditAdjustBuilder.cs" />
     <Compile Include="Terminals\PAX\Fluent\CreditCaptureBuilder.cs" />
     <Compile Include="Terminals\PAX\Fluent\CreditReturnBuilder.cs" />
     <Compile Include="Terminals\PAX\Fluent\CreditSaleBuilder.cs" />
@@ -241,6 +242,7 @@
     <Compile Include="Terminals\PAX\Responses\InitializeResponse.cs" />
     <Compile Include="Terminals\PAX\Responses\InputAccountResponse.cs" />
     <Compile Include="Terminals\PAX\Responses\LoyaltyResponse.cs" />
+    <Compile Include="Terminals\PAX\Responses\BatchClearResponse.cs" />
     <Compile Include="Terminals\PAX\Responses\ResetResponse.cs" />
     <Compile Include="Terminals\PAX\SubGroups\AccountSubGroups.cs" />
     <Compile Include="Terminals\PAX\SubGroups\AmountSubGroups.cs" />
