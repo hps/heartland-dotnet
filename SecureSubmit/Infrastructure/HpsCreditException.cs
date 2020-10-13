@@ -27,7 +27,7 @@ namespace SecureSubmit.Infrastructure
             {
                 IssuerResponseCode = issuerCode,
                 IssuerResponseText = issuerMessage,
-                EMVIssuerResp = authRsp.EMVIssuerResp
+                EMVIssuerResp = authRsp?.EMVIssuerResp
             };
         }
     }
