@@ -103,7 +103,7 @@ namespace SecureSubmit.Infrastructure.Validation
                     }
                     break;
             }
-            return new HpsCreditException(transactionId, HpsExceptionCodes.UnknownIssuerError, CreditExceptionCodeToMessage[HpsExceptionCodes.UnknownIssuerError], responseCode, responseText);
+            return new HpsCreditException(transactionId, HpsExceptionCodes.UnknownIssuerError, CreditExceptionCodeToMessage[HpsExceptionCodes.UnknownIssuerError], responseCode, responseText, null, authResp);
 
         }
     }
