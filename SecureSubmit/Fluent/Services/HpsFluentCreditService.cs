@@ -127,7 +127,7 @@ namespace SecureSubmit.Fluent.Services
                     throw new HpsCreditException(transactionId, HpsExceptionCodes.IssuerTimeoutReversalError, "Error occurred while reversing a charge due to an issuer timeout.", e);
                 }
             }
-            HpsIssuerResponseValidation.CheckResponse(transactionId, transaction.RspCode, transaction.RspText);
+            HpsIssuerResponseValidation.CheckResponse(transactionId, transaction.RspCode, transaction.RspText, HpsCardType.Credit, transaction);
         }
 
         private void ProcessGatewayResponse(PosResponseVer10 response, ItemChoiceType1 expectedResponseType, decimal? amount)
