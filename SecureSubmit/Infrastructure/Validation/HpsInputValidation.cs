@@ -96,7 +96,7 @@ namespace SecureSubmit.Infrastructure.Validation
             dict.Add(AddressFields.State, STATE_MAX_LENGTH);
             if ((!string.IsNullOrEmpty(cardHolderDetail)) && (cardHolderDetail.Length > dict[fieldName]))
             {
-                throw new HpsInvalidRequestException(HpsExceptionCodes.InvalidCardHolderDetail, "The value for " + fieldName + " should not more than" + dict[fieldName] + "characters", "cardHolderDetail");
+                throw new HpsInvalidRequestException(HpsExceptionCodes.InvalidCardHolderDetail, "The value for " + fieldName + " should not be more than " + dict[fieldName] + " characters", "cardHolderDetail");
             }
             return cardHolderDetail;
         }
